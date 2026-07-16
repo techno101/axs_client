@@ -1,0 +1,98 @@
+- generic [ref=f11e1]:
+  - generic [ref=f11e2]:
+    - link "Skip to main content" [ref=f11e3] [cursor=pointer]:
+      - /url: "#main-content"
+    - complementary "Admin navigation" [ref=f11e4]:
+      - generic [ref=f11e5]:
+        - generic [ref=f11e6]:
+          - generic [ref=f11e7]: A
+          - generic [ref=f11e9]: X
+        - generic [ref=f11e10]:
+          - strong [ref=f11e11]: ArmourX
+          - generic [ref=f11e12]: Operations
+        - button "Close navigation" [ref=f11e13]
+      - navigation [ref=f11e16]:
+        - generic [ref=f11e17]:
+          - paragraph [ref=f11e18]: Operate
+          - link "Dashboard" [ref=f11e19] [cursor=pointer]:
+            - /url: /
+          - link "Counter / Today Live" [ref=f11e26] [cursor=pointer]:
+            - /url: /counter
+            - generic [ref=f11e29]: Counter / Today
+            - generic [ref=f11e30]: Live
+          - link "Calendar" [ref=f11e31] [cursor=pointer]:
+            - /url: /calendar
+          - link "Bookings" [ref=f11e36] [cursor=pointer]:
+            - /url: /bookings
+        - generic [ref=f11e40]:
+          - paragraph [ref=f11e41]: People & money
+          - link "Customers" [ref=f11e42] [cursor=pointer]:
+            - /url: /customers
+          - link "Payments" [ref=f11e48] [cursor=pointer]:
+            - /url: /payments
+          - link "Attendance" [ref=f11e53] [cursor=pointer]:
+            - /url: /attendance
+        - generic [ref=f11e58]:
+          - paragraph [ref=f11e59]: Venue
+          - link "Fields & timings" [ref=f11e60] [cursor=pointer]:
+            - /url: /fields
+          - link "Availability blocks" [ref=f11e66] [cursor=pointer]:
+            - /url: /availability
+        - generic [ref=f11e71]:
+          - paragraph [ref=f11e72]: Publish
+          - link "Pages" [ref=f11e73] [cursor=pointer]:
+            - /url: /pages
+          - link "Articles" [ref=f11e78] [cursor=pointer]:
+            - /url: /articles
+          - link "FAQs" [ref=f11e83] [cursor=pointer]:
+            - /url: /faqs
+          - link "Media" [ref=f11e88] [cursor=pointer]:
+            - /url: /media
+        - generic [ref=f11e94]:
+          - paragraph [ref=f11e95]: Control
+          - link "Reports" [ref=f11e96] [cursor=pointer]:
+            - /url: /reports
+          - link "Notifications 2" [ref=f11e100] [cursor=pointer]:
+            - /url: /notifications
+            - generic [ref=f11e103]: Notifications
+            - generic [ref=f11e104]: "2"
+          - link "Users" [ref=f11e105] [cursor=pointer]:
+            - /url: /users
+          - link "Roles" [ref=f11e110] [cursor=pointer]:
+            - /url: /roles
+          - link "Audit log" [ref=f11e115] [cursor=pointer]:
+            - /url: /audit
+          - link "Settings" [ref=f11e120] [cursor=pointer]:
+            - /url: /settings
+      - generic [ref=f11e125]:
+        - generic [ref=f11e126]: Live operations
+        - paragraph [ref=f11e128]: Authorized PostgreSQL workspace
+    - generic [ref=f11e129]:
+      - banner [ref=f11e130]:
+        - button "Open navigation" [ref=f11e131]
+        - button [ref=f11e134] [cursor=pointer]
+        - group [ref=f11e138]:
+          - generic "P4" [ref=f11e139] [cursor=pointer]
+      - main [ref=f11e141]:
+        - generic [ref=f11e142]:
+          - generic [ref=f11e143]:
+            - generic [ref=f11e144]:
+              - generic [ref=f11e145]:
+                - generic [ref=f11e146]: Operational view
+                - generic [ref=f11e147]: Live database
+              - heading "Reports" [level=1] [ref=f11e148]
+              - paragraph [ref=f11e149]: Authorized CSV exports are escaped against spreadsheet formula injection and audited.
+            - link "Export daily CSV" [active] [ref=f11e151] [cursor=pointer]:
+              - /url: /v1/admin/reports/daily?date=2026-07-16
+          - generic [ref=f11e154]:
+            - paragraph [ref=f11e160]: No records
+            - heading "Nothing has been recorded yet" [level=2] [ref=f11e161]
+            - paragraph [ref=f11e162]: Authorized records will appear here when the relevant workflow creates them.
+  - button "Open Next.js Dev Tools" [ref=f11e173] [cursor=pointer]:
+    - generic [ref=f11e176]:
+      - text: Rendering
+      - generic [ref=f11e177]:
+        - generic [ref=f11e178]: .
+        - generic [ref=f11e179]: .
+        - generic [ref=f11e180]: .
+  - alert [ref=f11e172]

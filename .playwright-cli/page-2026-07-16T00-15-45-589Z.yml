@@ -1,0 +1,113 @@
+- generic [active] [ref=f13e1]:
+  - generic [ref=f13e2]:
+    - link "Skip to main content" [ref=f13e3] [cursor=pointer]:
+      - /url: "#main-content"
+    - complementary "Admin navigation" [ref=f13e4]:
+      - generic [ref=f13e5]:
+        - generic [ref=f13e6]:
+          - generic [ref=f13e7]: A
+          - generic [ref=f13e9]: X
+        - generic [ref=f13e10]:
+          - strong [ref=f13e11]: ArmourX
+          - generic [ref=f13e12]: Operations
+        - button "Close navigation" [ref=f13e13]
+      - navigation [ref=f13e16]:
+        - generic [ref=f13e17]:
+          - paragraph [ref=f13e18]: Operate
+          - link "Dashboard" [ref=f13e19] [cursor=pointer]:
+            - /url: /
+          - link "Counter / Today Live" [ref=f13e26] [cursor=pointer]:
+            - /url: /counter
+            - generic [ref=f13e29]: Counter / Today
+            - generic [ref=f13e30]: Live
+          - link "Calendar" [ref=f13e31] [cursor=pointer]:
+            - /url: /calendar
+          - link "Bookings" [ref=f13e36] [cursor=pointer]:
+            - /url: /bookings
+        - generic [ref=f13e40]:
+          - paragraph [ref=f13e41]: People & money
+          - link "Customers" [ref=f13e42] [cursor=pointer]:
+            - /url: /customers
+          - link "Payments" [ref=f13e48] [cursor=pointer]:
+            - /url: /payments
+          - link "Attendance" [ref=f13e53] [cursor=pointer]:
+            - /url: /attendance
+        - generic [ref=f13e58]:
+          - paragraph [ref=f13e59]: Venue
+          - link "Fields & timings" [ref=f13e60] [cursor=pointer]:
+            - /url: /fields
+          - link "Availability blocks" [ref=f13e66] [cursor=pointer]:
+            - /url: /availability
+        - generic [ref=f13e71]:
+          - paragraph [ref=f13e72]: Publish
+          - link "Pages" [ref=f13e73] [cursor=pointer]:
+            - /url: /pages
+          - link "Articles" [ref=f13e78] [cursor=pointer]:
+            - /url: /articles
+          - link "FAQs" [ref=f13e83] [cursor=pointer]:
+            - /url: /faqs
+          - link "Media" [ref=f13e88] [cursor=pointer]:
+            - /url: /media
+        - generic [ref=f13e94]:
+          - paragraph [ref=f13e95]: Control
+          - link "Reports" [ref=f13e96] [cursor=pointer]:
+            - /url: /reports
+          - link "Notifications 2" [ref=f13e100] [cursor=pointer]:
+            - /url: /notifications
+            - generic [ref=f13e103]: Notifications
+            - generic [ref=f13e104]: "2"
+          - link "Users" [ref=f13e105] [cursor=pointer]:
+            - /url: /users
+          - link "Roles" [ref=f13e110] [cursor=pointer]:
+            - /url: /roles
+          - link "Audit log" [ref=f13e115] [cursor=pointer]:
+            - /url: /audit
+          - link "Settings" [ref=f13e120] [cursor=pointer]:
+            - /url: /settings
+      - generic [ref=f13e125]:
+        - generic [ref=f13e126]: Live operations
+        - paragraph [ref=f13e128]: Authorized PostgreSQL workspace
+    - generic [ref=f13e129]:
+      - banner [ref=f13e130]:
+        - button "Open navigation" [ref=f13e131]
+        - button [ref=f13e134] [cursor=pointer]
+        - group [ref=f13e138]:
+          - generic "P4" [ref=f13e139] [cursor=pointer]
+      - main [ref=f13e141]:
+        - generic [ref=f13e142]:
+          - generic [ref=f13e144]:
+            - generic [ref=f13e145]:
+              - generic [ref=f13e146]: Help content
+              - generic [ref=f13e147]: Live database
+            - heading "FAQs" [level=1] [ref=f13e148]
+            - paragraph [ref=f13e149]: Plain-text answers ordered by category.
+          - generic [ref=f13e150]:
+            - paragraph [ref=f13e151]: Structured content only. Text is rendered by source-controlled components.
+            - button "New FAQ" [ref=f13e152] [cursor=pointer]
+          - region "Records" [ref=f13e155]:
+            - generic [ref=f13e156]:
+              - generic [ref=f13e157]:
+                - generic [ref=f13e158]: Search records
+                - textbox "Search records" [ref=f13e162]
+              - generic "Record filter" [ref=f13e163]:
+                - button "All 1" [ref=f13e164] [cursor=pointer]
+                - button "Attention" [ref=f13e165] [cursor=pointer]
+              - button "Columns" [ref=f13e166] [cursor=pointer]
+            - table [ref=f13e171]:
+              - rowgroup [ref=f13e172]:
+                - row [ref=f13e173]:
+                  - columnheader "Question / category" [ref=f13e174]
+                  - columnheader "State" [ref=f13e175]
+                  - columnheader "Actions" [ref=f13e176]
+              - rowgroup [ref=f13e178]:
+                - row [ref=f13e179]:
+                  - cell "When should my team arrive for a booking? booking" [ref=f13e180]:
+                    - strong [ref=f13e181]: When should my team arrive for a booking?
+                    - generic [ref=f13e182]: booking
+                  - cell [ref=f13e183]
+                  - cell [ref=f13e186]:
+                    - button "Open actions for When should my team arrive for a booking?" [ref=f13e187] [cursor=pointer]
+            - generic [ref=f13e190]:
+              - generic [ref=f13e191]: Showing 1 of 1 records
+              - generic [ref=f13e192]: Page 1 of 1
+  - button "Open Next.js Dev Tools" [ref=f13e198] [cursor=pointer]

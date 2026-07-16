@@ -1,0 +1,74 @@
+- generic [active] [ref=f7e1]:
+  - link "Skip to main content" [ref=f7e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - banner [ref=f7e3]:
+    - generic [ref=f7e4]:
+      - link "ArmourXSports home" [ref=f7e5] [cursor=pointer]:
+        - /url: /
+        - generic [ref=f7e9]:
+          - generic [ref=f7e10]: ARMOUR
+          - strong [ref=f7e11]: XSPORTS
+      - navigation "Primary navigation" [ref=f7e12]:
+        - link "Fields" [ref=f7e13] [cursor=pointer]:
+          - /url: /fields
+        - link "Our ground" [ref=f7e14] [cursor=pointer]:
+          - /url: /about
+        - link "Field notes" [ref=f7e15] [cursor=pointer]:
+          - /url: /articles
+        - link "FAQ" [ref=f7e16] [cursor=pointer]:
+          - /url: /faq
+        - link "Contact" [ref=f7e17] [cursor=pointer]:
+          - /url: /contact
+      - generic [ref=f7e18]:
+        - link "Find booking" [ref=f7e19] [cursor=pointer]:
+          - /url: /booking/find
+        - link "Book a field" [ref=f7e20] [cursor=pointer]:
+          - /url: /book
+  - main [ref=f7e25]:
+    - status "Loading page" [ref=f7e26]
+  - contentinfo [ref=f7e34]:
+    - generic [ref=f7e35]:
+      - generic [ref=f7e36]:
+        - link "ArmourXSports home" [ref=f7e37] [cursor=pointer]:
+          - /url: /
+          - generic [ref=f7e41]:
+            - generic [ref=f7e42]: ARMOUR
+            - strong [ref=f7e43]: XSPORTS
+        - paragraph [ref=f7e44]: Built for the full match day. Two fields, two complete blocks, one clear booking path.
+        - generic [ref=f7e45]: Venue address pending owner confirmation
+      - generic [ref=f7e50]:
+        - generic [ref=f7e51]:
+          - paragraph [ref=f7e52]: Explore
+          - link "Fields" [ref=f7e53] [cursor=pointer]:
+            - /url: /fields
+          - link "Booking" [ref=f7e56] [cursor=pointer]:
+            - /url: /book
+          - link "Field notes" [ref=f7e59] [cursor=pointer]:
+            - /url: /articles
+          - link "About" [ref=f7e62] [cursor=pointer]:
+            - /url: /about
+        - generic [ref=f7e65]:
+          - paragraph [ref=f7e66]: Support
+          - link "Find booking" [ref=f7e67] [cursor=pointer]:
+            - /url: /booking/find
+          - link "FAQ" [ref=f7e70] [cursor=pointer]:
+            - /url: /faq
+          - link "Contact" [ref=f7e73] [cursor=pointer]:
+            - /url: /contact
+          - link "Maintenance" [ref=f7e76] [cursor=pointer]:
+            - /url: /maintenance
+        - generic [ref=f7e79]:
+          - paragraph [ref=f7e80]: Policies
+          - link "Booking policy" [ref=f7e81] [cursor=pointer]:
+            - /url: /policies/booking
+          - link "Refund policy" [ref=f7e84] [cursor=pointer]:
+            - /url: /policies/refund
+          - link "Privacy" [ref=f7e87] [cursor=pointer]:
+            - /url: /privacy
+          - link "Terms" [ref=f7e90] [cursor=pointer]:
+            - /url: /terms
+    - generic [ref=f7e93]:
+      - generic [ref=f7e94]: © 2026 ArmourXSports
+      - generic [ref=f7e95]: Asia/Kuala_Lumpur · MYR
+      - generic [ref=f7e96]: Live booking · verified payments
+  - alert [ref=f7e97]

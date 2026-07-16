@@ -1,0 +1,43 @@
+{
+  "name": "armourxsports-client",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --webpack",
+    "build": "next build --webpack",
+    "start": "next start",
+    "start:test": "next start -p 4173",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "contract:check": "node scripts/check-contract.mjs",
+    "test:security": "node scripts/security-boundary.mjs",
+    "test:watch": "vitest",
+    "test:a11y": "node scripts/with-server.mjs scripts/accessibility-smoke.mjs",
+    "test:routes": "node scripts/with-server.mjs scripts/route-smoke.mjs",
+    "visual:capture": "node scripts/with-server.mjs scripts/capture-visuals.mjs",
+    "check": "npm run lint && npm run typecheck && npm run contract:check && npm run test:security && npm run test && npm run build"
+  },
+  "dependencies": {
+    "next": "16.2.10",
+    "react": "19.2.7",
+    "react-dom": "19.2.7"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.11.0",
+    "@playwright/test": "^1.55.0",
+    "@tailwindcss/postcss": "^4",
+    "@testing-library/jest-dom": "^6.8.0",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.10",
+    "jsdom": "^26.1.0",
+    "tailwindcss": "^4",
+    "typescript": "^5",
+    "vitest": "^3.2.4"
+  }
+}

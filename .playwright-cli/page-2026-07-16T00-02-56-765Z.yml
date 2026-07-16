@@ -1,0 +1,79 @@
+- generic [active] [ref=f16e1]:
+  - link "Skip to main content" [ref=f16e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - banner [ref=f16e3]:
+    - generic [ref=f16e4]:
+      - link "ArmourXSports home" [ref=f16e5] [cursor=pointer]:
+        - /url: /
+        - generic [ref=f16e9]:
+          - generic [ref=f16e10]: ARMOUR
+          - strong [ref=f16e11]: XSPORTS
+      - group [ref=f16e12]:
+        - generic "Open navigation" [ref=f16e13] [cursor=pointer]
+  - main [ref=f16e16]:
+    - generic [ref=f16e17]:
+      - img "Floodlit stadium viewed from above at night" [ref=f16e18]
+      - generic [ref=f16e21]:
+        - paragraph [ref=f16e22]: Private lookup
+        - heading "Find your booking." [level=1] [ref=f16e24]: Find yourbooking.
+        - paragraph [ref=f16e25]: Enter the booking reference and matching phone number. The live API rate-limits attempts and returns privacy-limited details only.
+    - generic [ref=f16e28]:
+      - generic [ref=f16e29]:
+        - generic [ref=f16e30]:
+          - generic [ref=f16e31]: Booking reference
+          - textbox "Booking reference" [ref=f16e32]:
+            - /placeholder: e.g. AXS-7K4M2P
+        - generic [ref=f16e33]:
+          - generic [ref=f16e34]: Mobile number used for booking
+          - textbox "Mobile number used for booking" [ref=f16e35]:
+            - /placeholder: e.g. 012 345 6789
+        - button "Find booking" [ref=f16e36] [cursor=pointer]
+        - paragraph [ref=f16e40]: Both details are required. Repeated attempts are rate limited.
+      - generic [ref=f16e42]:
+        - strong [ref=f16e46]: Your booking will appear here
+        - generic [ref=f16e47]: Enter both details to run a secure lookup.
+  - contentinfo [ref=f16e48]:
+    - generic [ref=f16e49]:
+      - generic [ref=f16e50]:
+        - link "ArmourXSports home" [ref=f16e51] [cursor=pointer]:
+          - /url: /
+          - generic [ref=f16e55]:
+            - generic [ref=f16e56]: ARMOUR
+            - strong [ref=f16e57]: XSPORTS
+        - paragraph [ref=f16e58]: Built for the full match day. Two fields, two complete blocks, one clear booking path.
+        - generic [ref=f16e59]: Venue address pending owner confirmation
+      - generic [ref=f16e64]:
+        - generic [ref=f16e65]:
+          - paragraph [ref=f16e66]: Explore
+          - link "Fields" [ref=f16e67] [cursor=pointer]:
+            - /url: /fields
+          - link "Booking" [ref=f16e70] [cursor=pointer]:
+            - /url: /book
+          - link "Field notes" [ref=f16e73] [cursor=pointer]:
+            - /url: /articles
+          - link "About" [ref=f16e76] [cursor=pointer]:
+            - /url: /about
+        - generic [ref=f16e79]:
+          - paragraph [ref=f16e80]: Support
+          - link "Find booking" [ref=f16e81] [cursor=pointer]:
+            - /url: /booking/find
+          - link "FAQ" [ref=f16e84] [cursor=pointer]:
+            - /url: /faq
+          - link "Contact" [ref=f16e87] [cursor=pointer]:
+            - /url: /contact
+          - link "Maintenance" [ref=f16e90] [cursor=pointer]:
+            - /url: /maintenance
+        - generic [ref=f16e93]:
+          - paragraph [ref=f16e94]: Policies
+          - link "Booking policy" [ref=f16e95] [cursor=pointer]:
+            - /url: /policies/booking
+          - link "Refund policy" [ref=f16e98] [cursor=pointer]:
+            - /url: /policies/refund
+          - link "Privacy" [ref=f16e101] [cursor=pointer]:
+            - /url: /privacy
+          - link "Terms" [ref=f16e104] [cursor=pointer]:
+            - /url: /terms
+    - generic [ref=f16e107]:
+      - generic [ref=f16e108]: © 2026 ArmourXSports
+      - generic [ref=f16e109]: Asia/Kuala_Lumpur · MYR
+      - generic [ref=f16e110]: Live booking · verified payments

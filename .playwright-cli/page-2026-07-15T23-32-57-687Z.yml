@@ -1,0 +1,250 @@
+- generic [ref=f1e2]:
+  - link "Skip to main content" [ref=f1e3] [cursor=pointer]:
+    - /url: "#main-content"
+  - complementary "Admin navigation" [ref=f1e4]:
+    - generic [ref=f1e5]:
+      - generic [ref=f1e6]:
+        - generic [ref=f1e7]: A
+        - generic [ref=f1e9]: X
+      - generic [ref=f1e10]:
+        - strong [ref=f1e11]: ArmourX
+        - generic [ref=f1e12]: Operations
+    - navigation [ref=f1e13]:
+      - generic [ref=f1e14]:
+        - paragraph [ref=f1e15]: Operate
+        - link "Dashboard" [ref=f1e16] [cursor=pointer]:
+          - /url: /
+        - link "Counter / Today Live" [ref=f1e23] [cursor=pointer]:
+          - /url: /counter
+          - generic [ref=f1e26]: Counter / Today
+          - generic [ref=f1e27]: Live
+        - link "Calendar" [ref=f1e28] [cursor=pointer]:
+          - /url: /calendar
+        - link "Bookings" [ref=f1e33] [cursor=pointer]:
+          - /url: /bookings
+      - generic [ref=f1e37]:
+        - paragraph [ref=f1e38]: People & money
+        - link "Customers" [ref=f1e39] [cursor=pointer]:
+          - /url: /customers
+        - link "Payments" [ref=f1e45] [cursor=pointer]:
+          - /url: /payments
+        - link "Attendance" [ref=f1e50] [cursor=pointer]:
+          - /url: /attendance
+      - generic [ref=f1e55]:
+        - paragraph [ref=f1e56]: Venue
+        - link "Fields & timings" [ref=f1e57] [cursor=pointer]:
+          - /url: /fields
+        - link "Availability blocks" [ref=f1e63] [cursor=pointer]:
+          - /url: /availability
+      - generic [ref=f1e68]:
+        - paragraph [ref=f1e69]: Publish
+        - link "Pages" [ref=f1e70] [cursor=pointer]:
+          - /url: /pages
+        - link "Articles" [ref=f1e75] [cursor=pointer]:
+          - /url: /articles
+        - link "FAQs" [ref=f1e80] [cursor=pointer]:
+          - /url: /faqs
+        - link "Media" [ref=f1e85] [cursor=pointer]:
+          - /url: /media
+      - generic [ref=f1e91]:
+        - paragraph [ref=f1e92]: Control
+        - link "Reports" [ref=f1e93] [cursor=pointer]:
+          - /url: /reports
+        - link "Notifications 2" [ref=f1e97] [cursor=pointer]:
+          - /url: /notifications
+          - generic [ref=f1e100]: Notifications
+          - generic [ref=f1e101]: "2"
+        - link "Users" [ref=f1e102] [cursor=pointer]:
+          - /url: /users
+        - link "Roles" [ref=f1e107] [cursor=pointer]:
+          - /url: /roles
+        - link "Audit log" [ref=f1e112] [cursor=pointer]:
+          - /url: /audit
+        - link "Settings" [ref=f1e117] [cursor=pointer]:
+          - /url: /settings
+    - generic [ref=f1e122]:
+      - generic [ref=f1e123]: Phase 4 operations
+      - paragraph [ref=f1e125]: Authorized PostgreSQL workspace
+  - generic [ref=f1e126]:
+    - banner [ref=f1e127]:
+      - button "Search or jump to… ⌘ K" [ref=f1e128] [cursor=pointer]:
+        - generic [ref=f1e132]: Search or jump to…
+        - generic [ref=f1e133]: ⌘ K
+      - generic "Database connection is live" [ref=f1e134]: Live operations
+      - group [ref=f1e136]:
+        - generic "P4 Phase 4 Owner owner" [ref=f1e137] [cursor=pointer]:
+          - generic [ref=f1e138]: P4
+          - generic [ref=f1e139]:
+            - strong [ref=f1e140]: Phase 4 Owner
+            - generic [ref=f1e141]: owner
+    - main [ref=f1e142]:
+      - generic [ref=f1e143]:
+        - generic [ref=f1e144]:
+          - generic [ref=f1e145]:
+            - generic [ref=f1e146]:
+              - generic [ref=f1e147]: Command overview
+              - generic [ref=f1e148]: Thursday, 16 July 2026
+            - heading "Operations overview." [level=1] [ref=f1e149]
+            - paragraph [ref=f1e150]: A live read on recent bookings, payment state, attendance, and audited exceptions.
+          - link "New counter booking" [ref=f1e152] [cursor=pointer]:
+            - /url: /counter
+        - status [ref=f1e155]:
+          - generic [ref=f1e160]:
+            - strong [ref=f1e161]: Operational services are connected
+            - paragraph [ref=f1e162]: Figures come from PostgreSQL and mutations are protected by session permissions, CSRF verification, transaction rules, and audit records.
+        - region "Operational metrics" [ref=f1e163]:
+          - article [ref=f1e164]:
+            - generic [ref=f1e165]: "01"
+            - paragraph [ref=f1e166]: Recent bookings
+            - strong [ref=f1e167]: "05"
+            - generic [ref=f1e168]: Latest persisted records
+          - article [ref=f1e169]:
+            - generic [ref=f1e170]: "02"
+            - paragraph [ref=f1e171]: Confirmed
+            - strong [ref=f1e172]: "03"
+            - generic [ref=f1e173]: Booking state only
+          - article [ref=f1e174]:
+            - generic [ref=f1e175]: "03"
+            - paragraph [ref=f1e176]: Needs attention
+            - strong [ref=f1e177]: "01"
+            - generic [ref=f1e178]: Pending or failed payment
+          - article [ref=f1e179]:
+            - generic [ref=f1e180]: "04"
+            - paragraph [ref=f1e181]: Check-ins
+            - strong [ref=f1e182]: "00"
+            - generic [ref=f1e183]: Recent records
+        - generic [ref=f1e184]:
+          - generic [ref=f1e185]:
+            - generic [ref=f1e186]:
+              - generic [ref=f1e187]:
+                - paragraph [ref=f1e188]: Live ledger
+                - heading "Recent bookings" [level=2] [ref=f1e189]
+              - link "All bookings" [ref=f1e190] [cursor=pointer]:
+                - /url: /bookings
+            - generic [ref=f1e193]:
+              - link "01 Morning 09:00–15:00 Field One Phase Five Browser Customer AXS-3ZE92YDE Confirmed RM 600" [ref=f1e194] [cursor=pointer]:
+                - /url: /bookings/44e6339a-e577-41ae-a434-17fc02a549c9
+                - generic [ref=f1e195]: "01"
+                - generic [ref=f1e196]:
+                  - generic [ref=f1e197]: Morning
+                  - strong [ref=f1e198]: 09:00–15:00
+                - generic [ref=f1e199]: Field One
+                - generic [ref=f1e200]:
+                  - strong [ref=f1e201]: Phase Five Browser Customer
+                  - generic [ref=f1e202]: AXS-3ZE92YDE
+                - generic [ref=f1e203]: Confirmed
+                - generic [ref=f1e205]: RM 600
+              - link "02 Morning 09:00–15:00 Field One DuitNow Customer AXS-K5C3MAYJ Confirmed RM 600" [ref=f1e208] [cursor=pointer]:
+                - /url: /bookings/dcf87cb1-b7e3-44ad-8460-a1c40969fe7c
+                - generic [ref=f1e209]: "02"
+                - generic [ref=f1e210]:
+                  - generic [ref=f1e211]: Morning
+                  - strong [ref=f1e212]: 09:00–15:00
+                - generic [ref=f1e213]: Field One
+                - generic [ref=f1e214]:
+                  - strong [ref=f1e215]: DuitNow Customer
+                  - generic [ref=f1e216]: AXS-K5C3MAYJ
+                - generic [ref=f1e217]: Confirmed
+                - generic [ref=f1e219]: RM 600
+              - link "03 Evening 15:00–21:00 Field Two Corrected Customer AXS-5RX9A3QV Cancelled RM 800" [ref=f1e222] [cursor=pointer]:
+                - /url: /bookings/fb2e1dbb-b8ce-4399-b800-83ea54fdbc9d
+                - generic [ref=f1e223]: "03"
+                - generic [ref=f1e224]:
+                  - generic [ref=f1e225]: Evening
+                  - strong [ref=f1e226]: 15:00–21:00
+                - generic [ref=f1e227]: Field Two
+                - generic [ref=f1e228]:
+                  - strong [ref=f1e229]: Corrected Customer
+                  - generic [ref=f1e230]: AXS-5RX9A3QV
+                - generic [ref=f1e231]: Cancelled
+                - generic [ref=f1e233]: RM 800
+              - link "04 Morning 09:00–15:00 Field Two Amount Customer AXS-EBY9H639 Payment Pending RM 600" [ref=f1e236] [cursor=pointer]:
+                - /url: /bookings/3310e2c2-ee3c-4284-af57-8e8c0c51302b
+                - generic [ref=f1e237]: "04"
+                - generic [ref=f1e238]:
+                  - generic [ref=f1e239]: Morning
+                  - strong [ref=f1e240]: 09:00–15:00
+                - generic [ref=f1e241]: Field Two
+                - generic [ref=f1e242]:
+                  - strong [ref=f1e243]: Amount Customer
+                  - generic [ref=f1e244]: AXS-EBY9H639
+                - generic [ref=f1e245]: Payment Pending
+                - generic [ref=f1e247]: RM 600
+              - link "05 Morning 09:00–15:00 Field One Online Customer AXS-57BKF3J3 Confirmed RM 600" [ref=f1e250] [cursor=pointer]:
+                - /url: /bookings/85c2cf62-c966-44c1-9c18-59347971e6ee
+                - generic [ref=f1e251]: "05"
+                - generic [ref=f1e252]:
+                  - generic [ref=f1e253]: Morning
+                  - strong [ref=f1e254]: 09:00–15:00
+                - generic [ref=f1e255]: Field One
+                - generic [ref=f1e256]:
+                  - strong [ref=f1e257]: Online Customer
+                  - generic [ref=f1e258]: AXS-57BKF3J3
+                - generic [ref=f1e259]: Confirmed
+                - generic [ref=f1e261]: RM 600
+          - complementary [ref=f1e264]:
+            - generic [ref=f1e265]:
+              - generic [ref=f1e266]:
+                - paragraph [ref=f1e267]: Latest records
+                - heading "Audit activity" [level=2] [ref=f1e268]
+              - link "Audit log" [ref=f1e269] [cursor=pointer]:
+                - /url: /audit
+            - list [ref=f1e270]:
+              - listitem [ref=f1e271]:
+                - time [ref=f1e272]: 07:30 am
+                - generic [ref=f1e274]:
+                  - strong [ref=f1e275]: payment.confirmed
+                  - paragraph [ref=f1e276]: payment
+                  - text: System
+              - listitem [ref=f1e277]:
+                - time [ref=f1e278]: 07:27 am
+                - generic [ref=f1e280]:
+                  - strong [ref=f1e281]: payment.attempt_failed
+                  - paragraph [ref=f1e282]: payment
+                  - text: System
+              - listitem [ref=f1e283]:
+                - time [ref=f1e284]: 07:27 am
+                - generic [ref=f1e286]:
+                  - strong [ref=f1e287]: booking.created
+                  - paragraph [ref=f1e288]: booking
+                  - text: System
+              - listitem [ref=f1e289]:
+                - time [ref=f1e290]: 07:25 am
+                - generic [ref=f1e292]:
+                  - strong [ref=f1e293]: hold.created
+                  - paragraph [ref=f1e294]: hold
+                  - text: System
+              - listitem [ref=f1e295]:
+                - time [ref=f1e296]: 07:14 am
+                - generic [ref=f1e298]:
+                  - strong [ref=f1e299]: cms.page_created
+                  - paragraph [ref=f1e300]: cms_page
+                  - text: Phase 4 Owner
+              - listitem [ref=f1e301]:
+                - time [ref=f1e302]: 07:14 am
+                - generic [ref=f1e304]:
+                  - strong [ref=f1e305]: booking.created
+                  - paragraph [ref=f1e306]: booking
+                  - text: Phase 4 Owner
+              - listitem [ref=f1e307]:
+                - time [ref=f1e308]: 07:14 am
+                - generic [ref=f1e310]:
+                  - strong [ref=f1e311]: booking.cancelled
+                  - paragraph [ref=f1e312]: booking
+                  - text: Phase 4 Owner
+              - listitem [ref=f1e313]:
+                - time [ref=f1e314]: 07:14 am
+                - generic [ref=f1e316]:
+                  - strong [ref=f1e317]: booking.rescheduled
+                  - paragraph [ref=f1e318]: booking
+                  - text: Phase 4 Owner
+        - generic [ref=f1e319]:
+          - generic [ref=f1e321]:
+            - paragraph [ref=f1e322]: Exception queue
+            - heading "1 booking need attention" [level=2] [ref=f1e323]
+          - article [ref=f1e325]:
+            - generic [ref=f1e330]:
+              - strong [ref=f1e331]: payment pending
+              - paragraph [ref=f1e332]: AXS-EBY9H639 · Field Two Morning
+            - link "Review" [ref=f1e333] [cursor=pointer]:
+              - /url: /bookings/3310e2c2-ee3c-4284-af57-8e8c0c51302b

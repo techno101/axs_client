@@ -1,0 +1,87 @@
+import type { Metadata } from "next";
+import Image from "next/image";
+import Link from "next/link";
+import { PageHero } from "@/components/layout/page-hero";
+import { ButtonLink } from "@/components/ui/button-link";
+import { ArrowUpRightIcon, CheckIcon } from "@/components/ui/icons";
+import { SectionHeading } from "@/components/ui/section-heading";
+import { configuredApiOrigin, createHttpPublicClient } from "@/lib/api/http-client";
+import { images } from "@/lib/content";
+import { formatMoney } from "@/lib/format";
+
+export const metadata: Metadata = {
+  title: "Football fields",
+  description: "Compare Armour Field One and Armour Field Two before choosing a complete booking block.",
+};
+export const dynamic = "force-dynamic";
+
+export default async function FieldsPage() {
+  const publicClient = createHttpPublicClient(configuredApiOrigin());
+  const [fields, blocks] = await Promise.all([
+    publicClient.getFields(),
+    publicClient.getBlocks(),
+  ]);
+
+  return (
+    <>
+      <PageHero
+        eyebrow="The Armour ground"
+        title={<>Pick your<br />field.</>}
+        intro="Two full football fields, the same clear block format, and enough time to build a real match day."
+        image={images.aerialPitch}
+        imageAlt="Aerial view of a green football pitch inside a stadium"
+      />
+      <section className="field-listing-section">
+        <div className="shell">
+          <SectionHeading
+            eyebrow="Field inventory"
+            title={<>Two ways to<br />take the ground.</>}
+            intro="Temporary visual content gives each field its own mood while final venue photography and specifications await approval."
+          />
+          <div className="field-listing">
+            {fields.map((field, index) => (
+              <article className="field-listing__row" key={field.id}>
+                <div className="field-listing__image">
+                  <Image src={field.image} alt={field.imageAlt} fill sizes="(max-width: 800px) 100vw, 48vw" />
+                  <span>0{index + 1}</span>
+                </div>
+                <div className="field-listing__copy">
+                  <p className="eyebrow"><span aria-hidden="true" />{field.shortName}</p>
+                  <h2>{field.name}</h2>
+                  <p>{field.description}</p>
+                  <ul>
+                    {field.features.map((feature) => (
+                      <li key={feature}><CheckIcon />{feature}</li>
+                    ))}
+                  </ul>
+                  <Link href={`/fields/${field.slug}`}>
+                    Explore {field.shortName}
+                    <ArrowUpRightIcon />
+                  </Link>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+      <section className="block-comparison">
+        <div className="shell block-comparison__grid">
+          <div>
+            <p className="eyebrow eyebrow--light"><span aria-hidden="true" />Fixed launch blocks</p>
+            <h2>Choose the time.<br />The field is yours.</h2>
+          </div>
+          <div className="block-comparison__rows">
+            {blocks.map((block) => (
+              <div key={block.id}>
+                <span>{block.label}</span>
+                <strong>{block.startsAt}—{block.endsAt}</strong>
+                <b>{formatMoney(block.amountMinor)}</b>
+              </div>
+            ))}
+            <ButtonLink href="/book">Check availability</ButtonLink>
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}

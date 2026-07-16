@@ -1,0 +1,226 @@
+- generic [ref=f8e1]:
+  - link "Skip to main content" [ref=f8e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - banner [ref=f8e3]:
+    - generic [ref=f8e4]:
+      - link "ArmourXSports home" [ref=f8e5] [cursor=pointer]:
+        - /url: /
+        - generic [ref=f8e9]:
+          - generic [ref=f8e10]: ARMOUR
+          - strong [ref=f8e11]: XSPORTS
+      - navigation "Primary navigation" [ref=f8e12]:
+        - link "Fields" [ref=f8e13] [cursor=pointer]:
+          - /url: /fields
+        - link "Our ground" [ref=f8e14] [cursor=pointer]:
+          - /url: /about
+        - link "Field notes" [ref=f8e15] [cursor=pointer]:
+          - /url: /articles
+        - link "FAQ" [ref=f8e16] [cursor=pointer]:
+          - /url: /faq
+        - link "Contact" [ref=f8e17] [cursor=pointer]:
+          - /url: /contact
+      - generic [ref=f8e18]:
+        - link "Find booking" [ref=f8e19] [cursor=pointer]:
+          - /url: /booking/find
+        - link "Book a field" [ref=f8e20] [cursor=pointer]:
+          - /url: /book
+  - main [ref=f8e25]:
+    - generic [ref=f8e26]:
+      - img "Player on a football pitch under floodlights" [ref=f8e27]
+      - generic [ref=f8e30]:
+        - paragraph [ref=f8e31]: Live booking
+        - heading "Build your match day." [level=1] [ref=f8e33]: Build yourmatch day.
+        - paragraph [ref=f8e34]: Choose a date, field and complete block. Availability, price, holds and payment state are confirmed by the ArmourXSports API.
+    - generic [ref=f8e35]:
+      - generic "Booking steps" [ref=f8e36]:
+        - strong [ref=f8e39]: Date
+        - strong [ref=f8e42]: Field
+        - generic [ref=f8e43]:
+          - generic [ref=f8e44]: "03"
+          - strong [ref=f8e45]: Block
+        - generic [ref=f8e46]:
+          - generic [ref=f8e47]: "04"
+          - strong [ref=f8e48]: Details
+        - generic [ref=f8e49]:
+          - generic [ref=f8e50]: "05"
+          - strong [ref=f8e51]: Review
+      - generic [ref=f8e52]:
+        - region [active] [ref=f8e285]:
+          - generic [ref=f8e54]:
+            - paragraph [ref=f8e55]: Step 3 of 5
+            - heading "Pick a complete block" [level=2] [ref=f8e286]
+            - text: Unavailable states stay visible, clear and non-interactive.
+          - generic [ref=f8e287]:
+            - generic [ref=f8e288]:
+              - button "Available Field 01 09:00 — 15:00 Morning block RM 600 Ready to request a hold" [ref=f8e289] [cursor=pointer]:
+                - generic [ref=f8e290]:
+                  - generic [ref=f8e291]: Available
+                  - generic [ref=f8e292]: Field 01
+                - generic [ref=f8e293]:
+                  - text: 09:00
+                  - generic [ref=f8e294]: —
+                  - text: 15:00
+                - generic [ref=f8e295]:
+                  - generic [ref=f8e296]: Morning block
+                  - strong [ref=f8e297]: RM 600
+                - generic [ref=f8e298]: Ready to request a hold
+              - button "Available Field 01 15:00 — 21:00 Evening block RM 800 Ready to request a hold" [ref=f8e299] [cursor=pointer]:
+                - generic [ref=f8e300]:
+                  - generic [ref=f8e301]: Available
+                  - generic [ref=f8e302]: Field 01
+                - generic [ref=f8e303]:
+                  - text: 15:00
+                  - generic [ref=f8e304]: —
+                  - text: 21:00
+                - generic [ref=f8e305]:
+                  - generic [ref=f8e306]: Evening block
+                  - strong [ref=f8e307]: RM 800
+                - generic [ref=f8e308]: Ready to request a hold
+            - status [ref=f8e309]: Live availability · refreshes every 15 seconds
+            - generic [ref=f8e310]:
+              - button "Back" [ref=f8e311] [cursor=pointer]
+              - button "Add details" [disabled] [ref=f8e312]
+        - complementary "Booking selection summary" [ref=f8e93]:
+          - paragraph [ref=f8e94]: Your selection
+          - generic [ref=f8e95]:
+            - generic [ref=f8e96]:
+              - term [ref=f8e97]: Date
+              - definition [ref=f8e98]: Saturday, 18 July 2026
+            - generic [ref=f8e99]:
+              - term [ref=f8e100]: Field
+              - definition [ref=f8e101]: Field 01
+            - generic [ref=f8e102]:
+              - term [ref=f8e103]: Block
+              - definition [ref=f8e104]: Not selected
+          - paragraph [ref=f8e106]: Final availability and price always come from the ArmourXSports API.
+      - region [ref=f8e107]:
+        - generic [ref=f8e108]:
+          - paragraph [ref=f8e109]: Public state guide
+          - heading "Every slot tells the truth." [level=2] [ref=f8e111]
+          - paragraph [ref=f8e112]: Compact examples show that no unavailable state is styled like an action.
+        - generic [ref=f8e113]:
+          - button "Available State preview 09:00 — 15:00 Morning block RM 600 Ready to request a hold" [disabled] [ref=f8e114]:
+            - generic [ref=f8e115]:
+              - generic [ref=f8e116]: Available
+              - generic [ref=f8e117]: State preview
+            - generic [ref=f8e118]:
+              - text: 09:00
+              - generic [ref=f8e119]: —
+              - text: 15:00
+            - generic [ref=f8e120]:
+              - generic [ref=f8e121]: Morning block
+              - strong [ref=f8e122]: RM 600
+            - generic [ref=f8e123]: Ready to request a hold
+          - button "On hold State preview 15:00 — 21:00 Evening block RM 800 Temporarily held by another booking" [disabled] [ref=f8e124]:
+            - generic [ref=f8e125]:
+              - generic [ref=f8e126]: On hold
+              - generic [ref=f8e127]: State preview
+            - generic [ref=f8e128]:
+              - text: 15:00
+              - generic [ref=f8e129]: —
+              - text: 21:00
+            - generic [ref=f8e130]:
+              - generic [ref=f8e131]: Evening block
+              - strong [ref=f8e132]: RM 800
+            - generic [ref=f8e133]: Temporarily held by another booking
+          - button "Booked State preview 09:00 — 15:00 Morning block RM 600 Already booked" [disabled] [ref=f8e134]:
+            - generic [ref=f8e135]:
+              - generic [ref=f8e136]: Booked
+              - generic [ref=f8e137]: State preview
+            - generic [ref=f8e138]:
+              - text: 09:00
+              - generic [ref=f8e139]: —
+              - text: 15:00
+            - generic [ref=f8e140]:
+              - generic [ref=f8e141]: Morning block
+              - strong [ref=f8e142]: RM 600
+            - generic [ref=f8e143]: Already booked
+          - button "Blocked State preview 15:00 — 21:00 Evening block RM 800 Unavailable for public booking" [disabled] [ref=f8e144]:
+            - generic [ref=f8e145]:
+              - generic [ref=f8e146]: Blocked
+              - generic [ref=f8e147]: State preview
+            - generic [ref=f8e148]:
+              - text: 15:00
+              - generic [ref=f8e149]: —
+              - text: 21:00
+            - generic [ref=f8e150]:
+              - generic [ref=f8e151]: Evening block
+              - strong [ref=f8e152]: RM 800
+            - generic [ref=f8e153]: Unavailable for public booking
+          - button "Closed State preview 09:00 — 15:00 Morning block RM 600 Venue closed for this block" [disabled] [ref=f8e154]:
+            - generic [ref=f8e155]:
+              - generic [ref=f8e156]: Closed
+              - generic [ref=f8e157]: State preview
+            - generic [ref=f8e158]:
+              - text: 09:00
+              - generic [ref=f8e159]: —
+              - text: 15:00
+            - generic [ref=f8e160]:
+              - generic [ref=f8e161]: Morning block
+              - strong [ref=f8e162]: RM 600
+            - generic [ref=f8e163]: Venue closed for this block
+          - button "Past State preview 15:00 — 21:00 Evening block RM 800 This block has already started" [disabled] [ref=f8e164]:
+            - generic [ref=f8e165]:
+              - generic [ref=f8e166]: Past
+              - generic [ref=f8e167]: State preview
+            - generic [ref=f8e168]:
+              - text: 15:00
+              - generic [ref=f8e169]: —
+              - text: 21:00
+            - generic [ref=f8e170]:
+              - generic [ref=f8e171]: Evening block
+              - strong [ref=f8e172]: RM 800
+            - generic [ref=f8e173]: This block has already started
+  - contentinfo [ref=f8e174]:
+    - generic [ref=f8e175]:
+      - generic [ref=f8e176]:
+        - link "ArmourXSports home" [ref=f8e177] [cursor=pointer]:
+          - /url: /
+          - generic [ref=f8e181]:
+            - generic [ref=f8e182]: ARMOUR
+            - strong [ref=f8e183]: XSPORTS
+        - paragraph [ref=f8e184]: Built for the full match day. Two fields, two complete blocks, one clear booking path.
+        - generic [ref=f8e185]: Venue address pending owner confirmation
+      - generic [ref=f8e190]:
+        - generic [ref=f8e191]:
+          - paragraph [ref=f8e192]: Explore
+          - link "Fields" [ref=f8e193] [cursor=pointer]:
+            - /url: /fields
+          - link "Booking" [ref=f8e196] [cursor=pointer]:
+            - /url: /book
+          - link "Field notes" [ref=f8e199] [cursor=pointer]:
+            - /url: /articles
+          - link "About" [ref=f8e202] [cursor=pointer]:
+            - /url: /about
+        - generic [ref=f8e205]:
+          - paragraph [ref=f8e206]: Support
+          - link "Find booking" [ref=f8e207] [cursor=pointer]:
+            - /url: /booking/find
+          - link "FAQ" [ref=f8e210] [cursor=pointer]:
+            - /url: /faq
+          - link "Contact" [ref=f8e213] [cursor=pointer]:
+            - /url: /contact
+          - link "Maintenance" [ref=f8e216] [cursor=pointer]:
+            - /url: /maintenance
+        - generic [ref=f8e219]:
+          - paragraph [ref=f8e220]: Policies
+          - link "Booking policy" [ref=f8e221] [cursor=pointer]:
+            - /url: /policies/booking
+          - link "Refund policy" [ref=f8e224] [cursor=pointer]:
+            - /url: /policies/refund
+          - link "Privacy" [ref=f8e227] [cursor=pointer]:
+            - /url: /privacy
+          - link "Terms" [ref=f8e230] [cursor=pointer]:
+            - /url: /terms
+    - generic [ref=f8e233]:
+      - generic [ref=f8e234]: © 2026 ArmourXSports
+      - generic [ref=f8e235]: Asia/Kuala_Lumpur · MYR
+      - generic [ref=f8e236]: Live booking · verified payments
+  - button "Open Next.js Dev Tools" [ref=f8e269] [cursor=pointer]:
+    - generic [ref=f8e316]:
+      - text: Compiling
+      - generic [ref=f8e317]:
+        - generic [ref=f8e318]: .
+        - generic [ref=f8e319]: .
+        - generic [ref=f8e320]: .
+  - alert [ref=f8e246]: Book a field | ArmourXSports

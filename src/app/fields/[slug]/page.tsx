@@ -1,0 +1,93 @@
+import type { Metadata } from "next";
+import Image from "next/image";
+import { notFound } from "next/navigation";
+import { PageHero } from "@/components/layout/page-hero";
+import { ButtonLink } from "@/components/ui/button-link";
+import { CheckIcon } from "@/components/ui/icons";
+import { SectionHeading } from "@/components/ui/section-heading";
+import { configuredApiOrigin, createHttpPublicClient } from "@/lib/api/http-client";
+import { formatMoney } from "@/lib/format";
+
+type FieldDetailProps = { params: Promise<{ slug: string }> };
+
+export const dynamic = "force-dynamic";
+
+function client() { return createHttpPublicClient(configuredApiOrigin()); }
+
+export async function generateMetadata({ params }: FieldDetailProps): Promise<Metadata> {
+  const { slug } = await params;
+  const field = await client().getField(slug);
+  return field
+    ? { title: field.name, description: field.description }
+    : { title: "Field not found" };
+}
+
+export default async function FieldDetailPage({ params }: FieldDetailProps) {
+  const { slug } = await params;
+  const publicClient = client();
+  const [field, blocks] = await Promise.all([
+    publicClient.getField(slug),
+    publicClient.getBlocks(),
+  ]);
+
+  if (!field) notFound();
+
+  return (
+    <>
+      <PageHero
+        eyebrow={`${field.shortName} · Full block booking`}
+        title={field.name}
+        intro={field.description}
+        image={field.image}
+        imageAlt={field.imageAlt}
+      />
+      <section className="field-detail-intro">
+        <div className="shell field-detail-intro__grid">
+          <SectionHeading
+            eyebrow="Inside the lines"
+            title={<>Built for the<br />whole session.</>}
+            intro="Field identity comes from the live API while final pitch dimensions, venue specifications and photography remain owner-controlled content."
+          />
+          <div className="field-fact-grid">
+            <div><span>Surface</span><strong>{field.surface}</strong></div>
+            <div><span>Format</span><strong>{field.size}</strong></div>
+            <div><span>Timezone</span><strong>Asia/Kuala_Lumpur</strong></div>
+            <div><span>Booking</span><strong>Guest checkout</strong></div>
+          </div>
+        </div>
+      </section>
+      <section className="field-detail-media">
+        <div className="shell field-detail-media__grid">
+          <div className="field-detail-media__image">
+            <Image src={field.image} alt={field.imageAlt} fill sizes="(max-width: 800px) 100vw, 60vw" />
+          </div>
+          <aside>
+            <p className="eyebrow"><span aria-hidden="true" />What is included</p>
+            <ul>
+              {field.features.map((feature) => <li key={feature}><CheckIcon />{feature}</li>)}
+            </ul>
+            <p className="field-detail-media__note">Venue features remain owner-controlled and must be verified before publication.</p>
+          </aside>
+        </div>
+      </section>
+      <section className="field-detail-booking">
+        <div className="shell field-detail-booking__grid">
+          <div>
+            <p className="eyebrow eyebrow--light"><span aria-hidden="true" />Book {field.shortName}</p>
+            <h2>Choose a complete block.</h2>
+          </div>
+          <div>
+            {blocks.map((block) => (
+              <div className="field-block-line" key={block.id}>
+                <span>{block.label}</span>
+                <strong>{block.startsAt}—{block.endsAt}</strong>
+                <b>{formatMoney(block.amountMinor)}</b>
+              </div>
+            ))}
+            <ButtonLink href="/book">Book this field</ButtonLink>
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}

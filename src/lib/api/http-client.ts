@@ -1,0 +1,112 @@
+import type {
+  ApiError,
+  Article as ContractArticle,
+  ArticleResponse,
+  ArticleListResponse,
+  Booking,
+  BookingResponse,
+  CreateBookingRequest,
+  CreateHoldRequest,
+  CreatePaymentAttemptRequest,
+  FaqListResponse,
+  Hold,
+  HoldResponse,
+  PaymentAttempt,
+  PaymentAttemptResponse,
+  PublicAvailabilityResponse,
+  PublicBookingStatus,
+  PublicBookingStatusResponse,
+  PublicConfigResponse,
+  PublicFieldsResponse,
+} from "@/lib/api/contract/v1";
+import type { Article, AvailabilitySlot, BookingBlock, FaqItem, Field, PaymentResult, PublicClient } from "@/lib/api/types";
+import { articles as localArticles, fields as localFields, images } from "@/lib/content";
+
+type ErrorEnvelope = { data: null; error: ApiError };
+
+export class PublicApiError extends Error {
+  constructor(readonly status: number, readonly code: ApiError["code"], message: string, readonly fieldErrors?: Record<string, string>) {
+    super(message);
+  }
+}
+
+function normalizeOrigin(value: string): string {
+  const origin = new URL(value);
+  if (origin.protocol !== "https:" && !(origin.protocol === "http:" && ["127.0.0.1", "localhost"].includes(origin.hostname))) throw new Error("NEXT_PUBLIC_API_ORIGIN must use HTTPS outside local development.");
+  return origin.origin;
+}
+
+export function configuredApiOrigin(): string {
+  const value = process.env.NEXT_PUBLIC_API_ORIGIN?.trim();
+  if (!value) throw new Error("NEXT_PUBLIC_API_ORIGIN is required for the live booking client.");
+  return normalizeOrigin(value);
+}
+
+async function responseData<T>(response: Response): Promise<T> {
+  const payload: unknown = await response.json().catch(() => null);
+  if (!response.ok) {
+    const error = payload && typeof payload === "object" && "error" in payload ? (payload as ErrorEnvelope).error : null;
+    throw new PublicApiError(response.status, error?.code ?? "SERVICE_UNAVAILABLE", error?.message ?? "The booking service is temporarily unavailable.", error?.fieldErrors);
+  }
+  if (!payload || typeof payload !== "object" || !("data" in payload)) throw new PublicApiError(502, "SERVICE_UNAVAILABLE", "The booking service returned an invalid response.");
+  return (payload as { data: T }).data;
+}
+
+function request(origin: string, path: string, init?: RequestInit) {
+  return fetch(`${origin}${path}`, { ...init, headers: { Accept: "application/json", ...init?.headers }, cache: "no-store" });
+}
+
+function fieldView(field: PublicFieldsResponse["data"][number]): Field {
+  const local = localFields.find((item) => item.id === field.id);
+  return local ? { ...local, name: field.name, surface: field.surface, imageAlt: field.imageAlt || local.imageAlt, features: field.features.length ? field.features : local.features } : {
+    id: field.id, slug: field.slug as Field["slug"], name: field.name, shortName: field.id === "FIELD_01" ? "Field 01" : "Field 02", description: "Verified venue details pending.", surface: field.surface, size: "Complete field", image: images.aerialPitch, imageAlt: field.imageAlt, features: field.features,
+  };
+}
+
+function blockView(block: PublicConfigResponse["data"]["blocks"][number]): BookingBlock {
+  return { id: block.code, label: block.label, startsAt: block.startsAt, endsAt: block.endsAt, amountMinor: block.amountMinor, currency: block.currency };
+}
+
+function articleView(article: ContractArticle): Article {
+  const local = localArticles.find((item) => item.slug === article.slug);
+  const body: Article["body"] = [];
+  for (const block of article.blocks) {
+    if (block.type === "heading") body.push({ heading: block.text, paragraphs: [] });
+    else {
+      if (!body.length) body.push({ heading: "Article", paragraphs: [] });
+      body.at(-1)!.paragraphs.push(block.text);
+    }
+  }
+  return { slug: article.slug, category: "Field notes", title: article.title, excerpt: article.excerpt, readTime: `${Math.max(1, Math.ceil(article.blocks.reduce((total, block) => total + block.text.split(/\s+/).length, 0) / 200))} min read`, publishedLabel: new Date(article.publishedAt).toLocaleDateString("en-MY"), image: local?.image ?? images.texturedPitch, imageAlt: local?.imageAlt ?? "Football field", body };
+}
+
+export function createHttpPublicClient(origin = configuredApiOrigin()): PublicClient {
+  return {
+    async getFields() { return (await responseData<PublicFieldsResponse["data"]>(await request(origin, "/v1/public/fields"))).map(fieldView); },
+    async getField(slug) { const response = await request(origin, `/v1/public/fields/${encodeURIComponent(slug)}`); if (response.status === 404) return null; return fieldView(await responseData<PublicFieldsResponse["data"][number]>(response)); },
+    async getBlocks() { return (await responseData<PublicConfigResponse["data"]>(await request(origin, "/v1/public/config"))).blocks.map(blockView); },
+    async getAvailability(date) { return (await responseData<PublicAvailabilityResponse["data"]>(await request(origin, `/v1/public/availability?date=${encodeURIComponent(date)}`))).map((entry): AvailabilitySlot => ({ fieldId: entry.fieldId, blockId: entry.blockCode, status: entry.state, ...(entry.publicMessage ? { publicMessage: entry.publicMessage } : {}) })); },
+    async createHold(input: CreateHoldRequest, key: string): Promise<Hold> { return responseData<HoldResponse["data"]>(await request(origin, "/v1/public/holds", { method: "POST", headers: { "Content-Type": "application/json", "Idempotency-Key": key }, body: JSON.stringify(input) })); },
+    async createBooking(input: CreateBookingRequest, key: string): Promise<Booking> { return responseData<BookingResponse["data"]>(await request(origin, "/v1/public/bookings", { method: "POST", headers: { "Content-Type": "application/json", "Idempotency-Key": key }, body: JSON.stringify(input) })); },
+    async createPaymentAttempt(reference: string, input: CreatePaymentAttemptRequest, key: string): Promise<PaymentAttempt> { return responseData<PaymentAttemptResponse["data"]>(await request(origin, `/v1/public/bookings/${encodeURIComponent(reference)}/payment-attempts`, { method: "POST", headers: { "Content-Type": "application/json", "Idempotency-Key": key }, body: JSON.stringify(input) })); },
+    async getBookingStatus(reference: string, accessToken: string): Promise<PublicBookingStatus> { return responseData<PublicBookingStatusResponse["data"]>(await request(origin, `/v1/public/bookings/${encodeURIComponent(reference)}/status?accessToken=${encodeURIComponent(accessToken)}`)); },
+    async findBooking(reference: string, phone: string): Promise<PublicBookingStatus> { return responseData<PublicBookingStatus>(await request(origin, "/v1/public/bookings/find", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ reference, phone }) })); },
+    async getPaymentResult(reference) {
+      if (typeof window === "undefined") throw new Error("Payment status requires the browser-held access token.");
+      const token = window.sessionStorage.getItem(`axs:booking:${reference}`);
+      if (!token) throw new PublicApiError(404, "NOT_FOUND", "This browser no longer has access to the booking status.");
+      const status = await this.getBookingStatus(reference, token);
+      const state: PaymentResult["state"] = status.bookingStatus === "confirmed" && status.paymentStatus === "paid" ? "confirmed" : status.bookingStatus === "expired" || status.paymentStatus === "expired" ? "expired" : status.bookingStatus === "payment_failed" || status.paymentStatus === "failed" ? "failed" : "pending";
+      return { reference, state, fieldName: status.fieldId === "FIELD_01" ? "Armour Field One" : "Armour Field Two", blockLabel: status.blockCode === "MORNING" ? "Morning block · 09:00–15:00" : "Evening block · 15:00–21:00", bookingDate: status.bookingDate, amountMinor: status.amountMinor, currency: "MYR", lastCheckedAt: new Date().toLocaleTimeString("en-MY") };
+    },
+    async getArticles() {
+      const summaries = await responseData<ArticleListResponse["data"]>(await request(origin, "/v1/public/articles"));
+      const articles = await Promise.all(summaries.map(async (summary) => this.getArticle(summary.slug)));
+      return articles.filter((article): article is Article => article !== null);
+    },
+    async getArticle(slug) { const response = await request(origin, `/v1/public/articles/${encodeURIComponent(slug)}`); return response.status === 404 ? null : articleView(await responseData<ArticleResponse["data"]>(response)); },
+    async getFaqs(): Promise<FaqItem[]> { return (await responseData<FaqListResponse["data"]>(await request(origin, "/v1/public/faqs"))).map((faq) => ({ question: faq.question, answer: faq.answer })); },
+  };
+}
+
+export const publicClient = { get current() { return createHttpPublicClient(); } };

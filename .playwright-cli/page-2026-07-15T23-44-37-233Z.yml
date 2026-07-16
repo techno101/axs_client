@@ -1,0 +1,138 @@
+- generic [active] [ref=f6e1]:
+  - generic [ref=f6e2]:
+    - link "Skip to main content" [ref=f6e3] [cursor=pointer]:
+      - /url: "#main-content"
+    - complementary "Admin navigation" [ref=f6e4]:
+      - generic [ref=f6e5]:
+        - generic [ref=f6e6]:
+          - generic [ref=f6e7]: A
+          - generic [ref=f6e9]: X
+        - generic [ref=f6e10]:
+          - strong [ref=f6e11]: ArmourX
+          - generic [ref=f6e12]: Operations
+      - navigation [ref=f6e13]:
+        - generic [ref=f6e14]:
+          - paragraph [ref=f6e15]: Operate
+          - link "Dashboard" [ref=f6e16] [cursor=pointer]:
+            - /url: /
+          - link "Counter / Today Live" [ref=f6e23] [cursor=pointer]:
+            - /url: /counter
+            - generic [ref=f6e26]: Counter / Today
+            - generic [ref=f6e27]: Live
+          - link "Calendar" [ref=f6e28] [cursor=pointer]:
+            - /url: /calendar
+          - link "Bookings" [ref=f6e33] [cursor=pointer]:
+            - /url: /bookings
+        - generic [ref=f6e37]:
+          - paragraph [ref=f6e38]: People & money
+          - link "Customers" [ref=f6e39] [cursor=pointer]:
+            - /url: /customers
+          - link "Payments" [ref=f6e45] [cursor=pointer]:
+            - /url: /payments
+          - link "Attendance" [ref=f6e50] [cursor=pointer]:
+            - /url: /attendance
+        - generic [ref=f6e55]:
+          - paragraph [ref=f6e56]: Venue
+          - link "Fields & timings" [ref=f6e57] [cursor=pointer]:
+            - /url: /fields
+          - link "Availability blocks" [ref=f6e63] [cursor=pointer]:
+            - /url: /availability
+        - generic [ref=f6e68]:
+          - paragraph [ref=f6e69]: Publish
+          - link "Pages" [ref=f6e70] [cursor=pointer]:
+            - /url: /pages
+          - link "Articles" [ref=f6e75] [cursor=pointer]:
+            - /url: /articles
+          - link "FAQs" [ref=f6e80] [cursor=pointer]:
+            - /url: /faqs
+          - link "Media" [ref=f6e85] [cursor=pointer]:
+            - /url: /media
+        - generic [ref=f6e91]:
+          - paragraph [ref=f6e92]: Control
+          - link "Reports" [ref=f6e93] [cursor=pointer]:
+            - /url: /reports
+          - link "Notifications 2" [ref=f6e97] [cursor=pointer]:
+            - /url: /notifications
+            - generic [ref=f6e100]: Notifications
+            - generic [ref=f6e101]: "2"
+          - link "Users" [ref=f6e102] [cursor=pointer]:
+            - /url: /users
+          - link "Roles" [ref=f6e107] [cursor=pointer]:
+            - /url: /roles
+          - link "Audit log" [ref=f6e112] [cursor=pointer]:
+            - /url: /audit
+          - link "Settings" [ref=f6e117] [cursor=pointer]:
+            - /url: /settings
+      - generic [ref=f6e122]:
+        - generic [ref=f6e123]: Live operations
+        - paragraph [ref=f6e125]: Authorized PostgreSQL workspace
+    - generic [ref=f6e126]:
+      - banner [ref=f6e127]:
+        - button "Search or jump to… ⌘ K" [ref=f6e128] [cursor=pointer]:
+          - generic [ref=f6e132]: Search or jump to…
+          - generic [ref=f6e133]: ⌘ K
+        - generic "Database connection is live" [ref=f6e134]: Live operations
+        - group [ref=f6e136]:
+          - generic "P4 Phase 4 Owner owner" [ref=f6e137] [cursor=pointer]:
+            - generic [ref=f6e138]: P4
+            - generic [ref=f6e139]:
+              - strong [ref=f6e140]: Phase 4 Owner
+              - generic [ref=f6e141]: owner
+      - main [ref=f6e142]:
+        - generic [ref=f6e143]:
+          - generic [ref=f6e145]:
+            - generic [ref=f6e146]:
+              - generic [ref=f6e147]: Help content
+              - generic [ref=f6e148]: Live database
+            - heading "FAQs" [level=1] [ref=f6e149]
+            - paragraph [ref=f6e150]: Plain-text answers ordered by category.
+          - generic [ref=f6e151]:
+            - paragraph [ref=f6e152]: Structured content only. Text is rendered by source-controlled components.
+            - button "New FAQ" [ref=f6e153] [cursor=pointer]
+          - dialog "Create FAQ" [ref=f6e175]:
+            - button "Dismiss CMS editor" [ref=f6e176]
+            - complementary [ref=f6e177]:
+              - generic [ref=f6e178]:
+                - generic [ref=f6e179]:
+                  - paragraph [ref=f6e180]: Structured CMS
+                  - heading "New FAQ" [level=2] [ref=f6e181]
+                - button "Close CMS editor" [ref=f6e182] [cursor=pointer]
+              - generic [ref=f6e185]:
+                - generic [ref=f6e186]: Safe publishing contract
+                - strong [ref=f6e187]: No arbitrary HTML, JSX, or JavaScript
+                - generic [ref=f6e188]: Every save is permission checked and audited
+              - generic [ref=f6e189]:
+                - generic [ref=f6e190]:
+                  - text: Question
+                  - textbox "Question" [ref=f6e191]
+                - generic [ref=f6e192]:
+                  - text: Answer
+                  - textbox "Answer" [ref=f6e193]
+                - generic [ref=f6e194]:
+                  - text: Category
+                  - textbox "Category" [ref=f6e195]: booking
+                - generic [ref=f6e196]:
+                  - text: Sort order
+                  - spinbutton "Sort order" [ref=f6e197]: "10"
+                - generic [ref=f6e198]:
+                  - text: Publication state
+                  - combobox "Publication state" [ref=f6e199]:
+                    - option "Draft" [selected]
+                    - option "Published"
+                    - option "Archived"
+                - status [ref=f6e203]: FAQ saved through the authorized CMS API.
+                - generic [ref=f6e200]:
+                  - button "Close" [ref=f6e201] [cursor=pointer]
+                  - button "Save FAQ" [ref=f6e202] [cursor=pointer]
+          - generic [ref=f6e156]:
+            - paragraph [ref=f6e162]: No records
+            - heading "Nothing has been recorded yet" [level=2] [ref=f6e163]
+            - paragraph [ref=f6e164]: Authorized records will appear here when the relevant workflow creates them.
+  - button "Open Next.js Dev Tools" [ref=f6e204] [cursor=pointer]:
+    - generic [ref=f6e207]:
+      - text: Rendering
+      - generic [ref=f6e208]:
+        - generic [ref=f6e209]: .
+        - generic [ref=f6e210]: .
+        - generic [ref=f6e211]: .
+  - alert [ref=f6e174]

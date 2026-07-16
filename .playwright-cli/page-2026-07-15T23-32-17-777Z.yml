@@ -1,0 +1,33 @@
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - region "ArmourXSports operations" [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e5]:
+          - generic [ref=e6]: A
+          - generic [ref=e8]: X
+        - generic [ref=e9]: ArmourXSportsOperations system
+      - generic [ref=e15]:
+        - paragraph [ref=e16]: Built for the sideline
+        - heading "Four blocks. One clear truth." [level=1] [ref=e17]: Four blocks.One clear truth.
+        - paragraph [ref=e18]: The operational surface for bookings, payments, attendance, and the people running the venue.
+      - generic [ref=e19]:
+        - generic [ref=e20]: Phase 4 operations
+        - generic [ref=e21]: Asia/Kuala_Lumpur
+    - generic [ref=e23]:
+      - paragraph [ref=e24]: Staff access
+      - heading "Welcome back." [level=2] [ref=e25]
+      - paragraph [ref=e26]: Sign in with an active administrative account.
+      - generic [ref=e27]:
+        - generic [ref=e28]:
+          - text: Work email
+          - textbox "Work email" [ref=e29]
+        - generic [ref=e30]:
+          - generic [ref=e31]: Password
+          - textbox "Password" [ref=e32]
+        - button "Continue securely" [ref=e33] [cursor=pointer]
+      - generic [ref=e36]:
+        - generic [ref=e37]: ◆
+        - paragraph [ref=e38]:
+          - strong [ref=e39]: Protected session
+          - text: Authorization, CSRF checks, login rate limits, expiry, and revocation are enforced by the server.
+  - button "Open Next.js Dev Tools" [ref=e45] [cursor=pointer]

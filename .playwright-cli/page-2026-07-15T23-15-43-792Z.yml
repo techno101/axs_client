@@ -1,0 +1,227 @@
+- generic [active] [ref=e1]:
+  - link "Skip to main content" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - banner [ref=e3]:
+    - generic [ref=e4]:
+      - link "ArmourXSports home" [ref=e5] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e9]:
+          - generic [ref=e10]: ARMOUR
+          - strong [ref=e11]: XSPORTS
+      - navigation "Primary navigation" [ref=e12]:
+        - link "Fields" [ref=e13] [cursor=pointer]:
+          - /url: /fields
+        - link "Our ground" [ref=e14] [cursor=pointer]:
+          - /url: /about
+        - link "Field notes" [ref=e15] [cursor=pointer]:
+          - /url: /articles
+        - link "FAQ" [ref=e16] [cursor=pointer]:
+          - /url: /faq
+        - link "Contact" [ref=e17] [cursor=pointer]:
+          - /url: /contact
+      - generic [ref=e18]:
+        - link "Find booking" [ref=e19] [cursor=pointer]:
+          - /url: /booking/find
+        - link "Book a field" [ref=e20] [cursor=pointer]:
+          - /url: /book
+  - main [ref=e25]:
+    - generic [ref=e26]:
+      - img "Floodlit stadium viewed from above at night" [ref=e27]
+      - generic [ref=e32]:
+        - generic [ref=e33]:
+          - paragraph [ref=e34]: Two fields · Complete blocks
+          - heading [level=1] [ref=e36]:
+            - text: Own the
+            - emphasis [ref=e37]: pitch.
+          - paragraph [ref=e38]: Built for match days that need room to breathe. Choose your field, take the full block, and bring the team.
+          - generic [ref=e39]:
+            - link "Book a field" [ref=e40] [cursor=pointer]:
+              - /url: /book
+            - link "Explore the ground" [ref=e45] [cursor=pointer]:
+              - /url: "#fields"
+        - generic [ref=e48]:
+          - generic [ref=e49]: AXS
+          - strong [ref=e50]: "01"
+      - generic [ref=e51]:
+        - generic [ref=e52]:
+          - generic [ref=e53]: Quick start
+          - strong [ref=e54]: Plan your match day
+        - generic [ref=e58]:
+          - generic [ref=e59]: Booking window
+          - text: Up to 90 days ahead
+        - generic [ref=e64]:
+          - generic [ref=e65]: Two daily blocks
+          - text: 09:00–15:00 · 15:00–21:00
+        - link "Check field availability" [ref=e66] [cursor=pointer]:
+          - /url: /book
+          - text: Check availability
+    - generic [ref=e70]:
+      - generic [ref=e71]:
+        - paragraph [ref=e72]: Football, uninterrupted.
+        - heading "Six hours. One field. Every minute belongs to your team." [level=2] [ref=e73]
+      - generic [ref=e74]:
+        - generic [ref=e75]: X
+        - paragraph [ref=e76]: No hourly shuffle and no fragmented schedule. ArmourXSports launches with two full fields and two clear daily windows.
+        - link "Why complete blocks" [ref=e77] [cursor=pointer]:
+          - /url: /about
+    - generic [ref=e81]:
+      - generic [ref=e82]:
+        - generic [ref=e83]:
+          - paragraph [ref=e84]: Choose your ground
+          - heading "Two fields. One standard." [level=2] [ref=e86]: Two fields.One standard.
+          - paragraph [ref=e87]: A consistent full-block format, with a distinct match-day feel on each pitch.
+        - link "View both fields" [ref=e88] [cursor=pointer]:
+          - /url: /fields
+      - generic [ref=e93]:
+        - article [ref=e94]:
+          - link "View Armour Field One" [ref=e95] [cursor=pointer]:
+            - /url: /fields/field-one
+            - generic [ref=e96]:
+              - img "Armour Field One football field" [ref=e97]
+              - generic [ref=e99]: "01"
+            - generic [ref=e101]:
+              - paragraph [ref=e102]: Field 01
+              - heading "Armour Field One" [level=3] [ref=e103]
+        - article [ref=e107]:
+          - link "View Armour Field Two" [ref=e108] [cursor=pointer]:
+            - /url: /fields/field-two
+            - generic [ref=e109]:
+              - img "Armour Field Two football field" [ref=e110]
+              - generic [ref=e112]: "02"
+            - generic [ref=e114]:
+              - paragraph [ref=e115]: Field 02
+              - heading "Armour Field Two" [level=3] [ref=e116]
+    - generic [ref=e121]:
+      - generic [ref=e122]:
+        - img "Football player on a lit pitch at night" [ref=e123]
+        - generic [ref=e124]:
+          - generic [ref=e125]: One booking
+          - strong [ref=e126]: Full field access
+      - generic [ref=e127]:
+        - generic [ref=e128]:
+          - paragraph [ref=e129]: Simple block pricing
+          - heading "Pick your rhythm." [level=2] [ref=e131]: Pick yourrhythm.
+          - paragraph [ref=e132]: Launch pricing is fixed by complete block. The live service will always confirm the authoritative amount before a hold is created.
+        - generic [ref=e133]:
+          - generic [ref=e134]:
+            - generic [ref=e135]: "01"
+            - generic [ref=e136]:
+              - paragraph [ref=e137]: Morning block
+              - strong [ref=e138]: 09:00—15:00
+            - generic [ref=e139]: RM 600
+          - generic [ref=e140]:
+            - generic [ref=e141]: "02"
+            - generic [ref=e142]:
+              - paragraph [ref=e143]: Evening block
+              - strong [ref=e144]: 15:00—21:00
+            - generic [ref=e145]: RM 800
+        - link "Check availability" [ref=e146] [cursor=pointer]:
+          - /url: /book
+    - generic [ref=e152]:
+      - generic [ref=e153]:
+        - paragraph [ref=e154]: Ready around the pitch
+        - heading "The details that keep play moving." [level=2] [ref=e156]: The details thatkeep play moving.
+        - paragraph [ref=e157]: A focused venue experience for teams, organisers and spectators. Final venue facts will be confirmed before production launch.
+      - generic [ref=e158]:
+        - article [ref=e159]:
+          - text: "01"
+          - heading "Floodlit play" [level=3] [ref=e163]
+          - paragraph [ref=e164]: Balanced light across the full field
+        - article [ref=e165]:
+          - text: "02"
+          - heading "Team-ready" [level=3] [ref=e169]
+          - paragraph [ref=e170]: Shelters and changing access
+        - article [ref=e171]:
+          - text: "03"
+          - heading "Easy arrival" [level=3] [ref=e175]
+          - paragraph [ref=e176]: On-site parking and clear entry
+        - article [ref=e177]:
+          - text: "04"
+          - heading "Full block" [level=3] [ref=e181]
+          - paragraph [ref=e182]: Six hours without hourly handovers
+    - region [ref=e183]:
+      - generic [ref=e184]:
+        - generic [ref=e185]:
+          - paragraph [ref=e186]: Inside the lines
+          - heading "Match-day atmosphere." [level=2] [ref=e188]
+        - paragraph [ref=e189]: Temporary licensed demo imagery. Venue photography will replace it before launch.
+      - generic [ref=e190]:
+        - figure [ref=e191]:
+          - img "Lit stadium at night" [ref=e192]
+        - figure [ref=e193]:
+          - img "Green football field viewed from above" [ref=e194]
+        - figure [ref=e195]:
+          - img "Player on a football field under floodlights" [ref=e196]
+    - generic [ref=e198]:
+      - generic [ref=e199]:
+        - generic [ref=e200]:
+          - paragraph [ref=e201]: Find the ground
+          - heading "Your next kick-off starts here." [level=2] [ref=e203]: Your nextkick-off starts here.
+          - paragraph [ref=e204]: The verified venue address, directions and contact channels are awaiting owner confirmation. The final route will use approved information only.
+        - generic [ref=e209]:
+          - strong [ref=e210]: ArmourXSports venue
+          - generic [ref=e211]: Address pending confirmation
+        - link "Contact the venue" [ref=e212] [cursor=pointer]:
+          - /url: /contact
+      - img "Stylised map placeholder; venue address pending confirmation" [ref=e217]:
+        - generic [ref=e221]: AXS
+        - paragraph [ref=e226]: Verified map coming before launch
+    - generic [ref=e229]:
+      - generic [ref=e230]:
+        - paragraph [ref=e231]: Good to know
+        - heading "Before the whistle." [level=2] [ref=e233]: Beforethe whistle.
+        - paragraph [ref=e234]: The essentials for planning a block. Final operational policy remains clearly marked until approved.
+      - link "View all FAQs" [ref=e235] [cursor=pointer]:
+        - /url: /faq
+    - generic [ref=e241]:
+      - img "Football pitch viewed from above" [ref=e242]
+      - generic [ref=e244]:
+        - paragraph [ref=e245]: Bring the squad.
+        - heading "Make the field yours." [level=2] [ref=e246]
+        - link "Book a field" [ref=e247] [cursor=pointer]:
+          - /url: /book
+  - contentinfo [ref=e252]:
+    - generic [ref=e253]:
+      - generic [ref=e254]:
+        - link "ArmourXSports home" [ref=e255] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e259]:
+            - generic [ref=e260]: ARMOUR
+            - strong [ref=e261]: XSPORTS
+        - paragraph [ref=e262]: Built for the full match day. Two fields, two complete blocks, one clear booking path.
+        - generic [ref=e263]: Venue address pending owner confirmation
+      - generic [ref=e268]:
+        - generic [ref=e269]:
+          - paragraph [ref=e270]: Explore
+          - link "Fields" [ref=e271] [cursor=pointer]:
+            - /url: /fields
+          - link "Booking" [ref=e274] [cursor=pointer]:
+            - /url: /book
+          - link "Field notes" [ref=e277] [cursor=pointer]:
+            - /url: /articles
+          - link "About" [ref=e280] [cursor=pointer]:
+            - /url: /about
+        - generic [ref=e283]:
+          - paragraph [ref=e284]: Support
+          - link "Find booking" [ref=e285] [cursor=pointer]:
+            - /url: /booking/find
+          - link "FAQ" [ref=e288] [cursor=pointer]:
+            - /url: /faq
+          - link "Contact" [ref=e291] [cursor=pointer]:
+            - /url: /contact
+          - link "Maintenance" [ref=e294] [cursor=pointer]:
+            - /url: /maintenance
+        - generic [ref=e297]:
+          - paragraph [ref=e298]: Policies
+          - link "Booking policy" [ref=e299] [cursor=pointer]:
+            - /url: /policies/booking
+          - link "Refund policy" [ref=e302] [cursor=pointer]:
+            - /url: /policies/refund
+          - link "Privacy" [ref=e305] [cursor=pointer]:
+            - /url: /privacy
+          - link "Terms" [ref=e308] [cursor=pointer]:
+            - /url: /terms
+    - generic [ref=e311]:
+      - generic [ref=e312]: © 2026 ArmourXSports
+      - generic [ref=e313]: Asia/Kuala_Lumpur · MYR
+      - generic [ref=e314]: Live booking · verified payments

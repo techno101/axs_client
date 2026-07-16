@@ -1,0 +1,181 @@
+- generic [active] [ref=f4e1]:
+  - generic [ref=f4e2]:
+    - link "Skip to main content" [ref=f4e3] [cursor=pointer]:
+      - /url: "#main-content"
+    - complementary "Admin navigation" [ref=f4e4]:
+      - generic [ref=f4e5]:
+        - generic [ref=f4e6]:
+          - generic [ref=f4e7]: A
+          - generic [ref=f4e9]: X
+        - generic [ref=f4e10]:
+          - strong [ref=f4e11]: ArmourX
+          - generic [ref=f4e12]: Operations
+      - navigation [ref=f4e13]:
+        - generic [ref=f4e14]:
+          - paragraph [ref=f4e15]: Operate
+          - link "Dashboard" [ref=f4e16] [cursor=pointer]:
+            - /url: /
+          - link "Counter / Today Live" [ref=f4e23] [cursor=pointer]:
+            - /url: /counter
+            - generic [ref=f4e26]: Counter / Today
+            - generic [ref=f4e27]: Live
+          - link "Calendar" [ref=f4e28] [cursor=pointer]:
+            - /url: /calendar
+          - link "Bookings" [ref=f4e33] [cursor=pointer]:
+            - /url: /bookings
+        - generic [ref=f4e37]:
+          - paragraph [ref=f4e38]: People & money
+          - link "Customers" [ref=f4e39] [cursor=pointer]:
+            - /url: /customers
+          - link "Payments" [ref=f4e45] [cursor=pointer]:
+            - /url: /payments
+          - link "Attendance" [ref=f4e50] [cursor=pointer]:
+            - /url: /attendance
+        - generic [ref=f4e55]:
+          - paragraph [ref=f4e56]: Venue
+          - link "Fields & timings" [ref=f4e57] [cursor=pointer]:
+            - /url: /fields
+          - link "Availability blocks" [ref=f4e63] [cursor=pointer]:
+            - /url: /availability
+        - generic [ref=f4e68]:
+          - paragraph [ref=f4e69]: Publish
+          - link "Pages" [ref=f4e70] [cursor=pointer]:
+            - /url: /pages
+          - link "Articles" [ref=f4e75] [cursor=pointer]:
+            - /url: /articles
+          - link "FAQs" [ref=f4e80] [cursor=pointer]:
+            - /url: /faqs
+          - link "Media" [ref=f4e85] [cursor=pointer]:
+            - /url: /media
+        - generic [ref=f4e91]:
+          - paragraph [ref=f4e92]: Control
+          - link "Reports" [ref=f4e93] [cursor=pointer]:
+            - /url: /reports
+          - link "Notifications 2" [ref=f4e97] [cursor=pointer]:
+            - /url: /notifications
+            - generic [ref=f4e100]: Notifications
+            - generic [ref=f4e101]: "2"
+          - link "Users" [ref=f4e102] [cursor=pointer]:
+            - /url: /users
+          - link "Roles" [ref=f4e107] [cursor=pointer]:
+            - /url: /roles
+          - link "Audit log" [ref=f4e112] [cursor=pointer]:
+            - /url: /audit
+          - link "Settings" [ref=f4e117] [cursor=pointer]:
+            - /url: /settings
+      - generic [ref=f4e122]:
+        - generic [ref=f4e123]: Live operations
+        - paragraph [ref=f4e125]: Authorized PostgreSQL workspace
+    - generic [ref=f4e126]:
+      - banner [ref=f4e127]:
+        - button "Search or jump to… ⌘ K" [ref=f4e128] [cursor=pointer]:
+          - generic [ref=f4e132]: Search or jump to…
+          - generic [ref=f4e133]: ⌘ K
+        - generic "Database connection is live" [ref=f4e134]: Live operations
+        - group [ref=f4e136]:
+          - generic "P4 Phase 4 Owner owner" [ref=f4e137] [cursor=pointer]:
+            - generic [ref=f4e138]: P4
+            - generic [ref=f4e139]:
+              - strong [ref=f4e140]: Phase 4 Owner
+              - generic [ref=f4e141]: owner
+      - main [ref=f4e142]:
+        - generic [ref=f4e143]:
+          - generic [ref=f4e144]:
+            - generic [ref=f4e145]:
+              - generic [ref=f4e146]:
+                - generic [ref=f4e147]: Stadium counter
+                - generic [ref=f4e148]: Thursday, 16 July 2026
+              - heading "Today, at a glance." [level=1] [ref=f4e149]
+              - paragraph [ref=f4e150]: Four blocks. Two fields. Every state readable from across the counter.
+            - link "Find booking" [ref=f4e152] [cursor=pointer]:
+              - /url: /bookings
+          - status [ref=f4e153]:
+            - generic [ref=f4e158]:
+              - strong [ref=f4e159]: Operational board
+              - paragraph [ref=f4e160]: Availability and booking state are live. Counter payments and mutations require the signed-in staff permission and CSRF token.
+          - generic [ref=f4e161]:
+            - generic [ref=f4e162]:
+              - generic [ref=f4e163]: Malaysia time
+              - strong [ref=f4e164]: 7:40 am
+            - generic "Counter board filter" [ref=f4e165]:
+              - button "All blocks" [ref=f4e166] [cursor=pointer]
+              - button "Needs action 4" [ref=f4e167] [cursor=pointer]
+            - button "New walk-in" [ref=f4e168] [cursor=pointer]
+          - generic [ref=f4e171]:
+            - generic [ref=f4e172]: 01 / Field One
+            - generic [ref=f4e173]: 02 / Field Two
+          - generic [ref=f4e174]:
+            - article [ref=f4e175]:
+              - generic [ref=f4e176]:
+                - generic [ref=f4e177]:
+                  - generic [ref=f4e178]: Morning
+                  - strong [ref=f4e179]: 09:00–15:00
+                - generic [ref=f4e180]: Held Counter
+              - generic [ref=f4e182]:
+                - heading "Active hold" [level=3] [ref=f4e186]
+                - paragraph [ref=f4e187]: Held Counter
+                - paragraph [ref=f4e188]: Hold expires 07:49 am
+              - generic [ref=f4e190]:
+                - generic [ref=f4e191]: RM 600
+                - button "Open" [ref=f4e192] [cursor=pointer]
+            - article [ref=f4e195]:
+              - generic [ref=f4e196]:
+                - generic [ref=f4e197]:
+                  - generic [ref=f4e198]: Evening
+                  - strong [ref=f4e199]: 15:00–21:00
+                - generic [ref=f4e200]: Available
+              - generic [ref=f4e202]:
+                - heading "Ready for walk-in" [level=3] [ref=f4e206]
+                - paragraph [ref=f4e207]: RM 800 complete block
+              - generic [ref=f4e208]:
+                - generic [ref=f4e209]: RM 800
+                - button "Book" [ref=f4e210] [cursor=pointer]
+            - article [ref=f4e213]:
+              - generic [ref=f4e214]:
+                - generic [ref=f4e215]:
+                  - generic [ref=f4e216]: Morning
+                  - strong [ref=f4e217]: 09:00–15:00
+                - generic [ref=f4e218]: Available
+              - generic [ref=f4e220]:
+                - heading "Ready for walk-in" [level=3] [ref=f4e224]
+                - paragraph [ref=f4e225]: RM 600 complete block
+              - generic [ref=f4e226]:
+                - generic [ref=f4e227]: RM 600
+                - button "Book" [ref=f4e228] [cursor=pointer]
+            - article [ref=f4e231]:
+              - generic [ref=f4e232]:
+                - generic [ref=f4e233]:
+                  - generic [ref=f4e234]: Evening
+                  - strong [ref=f4e235]: 15:00–21:00
+                - generic [ref=f4e236]: Available
+              - generic [ref=f4e238]:
+                - heading "Ready for walk-in" [level=3] [ref=f4e242]
+                - paragraph [ref=f4e243]: RM 800 complete block
+              - generic [ref=f4e244]:
+                - generic [ref=f4e245]: RM 800
+                - button "Book" [ref=f4e246] [cursor=pointer]
+          - dialog "Counter action panel" [ref=f4e271]:
+            - button "Dismiss action panel overlay" [ref=f4e272]
+            - complementary [ref=f4e273]:
+              - generic [ref=f4e274]:
+                - generic [ref=f4e275]:
+                  - paragraph [ref=f4e276]: Counter operation
+                  - heading "Create walk-in" [level=2] [ref=f4e277]
+                - button "Close action panel" [ref=f4e278] [cursor=pointer]
+              - generic [ref=f4e281]:
+                - generic [ref=f4e282]: Field One
+                - strong [ref=f4e283]: Morning / 09:00–15:00
+                - generic [ref=f4e284]: 2026-07-16 / RM 600
+              - generic [ref=f4e285]:
+                - paragraph [ref=f4e290]: This block is currently Held Counter and cannot accept a walk-in.
+                - button "Extend once by 5 minutes" [ref=f4e291] [cursor=pointer]
+                - status [ref=f4e292]: Counter hold extended once for five minutes. The audit record was persisted.
+          - generic "Counter status legend" [ref=f4e249]:
+            - generic [ref=f4e250]: Board language
+            - generic [ref=f4e251]: Available
+            - generic [ref=f4e253]: Held Online
+            - generic [ref=f4e255]: Held Counter
+            - generic [ref=f4e257]: Confirmed
+            - generic [ref=f4e259]: Blocked
+  - button "Open Next.js Dev Tools" [ref=f4e266] [cursor=pointer]
+  - alert [ref=f4e270]
