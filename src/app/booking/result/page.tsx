@@ -19,7 +19,7 @@ export default async function BookingResultPage({ searchParams }: { searchParams
       <section className="payment-result-section">
         <div className="shell payment-result-section__grid">
           <LivePaymentResult reference={reference} apiOrigin={configuredApiOrigin()} />
-          <aside><p className="eyebrow"><span aria-hidden="true" />Payment integrity</p><h2>Backend state decides.</h2><p>The redirect improves the customer experience only. A verified, amount-matched, idempotent Billplz callback is required before this page can show confirmation.</p></aside>
+          <aside><p className="eyebrow"><span aria-hidden="true" />Payment integrity</p><h2>Backend state decides.</h2><p>The redirect improves the customer experience only. A verified, amount-matched, idempotent provider callback is required before this page can show confirmation.</p></aside>
         </div>
       </section>
     </>

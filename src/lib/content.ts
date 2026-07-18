@@ -11,28 +11,28 @@ export const fields: Field[] = [
   {
     id: "FIELD_01",
     slug: "field-one",
-    name: "Armour Field One",
-    shortName: "Field 01",
+    name: "Field 1",
+    shortName: "Field 1",
     description:
-      "Our show field for fast, full-pitch football under a crisp floodlight canopy.",
-    surface: "Premium synthetic turf",
-    size: "Full field block",
+      "Field details and approved venue specifications are pending owner confirmation.",
+    surface: "Venue specification pending",
+    facilityFacts: [],
     image: images.nightStadium,
     imageAlt: "Floodlit stadium viewed from above at night",
-    features: ["Even lighting", "Team shelters", "Pitch-side access", "On-site parking"],
+    features: ["09:00–15:00 block", "15:00–21:00 block", "Venue details pending"],
   },
   {
     id: "FIELD_02",
     slug: "field-two",
-    name: "Armour Field Two",
-    shortName: "Field 02",
+    name: "Field 2",
+    shortName: "Field 2",
     description:
-      "A focused match setting with the same full-block format and easy venue access.",
-    surface: "Competition synthetic turf",
-    size: "Full field block",
+      "Field details and approved venue specifications are pending owner confirmation.",
+    surface: "Venue specification pending",
+    facilityFacts: [],
     image: images.aerialPitch,
     imageAlt: "Aerial view of a green football pitch inside a stadium",
-    features: ["Full block booking", "Floodlights", "Changing access", "Spectator edge"],
+    features: ["09:00–15:00 block", "15:00–21:00 block", "Venue details pending"],
   },
 ];
 
@@ -64,7 +64,7 @@ export const faqs: FaqItem[] = [
   {
     question: "How long is a selected slot held?",
     answer:
-      "The booking service creates a 10-minute server-controlled hold before customer details are submitted.",
+      "When online payment is enabled, the booking service creates a 10-minute server-controlled hold before customer details are submitted. No hold is created while online payment is disabled.",
   },
   {
     question: "Can I book without an account?",
@@ -85,27 +85,27 @@ export const faqs: FaqItem[] = [
 
 export const articles: Article[] = [
   {
-    slug: "build-a-six-hour-match-day",
-    category: "Match day",
-    title: "Make a six-hour field block feel effortless",
+    slug: "how-booking-status-is-verified",
+    category: "Booking guide",
+    title: "How booking status is verified",
     excerpt:
-      "A practical run sheet for warm-up, rotations, hydration and the moments between matches.",
+      "Why availability, holds and payment confirmation always come from the ArmourXSports API.",
     readTime: "4 min read",
     publishedLabel: "Field notes · 12 July 2026",
     image: images.nightPlayer,
     imageAlt: "Football player on a lit pitch at night",
     body: [
       {
-        heading: "Start with the shape of the day",
+        heading: "Availability is server-authoritative",
         paragraphs: [
-          "A full block gives teams room to arrive, warm up, play and reset without compressing every decision into an hourly handover.",
-          "Share a simple run sheet before players travel: arrival window, warm-up, kick-off order, recovery breaks and the named person responsible for timekeeping.",
+          "The booking page displays the latest field, date and block state returned by the API. A browser cannot reserve inventory without a server-created hold.",
+          "A hold expires on the server clock. Refreshing or changing browser state cannot extend it.",
         ],
       },
       {
-        heading: "Protect the useful minutes",
+        heading: "Payment redirects are not confirmation",
         paragraphs: [
-          "Keep equipment staged, rotate with clear signals and make water accessible away from active touchlines. The best match-day plan is visible enough that nobody needs to ask what happens next.",
+          "The result page polls the protected booking status. Only a verified provider callback can move an online booking to confirmed and paid.",
         ],
       },
     ],
@@ -115,7 +115,7 @@ export const articles: Article[] = [
     category: "Booking guide",
     title: "Morning or evening: choose the right block",
     excerpt:
-      "Two fixed windows, two different rhythms. Compare the practical fit before your team commits.",
+      "Compare the two fixed booking windows and their authoritative prices.",
     readTime: "3 min read",
     publishedLabel: "Booking guide · 10 July 2026",
     image: images.aerialPitch,
@@ -124,25 +124,25 @@ export const articles: Article[] = [
       {
         heading: "Morning, 09:00–15:00",
         paragraphs: [
-          "The RM600 morning block suits training days, youth fixtures and groups that want the rest of the evening free.",
+          "The morning block runs from 09:00 to 15:00 and the authoritative launch price is RM600.",
         ],
       },
       {
         heading: "Evening, 15:00–21:00",
         paragraphs: [
-          "The RM800 evening block carries the session into floodlit play and often fits working teams better. Live checkout always uses the authoritative API amount.",
+          "The evening block runs from 15:00 to 21:00 and the authoritative launch price is RM800. Live checkout always uses the API amount.",
         ],
       },
     ],
   },
   {
     slug: "captains-booking-checklist",
-    category: "Team craft",
-    title: "The captain’s pre-booking checklist",
+    category: "Booking guide",
+    title: "Pre-booking checklist",
     excerpt:
       "Confirm the date, decision-maker and contact details before the ten-minute hold begins.",
     readTime: "2 min read",
-    publishedLabel: "Team craft · 8 July 2026",
+    publishedLabel: "Booking guide · 8 July 2026",
     image: images.texturedPitch,
     imageAlt: "Aerial view of a football pitch surrounded by buildings",
     body: [

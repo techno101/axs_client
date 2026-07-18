@@ -1,4 +1,4 @@
-import type { Booking, CreateBookingRequest, CreateHoldRequest, CreatePaymentAttemptRequest, CustomerDetails, Hold, PaymentAttempt, PublicAvailabilityState, PublicBookingStatus } from "@/lib/api/contract/v1";
+import type { Booking, CreateBookingRequest, CreateHoldRequest, CreatePaymentAttemptRequest, CustomerDetails, FacilityFact, Hold, OnlinePaymentCapability, PaymentAttempt, PublicAvailabilityState, PublicBookingStatus } from "@/lib/api/contract/v1";
 
 // UI-specific view models adapt the pinned admin-owned v1 contract artifact
 // without moving booking authority into the public repository.
@@ -13,7 +13,7 @@ export type Field = {
   shortName: string;
   description: string;
   surface: string;
-  size: string;
+  facilityFacts: FacilityFact[];
   image: string;
   imageAlt: string;
   features: string[];
@@ -26,6 +26,11 @@ export type BookingBlock = {
   endsAt: string;
   amountMinor: 60000 | 80000;
   currency: "MYR";
+};
+
+export type PublicConfigView = {
+  blocks: BookingBlock[];
+  onlinePayment: OnlinePaymentCapability;
 };
 
 export type AvailabilitySlot = {
@@ -66,6 +71,7 @@ export type FaqItem = {
 export interface PublicClient {
   getFields(): Promise<Field[]>;
   getField(slug: string): Promise<Field | null>;
+  getConfig(): Promise<PublicConfigView>;
   getBlocks(): Promise<BookingBlock[]>;
   getAvailability(date: string): Promise<AvailabilitySlot[]>;
   createHold(input: CreateHoldRequest, idempotencyKey: string): Promise<Hold>;

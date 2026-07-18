@@ -1,13 +1,11 @@
 # Client Testing
 
-| Command | Coverage |
-| --- | --- |
-| `npm run lint`, `npm run typecheck`, `npm run build` | Static and production-build checks |
-| `npm run contract:check` | Generated v1 version/checksum and no source sharing |
-| `npm run test:security` | No secrets, database/callback authority, or executable CMS sink |
-| `npm test` | Unit/component tests including real HTTP adapter mapping/errors |
-| `npm run test:routes`, `test:a11y`, `visual:capture` | Browser checks when a live compatible API origin is available |
+Run from `axs_client`:
 
-Phase 4 verification on 2026-07-16: 13 unit/component tests, lint, strict typecheck, contract/security checks, and production build pass. Browser verification loaded `/book` against the disposable live admin API through exact-origin CORS. Payment callback, replay, amount, and database assertions remain admin integration-test responsibilities.
+```powershell
+npm run check
+```
 
-Release QA must rerun the complete client flow against the approved live Billplz sandbox merchant and deployed API, then cover offline/network retry, expiry/conflict, privacy lookup, mobile browsers, screen reader, and true 200% zoom.
+Phase 7 requires the pinned contract check, disabled-payment presentation/unit coverage, lint, typecheck, tests and build. Browser checks later cover public content, booking/error/result/maintenance/404 states, keyboard/screen-reader behavior and 360/390/768/1024/1440 layouts.
+
+Real provider sandbox confirmation, Vercel production checks and final owner content are deferred owner-gated work. No client test may send customer identifiers or payment data to analytics.

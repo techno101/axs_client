@@ -8,6 +8,7 @@ import type {
   AvailabilityStatus,
   BookingBlock,
   Field,
+  PublicConfigView,
 } from "@/lib/api/types";
 import { formatMoney } from "@/lib/format";
 import { createHttpPublicClient, PublicApiError } from "@/lib/api/http-client";
@@ -45,12 +46,13 @@ type BookingWizardProps = {
   fields: Field[];
   blocks: BookingBlock[];
   availability: AvailabilitySlot[];
+  onlinePayment: PublicConfigView["onlinePayment"];
   apiOrigin: string;
   businessDate: string;
   initialDate: string;
 };
 
-export function BookingWizard({ fields, blocks, availability, apiOrigin, businessDate, initialDate }: BookingWizardProps) {
+export function BookingWizard({ fields, blocks, availability, onlinePayment, apiOrigin, businessDate, initialDate }: BookingWizardProps) {
   const client = useMemo(() => createHttpPublicClient(apiOrigin), [apiOrigin]);
   const dateOptions = useMemo(() => Array.from({ length: 5 }, (_, index) => {
     const value = addIsoDays(businessDate, index);
@@ -114,7 +116,7 @@ export function BookingWizard({ fields, blocks, availability, apiOrigin, busines
   };
 
   async function requestHold() {
-    if (!blockId) return;
+    if (!blockId || !onlinePayment.enabled) return;
     setRequestState("holding");
     setError(null);
     try {
@@ -135,7 +137,7 @@ export function BookingWizard({ fields, blocks, availability, apiOrigin, busines
       const booking = await client.createBooking({ holdToken: hold.token, customer: { name: customer.name, phone: customer.phone, email: customer.email, ...(customer.team ? { teamName: customer.team } : {}) } }, crypto.randomUUID());
       if (!booking.accessToken) throw new Error("The booking response did not include its one-time access token.");
       window.sessionStorage.setItem(`axs:booking:${booking.reference}`, booking.accessToken);
-      const attempt = await client.createPaymentAttempt(booking.reference, { method: "billplz_online", returnPath: `/booking/result?reference=${encodeURIComponent(booking.reference)}` }, crypto.randomUUID());
+      const attempt = await client.createPaymentAttempt(booking.reference, { method: "online_provider", returnPath: `/booking/result?reference=${encodeURIComponent(booking.reference)}` }, crypto.randomUUID());
       if (!attempt.redirectUrl) throw new Error("The payment provider did not return a redirect URL.");
       window.location.assign(attempt.redirectUrl);
     } catch (requestError) {
@@ -228,6 +230,7 @@ export function BookingWizard({ fields, blocks, availability, apiOrigin, busines
 
           {step === 2 ? (
             <div className="slot-step">
+              {!onlinePayment.enabled ? <div className="booking-live-note booking-live-note--calm" role="status"><AlertIcon /><p><strong>Online booking is not available yet.</strong> {onlinePayment.publicMessage ?? "You can still review fields, sessions and prices."} No field block has been held.</p></div> : null}
               <div className="slot-grid">
                 {slots.map(({ block: item, status }) => (
                   <SlotCard
@@ -243,7 +246,7 @@ export function BookingWizard({ fields, blocks, availability, apiOrigin, busines
               <p className="availability-refresh" role="status">Live availability · refreshes every 15 seconds</p>
               <div className="wizard-buttons">
                 <button className="wizard-back" type="button" onClick={() => goTo(1)}>Back</button>
-                <button className="wizard-next" type="button" disabled={!blockId || requestState !== "idle"} onClick={requestHold}>{requestState === "holding" ? "Holding block…" : "Add details"} <ArrowRightIcon /></button>
+                <button className="wizard-next" type="button" disabled={!blockId || requestState !== "idle" || !onlinePayment.enabled} onClick={requestHold}>{!onlinePayment.enabled ? "Online payment unavailable" : requestState === "holding" ? "Holding block…" : "Add details"} <ArrowRightIcon /></button>
               </div>
             </div>
           ) : null}
@@ -312,7 +315,7 @@ export function BookingWizard({ fields, blocks, availability, apiOrigin, busines
       <section className="state-guide" aria-labelledby="state-guide-title">
         <div className="state-guide__heading">
           <p className="eyebrow"><span aria-hidden="true" />Public state guide</p>
-          <h2 id="state-guide-title">Every slot tells the truth.</h2>
+          <h2 id="state-guide-title">Availability state examples.</h2>
           <p>Compact examples show that no unavailable state is styled like an action.</p>
         </div>
         <div className="state-guide__grid">
@@ -332,13 +335,13 @@ export function BookingWizard({ fields, blocks, availability, apiOrigin, busines
 }
 
 function getStepTitle(step: number) {
-  return ["Choose your date", "Select a field", "Pick a complete block", "Who is booking?", "Review the match day"][step];
+  return ["Choose your date", "Select a field", "Pick a complete block", "Who is booking?", "Review booking"][step];
 }
 
 function getStepIntro(step: number) {
   return [
     "Start with a date inside the 90-day booking window.",
-    "Both launch fields use the same fixed morning and evening blocks.",
+    "Current field records use the same fixed morning and evening blocks.",
     "Unavailable states stay visible, clear and non-interactive.",
     "The live service will require name, phone and email for guest booking.",
     "Check the details before the server creates a payment attempt.",

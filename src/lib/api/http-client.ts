@@ -19,7 +19,7 @@ import type {
   PublicConfigResponse,
   PublicFieldsResponse,
 } from "@/lib/api/contract/v1";
-import type { Article, AvailabilitySlot, BookingBlock, FaqItem, Field, PaymentResult, PublicClient } from "@/lib/api/types";
+import type { Article, AvailabilitySlot, BookingBlock, FaqItem, Field, PaymentResult, PublicClient, PublicConfigView } from "@/lib/api/types";
 import { articles as localArticles, fields as localFields, images } from "@/lib/content";
 
 type ErrorEnvelope = { data: null; error: ApiError };
@@ -58,8 +58,8 @@ function request(origin: string, path: string, init?: RequestInit) {
 
 function fieldView(field: PublicFieldsResponse["data"][number]): Field {
   const local = localFields.find((item) => item.id === field.id);
-  return local ? { ...local, name: field.name, surface: field.surface, imageAlt: field.imageAlt || local.imageAlt, features: field.features.length ? field.features : local.features } : {
-    id: field.id, slug: field.slug as Field["slug"], name: field.name, shortName: field.id === "FIELD_01" ? "Field 01" : "Field 02", description: "Verified venue details pending.", surface: field.surface, size: "Complete field", image: images.aerialPitch, imageAlt: field.imageAlt, features: field.features,
+  return local ? { ...local, name: field.name, shortName: field.name, description: field.description, surface: field.surface, facilityFacts: field.facilityFacts, image: field.imageUrl || local.image, imageAlt: field.imageAlt || local.imageAlt, features: field.features } : {
+    id: field.id, slug: field.slug as Field["slug"], name: field.name, shortName: field.name, description: field.description, surface: field.surface, facilityFacts: field.facilityFacts, image: field.imageUrl || images.aerialPitch, imageAlt: field.imageAlt || "Temporary field image pending owner-approved photography", features: field.features,
   };
 }
 
@@ -84,12 +84,13 @@ export function createHttpPublicClient(origin = configuredApiOrigin()): PublicCl
   return {
     async getFields() { return (await responseData<PublicFieldsResponse["data"]>(await request(origin, "/v1/public/fields"))).map(fieldView); },
     async getField(slug) { const response = await request(origin, `/v1/public/fields/${encodeURIComponent(slug)}`); if (response.status === 404) return null; return fieldView(await responseData<PublicFieldsResponse["data"][number]>(response)); },
-    async getBlocks() { return (await responseData<PublicConfigResponse["data"]>(await request(origin, "/v1/public/config"))).blocks.map(blockView); },
+    async getConfig(): Promise<PublicConfigView> { const config = await responseData<PublicConfigResponse["data"]>(await request(origin, "/v1/public/config")); return { blocks: config.blocks.map(blockView), onlinePayment: config.onlinePayment }; },
+    async getBlocks() { return (await this.getConfig()).blocks; },
     async getAvailability(date) { return (await responseData<PublicAvailabilityResponse["data"]>(await request(origin, `/v1/public/availability?date=${encodeURIComponent(date)}`))).map((entry): AvailabilitySlot => ({ fieldId: entry.fieldId, blockId: entry.blockCode, status: entry.state, ...(entry.publicMessage ? { publicMessage: entry.publicMessage } : {}) })); },
     async createHold(input: CreateHoldRequest, key: string): Promise<Hold> { return responseData<HoldResponse["data"]>(await request(origin, "/v1/public/holds", { method: "POST", headers: { "Content-Type": "application/json", "Idempotency-Key": key }, body: JSON.stringify(input) })); },
     async createBooking(input: CreateBookingRequest, key: string): Promise<Booking> { return responseData<BookingResponse["data"]>(await request(origin, "/v1/public/bookings", { method: "POST", headers: { "Content-Type": "application/json", "Idempotency-Key": key }, body: JSON.stringify(input) })); },
     async createPaymentAttempt(reference: string, input: CreatePaymentAttemptRequest, key: string): Promise<PaymentAttempt> { return responseData<PaymentAttemptResponse["data"]>(await request(origin, `/v1/public/bookings/${encodeURIComponent(reference)}/payment-attempts`, { method: "POST", headers: { "Content-Type": "application/json", "Idempotency-Key": key }, body: JSON.stringify(input) })); },
-    async getBookingStatus(reference: string, accessToken: string): Promise<PublicBookingStatus> { return responseData<PublicBookingStatusResponse["data"]>(await request(origin, `/v1/public/bookings/${encodeURIComponent(reference)}/status?accessToken=${encodeURIComponent(accessToken)}`)); },
+    async getBookingStatus(reference: string, accessToken: string): Promise<PublicBookingStatus> { return responseData<PublicBookingStatusResponse["data"]>(await request(origin, `/v1/public/bookings/${encodeURIComponent(reference)}/status`, { headers: { "X-Booking-Access-Token": accessToken } })); },
     async findBooking(reference: string, phone: string): Promise<PublicBookingStatus> { return responseData<PublicBookingStatus>(await request(origin, "/v1/public/bookings/find", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ reference, phone }) })); },
     async getPaymentResult(reference) {
       if (typeof window === "undefined") throw new Error("Payment status requires the browser-held access token.");
@@ -97,7 +98,7 @@ export function createHttpPublicClient(origin = configuredApiOrigin()): PublicCl
       if (!token) throw new PublicApiError(404, "NOT_FOUND", "This browser no longer has access to the booking status.");
       const status = await this.getBookingStatus(reference, token);
       const state: PaymentResult["state"] = status.bookingStatus === "confirmed" && status.paymentStatus === "paid" ? "confirmed" : status.bookingStatus === "expired" || status.paymentStatus === "expired" ? "expired" : status.bookingStatus === "payment_failed" || status.paymentStatus === "failed" ? "failed" : "pending";
-      return { reference, state, fieldName: status.fieldId === "FIELD_01" ? "Armour Field One" : "Armour Field Two", blockLabel: status.blockCode === "MORNING" ? "Morning block · 09:00–15:00" : "Evening block · 15:00–21:00", bookingDate: status.bookingDate, amountMinor: status.amountMinor, currency: "MYR", lastCheckedAt: new Date().toLocaleTimeString("en-MY") };
+      return { reference, state, fieldName: status.fieldId === "FIELD_01" ? "Field 1" : "Field 2", blockLabel: status.blockCode === "MORNING" ? "Morning block · 09:00–15:00" : "Evening block · 15:00–21:00", bookingDate: status.bookingDate, amountMinor: status.amountMinor, currency: "MYR", lastCheckedAt: new Date().toLocaleTimeString("en-MY") };
     },
     async getArticles() {
       const summaries = await responseData<ArticleListResponse["data"]>(await request(origin, "/v1/public/articles"));

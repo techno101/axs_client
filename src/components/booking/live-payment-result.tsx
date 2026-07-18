@@ -23,7 +23,7 @@ export function LivePaymentResult({ reference, apiOrigin }: { reference: string;
         const status = await client.getBookingStatus(reference, accessToken);
         const state: PaymentResult["state"] = status.bookingStatus === "confirmed" && status.paymentStatus === "paid" ? "confirmed" : status.bookingStatus === "expired" || status.paymentStatus === "expired" ? "expired" : status.bookingStatus === "payment_failed" || status.paymentStatus === "failed" ? "failed" : "pending";
         if (!active) return;
-        setResult({ reference, state, fieldName: status.fieldId === "FIELD_01" ? "Armour Field One" : "Armour Field Two", blockLabel: status.blockCode === "MORNING" ? "Morning block · 09:00–15:00" : "Evening block · 15:00–21:00", bookingDate: status.bookingDate, amountMinor: status.amountMinor, currency: "MYR", lastCheckedAt: `Verified backend state · ${new Date().toLocaleTimeString("en-MY")}` });
+        setResult({ reference, state, fieldName: status.fieldId === "FIELD_01" ? "Field 1" : "Field 2", blockLabel: status.blockCode === "MORNING" ? "Morning block · 09:00–15:00" : "Evening block · 15:00–21:00", bookingDate: status.bookingDate, amountMinor: status.amountMinor, currency: "MYR", lastCheckedAt: `Verified backend state · ${new Date().toLocaleTimeString("en-MY")}` });
         setError(null);
         if (state === "pending") timer = window.setTimeout(poll, 3_000);
       } catch (pollError) {

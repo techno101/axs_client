@@ -19,7 +19,7 @@ export default async function ArticlesPage() {
       <PageHero
         eyebrow="Field notes"
         title={<>Ideas beyond<br />the touchline.</>}
-        intro="Booking guides, match-day craft and practical notes published through the structured ArmourXSports CMS."
+        intro="Booking guides and operational notes published through the structured ArmourXSports CMS."
         image={images.texturedPitch}
         imageAlt="Aerial view of a football pitch"
       />

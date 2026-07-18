@@ -11,7 +11,7 @@ export default function MaintenancePage() {
       <div className="system-view__content">
         <div className="system-view__icon"><ClockIcon /></div>
         <p>Planned maintenance</p>
-        <h1>The floodlights are warming up.</h1>
+        <h1>Booking is temporarily unavailable.</h1>
         <span>Booking is temporarily unavailable during maintenance. Existing booking lookup may remain available when the API reports it as healthy.</span>
         <div><ButtonLink href="/" variant="light">Return home</ButtonLink><ButtonLink href="/booking/find" variant="outline">Find booking</ButtonLink></div>
       </div>

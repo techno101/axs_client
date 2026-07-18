@@ -14,7 +14,7 @@ type SlotCardProps = {
 };
 
 const statusHelp: Record<AvailabilityStatus, string> = {
-  available: "Ready to request a hold",
+  available: "Available for selection",
   held: "Temporarily held by another booking",
   booked: "Already booked",
   blocked: "Unavailable for public booking",

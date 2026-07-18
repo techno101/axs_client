@@ -2339,6 +2339,12 @@ img {
   font-size: 12px;
 }
 
+.booking-live-note--calm {
+  border-color: rgba(35, 98, 132, .22);
+  background: #eef7fb;
+  color: #244f67;
+}
+
 .wizard-next,
 .finder-submit {
   display: inline-flex;

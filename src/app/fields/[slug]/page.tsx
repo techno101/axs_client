@@ -44,15 +44,14 @@ export default async function FieldDetailPage({ params }: FieldDetailProps) {
       <section className="field-detail-intro">
         <div className="shell field-detail-intro__grid">
           <SectionHeading
-            eyebrow="Inside the lines"
-            title={<>Built for the<br />whole session.</>}
-            intro="Field identity comes from the live API while final pitch dimensions, venue specifications and photography remain owner-controlled content."
+            eyebrow="Field information"
+            title={<>Current venue<br />details.</>}
+            intro="The field name and presentation details come from the live API. Anything not yet verified remains visibly pending."
           />
           <div className="field-fact-grid">
             <div><span>Surface</span><strong>{field.surface}</strong></div>
-            <div><span>Format</span><strong>{field.size}</strong></div>
-            <div><span>Timezone</span><strong>Asia/Kuala_Lumpur</strong></div>
-            <div><span>Booking</span><strong>Guest checkout</strong></div>
+            {field.facilityFacts.map((fact) => <div key={`${fact.label}-${fact.value}`}><span>{fact.label}</span><strong>{fact.value}</strong></div>)}
+            {!field.facilityFacts.length ? <div><span>Facility facts</span><strong>Pending owner confirmation</strong></div> : null}
           </div>
         </div>
       </section>
@@ -63,9 +62,7 @@ export default async function FieldDetailPage({ params }: FieldDetailProps) {
           </div>
           <aside>
             <p className="eyebrow"><span aria-hidden="true" />What is included</p>
-            <ul>
-              {field.features.map((feature) => <li key={feature}><CheckIcon />{feature}</li>)}
-            </ul>
+            {field.features.length ? <ul>{field.features.map((feature) => <li key={feature}><CheckIcon />{feature}</li>)}</ul> : <p>Verified feature details are pending owner confirmation.</p>}
             <p className="field-detail-media__note">Venue features remain owner-controlled and must be verified before publication.</p>
           </aside>
         </div>

@@ -2,7 +2,7 @@
 
 ## Identity and status
 
-This repository owns the public website, customer booking UX, API consumption, and safe rendering of published content. Phase 4 binds production pages to the admin-owned live v1 HTTP contract. It never owns PostgreSQL, provider credentials, callbacks, admin authorization, counter workflows, or infrastructure.
+This repository owns the public website, customer booking UX, API consumption, and safe rendering of published content. Phase 5 continuation binds production pages to admin-owned contract v1.1, keeps booking capabilities out of URLs, and uses neutral owner-pending product language. It never owns PostgreSQL, provider credentials, callbacks, admin authorization, counter workflows, or infrastructure.
 
 ## Reading sequence
 

@@ -10,17 +10,19 @@
  * Run: npm run contract:generate
  */
 
-export const API_CONTRACT_VERSION = "1.0.0" as const;
-export const API_CONTRACT_SHA256 = "b19c254c40a4624ace71cfd07de3cad5a96b0291e4e3713799ce03e2bc061a7c" as const;
+export const API_CONTRACT_VERSION = "1.3.0" as const;
+export const API_CONTRACT_SHA256 = "eea87bb559dc98820c206fcf10c3fc8ebe57c155e5f3c31d371d8e6937885242" as const;
 export const API_TIMEZONE = "Asia/Kuala_Lumpur" as const;
 
-export interface ApiMeta { requestId: string; serverTime: string; timezone: "Asia/Kuala_Lumpur"; contractVersion: "1.0.0"; nextPage?: number | null; pageSize?: number; total?: number; }
+export interface ApiMeta { requestId: string; serverTime: string; timezone: "Asia/Kuala_Lumpur"; contractVersion: "1.3.0"; nextPage?: number | null; pageSize?: number; total?: number; }
 
-export interface ApiError { code: "AUTHENTICATION_REQUIRED" | "PERMISSION_DENIED" | "CSRF_INVALID" | "RATE_LIMITED" | "VALIDATION_ERROR" | "NOT_FOUND" | "SLOT_UNAVAILABLE" | "HOLD_EXPIRED" | "IDEMPOTENCY_CONFLICT" | "BOOKING_STATE_INVALID" | "PAYMENT_PENDING" | "PAYMENT_ALREADY_CONFIRMED" | "SERVICE_UNAVAILABLE" | "INTERNAL_ERROR"; message: string; fieldErrors?: { [key: string]: string; }; retryAfterSeconds?: number; }
+export interface ApiError { code: "AUTHENTICATION_REQUIRED" | "PERMISSION_DENIED" | "CSRF_INVALID" | "RATE_LIMITED" | "VALIDATION_ERROR" | "NOT_FOUND" | "SLOT_UNAVAILABLE" | "HOLD_EXPIRED" | "IDEMPOTENCY_CONFLICT" | "BOOKING_STATE_INVALID" | "PAYMENT_PENDING" | "PAYMENT_ALREADY_CONFIRMED" | "STALE_WRITE" | "SERVICE_UNAVAILABLE" | "INTERNAL_ERROR"; message: string; fieldErrors?: { [key: string]: string; }; retryAfterSeconds?: number; }
 
 export interface ErrorEnvelope { data: null; meta: ApiMeta; error: ApiError; }
 
-export interface Field { id: "FIELD_01" | "FIELD_02"; slug: string; name: string; surface: string; imageUrl: string; imageAlt: string; features: Array<string>; }
+export interface FacilityFact { label: string; value: string; }
+
+export interface Field { id: "FIELD_01" | "FIELD_02"; slug: string; name: string; description: string; surface: string; facilityFacts: Array<FacilityFact>; imageUrl: string; imageAlt: string; features: Array<string>; }
 
 export interface BookingBlock { code: "MORNING" | "EVENING"; label: string; startsAt: string; endsAt: string; amountMinor: 60000 | 80000; currency: "MYR"; }
 
@@ -28,7 +30,9 @@ export type PublicAvailabilityState = "available" | "held" | "booked" | "blocked
 
 export interface AvailabilityEntry { fieldId: "FIELD_01" | "FIELD_02"; blockCode: "MORNING" | "EVENING"; state: PublicAvailabilityState; publicMessage?: string; }
 
-export interface PublicConfig { timezone: "Asia/Kuala_Lumpur"; bookingWindowDays: 90; cutoffMinutes: 60; onlineHoldMinutes: 10; currency: "MYR"; blocks: Array<BookingBlock>; }
+export interface OnlinePaymentCapability { enabled: boolean; publicMessage?: string; }
+
+export interface PublicConfig { timezone: "Asia/Kuala_Lumpur"; bookingWindowDays: 90; cutoffMinutes: 60; onlineHoldMinutes: 10; currency: "MYR"; blocks: Array<BookingBlock>; onlinePayment: OnlinePaymentCapability; }
 
 export interface CreateHoldRequest { fieldId: "FIELD_01" | "FIELD_02"; blockCode: "MORNING" | "EVENING"; bookingDate: string; }
 
@@ -44,7 +48,7 @@ export type PaymentStatus = "created" | "pending" | "paid" | "failed" | "expired
 
 export interface Booking { id: string; reference: string; fieldId: string; blockCode: string; bookingDate: string; amountMinor: number; currency: "MYR"; status: BookingStatus; paymentStatus: PaymentStatus; accessToken?: string; }
 
-export interface CreatePaymentAttemptRequest { method: "billplz_online"; returnPath?: string; }
+export interface CreatePaymentAttemptRequest { method: "online_provider"; returnPath?: string; }
 
 export interface PaymentAttempt { id: string; bookingReference: string; state: PaymentStatus; redirectUrl?: string; }
 
@@ -90,17 +94,25 @@ export interface AttendanceRequest { status: "checked_in" | "no_show" | "check_i
 
 export interface ReceiptPrintRequest { reason?: string; }
 
+export interface UpdateFieldPresentationRequest { name: string; description: string; surface: string; facilityFacts: Array<FacilityFact>; features: Array<string>; imageUrl: string; imageAlt: string; version: number; }
+
+export interface CreateAvailabilityBlockRequest { fieldId: "FIELD_01" | "FIELD_02"; blockCode: "MORNING" | "EVENING"; bookingDate: string; reason: string; }
+
+export interface SaveAdminUserRequest { email: string; displayName: string; role: AdminRole; active: boolean; password?: string; version?: number; }
+
+export interface UpdateRolePermissionsRequest { permissions: Array<AdminPermission>; version: number; }
+
+export interface UpdatePublicBookingSettingsRequest { message: string; version: number; }
+
 export type PublicationStatus = "draft" | "published" | "archived";
 
-export interface SavePageRequest { slug: string; title: string; blocks: Array<ContentBlock>; status: PublicationStatus; }
+export interface SavePageRequest { slug: string; title: string; blocks: Array<ContentBlock>; status: PublicationStatus; version?: number; }
 
-export interface SaveArticleRequest { slug: string; title: string; excerpt: string; blocks: Array<ContentBlock>; status: PublicationStatus; }
+export interface SaveArticleRequest { slug: string; title: string; excerpt: string; blocks: Array<ContentBlock>; status: PublicationStatus; version?: number; }
 
-export interface SaveFaqRequest { question: string; answer: string; category: string; sortOrder: number; status: PublicationStatus; }
+export interface SaveFaqRequest { question: string; answer: string; category: string; sortOrder: number; status: PublicationStatus; version?: number; }
 
 export interface RegisterMediaRequest { objectKey: string; publicUrl: string; contentType: "image/jpeg" | "image/png" | "image/webp" | "image/avif"; byteSize: number; sha256: string; altText: string; }
-
-export interface BillplzCallback { id: string; collection_id: string; paid: "true" | "false"; state: "due" | "deleted" | "paid"; amount: string; paid_amount: string; x_signature: string; }
 
 export interface AdminBooking { id: string; reference: string; fieldId: string; blockCode: string; bookingDate: string; amountMinor: number; currency: string; status: BookingStatus; paymentStatus: PaymentStatus; attendanceStatus: "not_checked_in" | "checked_in" | "no_show" | "check_in_reversed"; }
 
@@ -108,7 +120,7 @@ export interface CounterSlot { fieldId: string; blockCode: string; bookingDate: 
 
 export interface AdminDashboard { businessDate: string; bookingCount: number; attentionCount: number; }
 
-export interface Health { status: "ok"; service: string; contractVersion: "1.0.0"; }
+export interface Health { status: "ok"; service: string; contractVersion: "1.3.0"; }
 
 export interface Readiness { status: "ready" | "not_ready"; database: "connected" | "not_configured" | "unavailable"; authoritative: boolean; }
 

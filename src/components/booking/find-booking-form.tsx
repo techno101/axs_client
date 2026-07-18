@@ -39,7 +39,7 @@ export function FindBookingForm({ apiOrigin }: { apiOrigin: string }) {
         {state === "error" ? <p className="booking-error" role="alert">{message}</p> : null}
       </form>
       <div className="finder-result" aria-live="polite">
-        {result ? <><div><span>Verified result</span><PaymentPill state={paymentState} /></div><h2>{result.reference}</h2><dl><div><dt>Field</dt><dd>{result.fieldId === "FIELD_01" ? "Armour Field One" : "Armour Field Two"}</dd></div><div><dt>Date</dt><dd>{result.bookingDate}</dd></div><div><dt>Block</dt><dd>{result.blockCode === "MORNING" ? "09:00–15:00" : "15:00–21:00"}</dd></div></dl><p>This privacy-limited result contains no payment identifiers or customer data.</p></> : <div className="finder-empty"><SearchIcon /><strong>Your booking will appear here</strong><span>Enter both details to run a secure lookup.</span></div>}
+        {result ? <><div><span>Verified result</span><PaymentPill state={paymentState} /></div><h2>{result.reference}</h2><dl><div><dt>Field</dt><dd>{result.fieldId === "FIELD_01" ? "Field 1" : "Field 2"}</dd></div><div><dt>Date</dt><dd>{result.bookingDate}</dd></div><div><dt>Block</dt><dd>{result.blockCode === "MORNING" ? "09:00–15:00" : "15:00–21:00"}</dd></div></dl><p>This privacy-limited result contains no payment identifiers or customer data.</p></> : <div className="finder-empty"><SearchIcon /><strong>Your booking will appear here</strong><span>Enter both details to run a secure lookup.</span></div>}
       </div>
     </div>
   );

@@ -1,11 +1,5 @@
 # Client Deployment
 
-The only runtime value is the public HTTPS API origin:
+`axs_client` deploys independently through Vercel. This repository does not contain VPS scripts, PM2, database values, staff/session secrets, provider credentials, webhooks or worker tokens.
 
-```text
-NEXT_PUBLIC_API_ORIGIN=https://api.example.invalid
-```
-
-Developer public values belong in ignored `.env.local`; hosted values belong in the Vercel environment dashboard. Database, Billplz, session, callback, worker, and admin secrets never belong here.
-
-Before release: verify the pinned contract, build, configure the exact matching admin CORS origin, apply nonce CSP/security headers at the hosting edge, validate no-store behavior for availability/status, run booking-to-confirmation against the live merchant sandbox, test domain/TLS/monitoring/rollback, and approve final content/assets. No deployment occurred in Phase 4.
+Use Vercel project settings for public values such as the approved API origin. Do not deploy in Phase 7. Final deployment needs approved domains, public API CORS, SEO settings, privacy-safe analytics decision and owner content. Online payment remains disabled until the admin-owned provider gate passes.
