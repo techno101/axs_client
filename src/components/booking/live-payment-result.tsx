@@ -14,16 +14,17 @@ export function LivePaymentResult({ reference, apiOrigin }: { reference: string;
     let active = true;
     let timer: number | undefined;
     const poll = async () => {
-      const accessToken = window.sessionStorage.getItem(`axs:booking:${reference}`);
+      const accessToken = window.sessionStorage.getItem(`axs:order:${reference}`);
       if (!accessToken) {
-        if (active) setError("This browser no longer has the private access token for this booking. Use Find a booking with the booking phone number.");
+        if (active) setError("This browser no longer has the private status handle for this order. Keep the confirmed email once it is available.");
         return;
       }
       try {
-        const status = await client.getBookingStatus(reference, accessToken);
-        const state: PaymentResult["state"] = status.bookingStatus === "confirmed" && status.paymentStatus === "paid" ? "confirmed" : status.bookingStatus === "expired" || status.paymentStatus === "expired" ? "expired" : status.bookingStatus === "payment_failed" || status.paymentStatus === "failed" ? "failed" : "pending";
+        const status = await client.getOrderStatus(reference, accessToken);
+        const state: PaymentResult["state"] = status.status === "confirmed" && status.paymentStatus === "paid" ? "confirmed" : status.status === "expired" || status.paymentStatus === "expired" ? "expired" : status.status === "payment_failed" || status.paymentStatus === "failed" ? "failed" : "pending";
         if (!active) return;
-        setResult({ reference, state, fieldName: status.fieldId === "FIELD_01" ? "Field 1" : "Field 2", blockLabel: status.blockCode === "MORNING" ? "Morning block · 09:00–15:00" : "Evening block · 15:00–21:00", bookingDate: status.bookingDate, amountMinor: status.amountMinor, currency: "MYR", lastCheckedAt: `Verified backend state · ${new Date().toLocaleTimeString("en-MY")}` });
+        const first = status.occurrences[0];
+        setResult({ reference, state, fieldName: status.occurrences.length === 1 ? first?.fieldName ?? "Selected field" : `${status.occurrences.length} field sessions`, blockLabel: status.occurrences.length === 1 ? `${first?.label ?? "Selected session"} · ${first?.startsAt ?? ""}–${first?.endsAt ?? ""}` : "One payment for the complete order", bookingDate: status.occurrences.length === 1 ? first?.bookingDate ?? "Pending" : "Multiple dates", amountMinor: status.totalAmountMinor, currency: "MYR", lastCheckedAt: `Verified backend state · ${new Date().toLocaleTimeString("en-MY")}` });
         setError(null);
         if (state === "pending") timer = window.setTimeout(poll, 3_000);
       } catch (pollError) {

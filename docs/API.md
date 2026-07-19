@@ -1,14 +1,12 @@
 # Client API Contract View
 
-The admin repository owns OpenAPI v1.3.0. This repository consumes the copied artifact at `src/lib/api/contract/v1.ts`; `npm run contract:check` validates its local version/checksum. The artifact never imports admin source.
+`axs_admin` owns v1.5.0 OpenAPI. The copied static contract artifact is `src/lib/api/contract/v1.ts`, currently checksum `cc3a935491c2480844fba4815d4f13835c95c95d005f3e078266ff97332bda97`. `npm run contract:check` verifies the local representation; the client never imports admin source.
 
-| Client action | API boundary |
+| Client flow | API boundary |
 | --- | --- |
-| Current public data | config, fields, availability, CMS pages/articles/FAQs |
-| Public mutation | hold, booking, payment attempt with idempotency |
-| Authoritative result | booking status with dedicated access-token header |
-| Transitional lookup | reference plus phone; scheduled for removal in Phase 9 |
+| Browse | config, fields, availability and published CMS data |
+| Aggregate checkout | `hold-groups` → `orders` → one order payment attempt |
+| Authoritative result | order status with the dedicated access-token header |
+| Legacy compatibility | single booking endpoints remain but new public flow uses orders |
 
-Config includes `onlinePayment: { enabled, publicMessage? }`. When disabled, the client must stop before a hold/booking/payment request and display the public message. The API independently enforces this before any inventory write. The payment method literal is `online_provider`; a redirect never confirms payment.
-
-Only `NEXT_PUBLIC_API_ORIGIN` and other truly public values belong here. Browser session storage may hold a short-lived booking/document handle only; no customer data, payment identifier, reference, token or free text belongs in analytics.
+`onlinePayment.enabled` is server-authoritative. If false, the client stops before mutations; any attempted public mutation is still rejected by the API before a write. Hosted checkout redirects are navigation only. Browser analytics/session state must never contain customer data, payment IDs, access tokens in analytics payloads, or free text.

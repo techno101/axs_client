@@ -6,6 +6,6 @@ Run from `axs_client`:
 npm run check
 ```
 
-Phase 7 requires the pinned contract check, disabled-payment presentation/unit coverage, lint, typecheck, tests and build. Browser checks later cover public content, booking/error/result/maintenance/404 states, keyboard/screen-reader behavior and 360/390/768/1024/1440 layouts.
+This verifies lint, TypeScript, pinned contract structure, security boundary tests, unit/component tests and production build. Local evidence covers the v1.5 contract pin, disabled-payment stop-before-mutation behavior, aggregate order client calls and result status polling.
 
-Real provider sandbox confirmation, Vercel production checks and final owner content are deferred owner-gated work. No client test may send customer identifiers or payment data to analytics.
+Pending external evidence: a running disposable API/database environment, browser desktop/mobile screenshots against live API data, and a sandbox provider redirect/callback result. Do not start the client against a real environment file merely to obtain screenshots.

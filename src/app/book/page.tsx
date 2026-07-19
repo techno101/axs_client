@@ -35,7 +35,7 @@ export default async function BookPage() {
         image={images.nightPlayer}
         imageAlt="Player on a football pitch under floodlights"
       />
-      <BookingWizard fields={fields} blocks={config.blocks} availability={availability} onlinePayment={config.onlinePayment} apiOrigin={apiOrigin} businessDate={businessDate} initialDate={initialDate} />
+      <BookingWizard fields={fields} blocks={config.slots} availability={availability} onlinePayment={config.onlinePayment} apiOrigin={apiOrigin} businessDate={businessDate} initialDate={initialDate} />
     </>
   );
 }

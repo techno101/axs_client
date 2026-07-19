@@ -2,9 +2,8 @@
 
 | Decision | Result |
 | --- | --- |
-| Deployment | Independent Vercel project. |
-| Booking authority | API only; browser is never inventory/payment authority. |
-| Payment presentation | Capability-gated; disabled state stops before public mutation. |
-| Content | Real API/CMS data where present; owner-pending facts remain visibly pending. |
-| Accounts | Guest booking stays available; Phase 9 adds optional accounts that begin fresh. |
-| Privacy | Session handle only; analytics excludes identifiers and free text. |
+| Boundary | Vercel public client only; no database/provider/admin authority. |
+| Contract | Consume the admin-generated pinned v1.5 artifact; never a shared package. |
+| Checkout | New flow uses grouped holds/orders, one aggregate payment attempt and authority-status polling. |
+| Payment | Disabled server capability stops the browser before mutation; redirect is never confirmation. |
+| Content | Pending owner content stays visible as pending, not fabricated. |

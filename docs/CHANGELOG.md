@@ -1,9 +1,9 @@
 # Client Changelog
 
-## Phase 7 — 2026-07-18
+## v1.5 order consumer â€” 2026-07-19
 
-- Pinned API contract v1.3.0 and changed the payment-attempt method to the generic online-provider boundary.
-- Updated result copy to describe verified provider confirmation without implying redirect authority.
-- Reconciled client documentation with the three-application architecture and disabled-payment default.
+- Pinned the admin-owned v1.5.0 contract.
+- Moved the public booking wizard to grouped hold/order/payment-attempt flow with a maximum 20-slot basket.
+- Updated result polling to authoritative order status and retained disabled-payment pre-mutation behavior.
 
-No Vercel deployment, environment read or online-payment activation occurred.
+No Vercel deployment, production payment enablement or real environment read occurred.

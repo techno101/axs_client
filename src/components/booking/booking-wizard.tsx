@@ -12,7 +12,16 @@ import type {
 } from "@/lib/api/types";
 import { formatMoney } from "@/lib/format";
 import { createHttpPublicClient, PublicApiError } from "@/lib/api/http-client";
-import type { Hold } from "@/lib/api/types";
+type BasketItem = {
+  fieldId: string;
+  blockCode: string;
+  bookingDate: string;
+  fieldName: string;
+  label: string;
+  startsAt: string;
+  endsAt: string;
+  amountMinor: number;
+};
 
 const steps = ["Date", "Field", "Block", "Details", "Review"] as const;
 
@@ -61,8 +70,8 @@ export function BookingWizard({ fields, blocks, availability, onlinePayment, api
   const maxDate = useMemo(() => addIsoDays(businessDate, 90), [businessDate]);
   const [step, setStep] = useState(0);
   const [date, setDate] = useState(initialDate);
-  const [fieldId, setFieldId] = useState<Field["id"]>("FIELD_01");
-  const [blockId, setBlockId] = useState<BookingBlock["id"] | null>(null);
+  const [fieldId, setFieldId] = useState<string>(() => fields[0]?.id ?? "");
+  const [blockId, setBlockId] = useState<string | null>(null);
   const [customer, setCustomer] = useState<CustomerDetails>({
     name: "",
     phone: "",
@@ -70,14 +79,15 @@ export function BookingWizard({ fields, blocks, availability, onlinePayment, api
     team: "",
   });
   const [liveAvailability, setLiveAvailability] = useState(availability);
-  const [hold, setHold] = useState<Hold | null>(null);
+  const [basket, setBasket] = useState<BasketItem[]>([]);
   const [requestState, setRequestState] = useState<"idle" | "holding" | "booking">("idle");
   const [error, setError] = useState<string | null>(null);
 
   const field = fields.find((item) => item.id === fieldId) ?? fields[0];
-  const block = blocks.find((item) => item.id === blockId) ?? null;
+  const fieldBlocks = blocks.filter((item) => item.fieldId === fieldId);
+  const block = fieldBlocks.find((item) => item.id === blockId) ?? null;
   const selectedDate = dateOptions.find((item) => item.value === date) ?? { value: date, day: displayDate(date, { weekday: "short" }), date: displayDate(date, { day: "2-digit" }), month: displayDate(date, { month: "short" }), label: displayDate(date, { weekday: "long" }), display: displayDate(date, { weekday: "long", day: "numeric", month: "long", year: "numeric" }) };
-  const slots = blocks.map((item) => ({
+  const slots = fieldBlocks.map((item) => ({
     block: item,
     status:
       liveAvailability.find(
@@ -116,28 +126,28 @@ export function BookingWizard({ fields, blocks, availability, onlinePayment, api
   };
 
   async function requestHold() {
-    if (!blockId || !onlinePayment.enabled) return;
-    setRequestState("holding");
+    if (!blockId || !block || !onlinePayment.enabled) return;
     setError(null);
-    try {
-      const result = await client.createHold({ fieldId, blockCode: blockId, bookingDate: date }, crypto.randomUUID());
-      setHold(result);
-      goTo(3);
-    } catch (requestError) {
-      setError(requestError instanceof PublicApiError ? requestError.message : "The field block could not be held. Refresh and try again.");
-      setLiveAvailability(await client.getAvailability(date).catch(() => liveAvailability));
-    } finally { setRequestState("idle"); }
+    const candidate = { fieldId, blockCode: blockId, bookingDate: date, fieldName: field.name, label: block.label, startsAt: block.startsAt, endsAt: block.endsAt, amountMinor: block.amountMinor };
+    if (basket.some((item) => item.fieldId === candidate.fieldId && item.blockCode === candidate.blockCode && item.bookingDate === candidate.bookingDate)) {
+      setError("This field session is already in your booking.");
+      return;
+    }
+    setBasket((current) => [...current, candidate]);
+    setBlockId(null);
+    goTo(3);
   }
 
   async function proceedToPayment() {
-    if (!hold) return;
+    if (!basket.length || !onlinePayment.enabled) return;
     setRequestState("booking");
     setError(null);
     try {
-      const booking = await client.createBooking({ holdToken: hold.token, customer: { name: customer.name, phone: customer.phone, email: customer.email, ...(customer.team ? { teamName: customer.team } : {}) } }, crypto.randomUUID());
-      if (!booking.accessToken) throw new Error("The booking response did not include its one-time access token.");
-      window.sessionStorage.setItem(`axs:booking:${booking.reference}`, booking.accessToken);
-      const attempt = await client.createPaymentAttempt(booking.reference, { method: "online_provider", returnPath: `/booking/result?reference=${encodeURIComponent(booking.reference)}` }, crypto.randomUUID());
+      const holdGroup = await client.createHoldGroup({ occurrences: basket.map(({ fieldId: selectedFieldId, blockCode, bookingDate }) => ({ fieldId: selectedFieldId, blockCode, bookingDate })) }, crypto.randomUUID());
+      const order = await client.createOrder({ holdToken: holdGroup.token, customer: { name: customer.name, phone: customer.phone, email: customer.email, ...(customer.team ? { teamName: customer.team } : {}) } }, crypto.randomUUID());
+      if (!order.accessToken) throw new Error("The order response did not include its one-time status handle.");
+      window.sessionStorage.setItem(`axs:order:${order.reference}`, order.accessToken);
+      const attempt = await client.createOrderPaymentAttempt(order.reference, { method: "online_provider", returnPath: `/booking/result?reference=${encodeURIComponent(order.reference)}` }, crypto.randomUUID());
       if (!attempt.redirectUrl) throw new Error("The payment provider did not return a redirect URL.");
       window.location.assign(attempt.redirectUrl);
     } catch (requestError) {
@@ -175,7 +185,7 @@ export function BookingWizard({ fields, blocks, availability, onlinePayment, api
                     type="button"
                     key={option.value}
                     aria-pressed={date === option.value}
-                    onClick={() => { setDate(option.value); setHold(null); }}
+                    onClick={() => { setDate(option.value); }}
                   >
                     <span>{option.day}</span>
                     <strong>{option.date}</strong>
@@ -191,7 +201,7 @@ export function BookingWizard({ fields, blocks, availability, onlinePayment, api
                     min={businessDate}
                     max={maxDate}
                     value={date}
-                    onChange={(event) => { setDate(event.target.value); setHold(null); }}
+                    onChange={(event) => { setDate(event.target.value); }}
                   />
                 </label>
               </div>
@@ -213,7 +223,7 @@ export function BookingWizard({ fields, blocks, availability, onlinePayment, api
                   type="button"
                   key={item.id}
                   aria-pressed={fieldId === item.id}
-                  onClick={() => { setFieldId(item.id); setHold(null); }}
+                  onClick={() => { setFieldId(item.id); setBlockId(null); }}
                 >
                   <span className="field-choice__index">0{index + 1}</span>
                   <span className="field-choice__name">{item.name}</span>
@@ -234,25 +244,26 @@ export function BookingWizard({ fields, blocks, availability, onlinePayment, api
               <div className="slot-grid">
                 {slots.map(({ block: item, status }) => (
                   <SlotCard
-                    key={item.id}
+                    key={`${item.fieldId}-${item.id}`}
                     block={item}
                     status={status}
                     fieldName={field.shortName}
                     selected={blockId === item.id}
-                    onSelect={status === "available" ? () => { setBlockId(item.id); setHold(null); } : undefined}
+                    onSelect={status === "available" ? () => { setBlockId(item.id); } : undefined}
                   />
                 ))}
               </div>
               <p className="availability-refresh" role="status">Live availability · refreshes every 15 seconds</p>
               <div className="wizard-buttons">
                 <button className="wizard-back" type="button" onClick={() => goTo(1)}>Back</button>
-                <button className="wizard-next" type="button" disabled={!blockId || requestState !== "idle" || !onlinePayment.enabled} onClick={requestHold}>{!onlinePayment.enabled ? "Online payment unavailable" : requestState === "holding" ? "Holding block…" : "Add details"} <ArrowRightIcon /></button>
+                <button className="wizard-next" type="button" disabled={!blockId || requestState !== "idle" || !onlinePayment.enabled || basket.length >= 20} onClick={requestHold}>{!onlinePayment.enabled ? "Online payment unavailable" : basket.length >= 20 ? "Basket is full" : "Add to booking"} <ArrowRightIcon /></button>
               </div>
             </div>
           ) : null}
 
           {step === 3 ? (
             <form className="customer-form" onSubmit={submitDetails}>
+              <p className="booking-live-note booking-live-note--calm" role="status"><AlertIcon /><span><strong>{basket.length} session{basket.length === 1 ? "" : "s"} selected.</strong> Return to field selection to add up to 20 sessions before payment.</span></p>
               <div className="customer-form__grid">
                 <div className="field-control">
                   <label htmlFor="customer-name">Full name</label>
@@ -279,22 +290,21 @@ export function BookingWizard({ fields, blocks, availability, onlinePayment, api
             </form>
           ) : null}
 
-          {step === 4 && block ? (
+          {step === 4 && basket.length ? (
             <div className="review-step">
               <dl>
-                <div><dt>Date</dt><dd>{selectedDate.display}</dd></div>
-                <div><dt>Field</dt><dd>{field.name}</dd></div>
-                <div><dt>Block</dt><dd>{block.label} · {block.startsAt}–{block.endsAt}</dd></div>
+                {basket.map((item) => <div key={`${item.fieldId}-${item.blockCode}-${item.bookingDate}`}><dt>{item.bookingDate}</dt><dd>{item.fieldName} · {item.label} · {item.startsAt}–{item.endsAt}</dd></div>)}
                 <div><dt>Booking contact</dt><dd>{customer.name}<small>{customer.email}</small></dd></div>
-                <div className="review-step__total"><dt>Authoritative amount</dt><dd>{formatMoney(hold?.amountMinor ?? block.amountMinor)}</dd></div>
+                <div className="review-step__total"><dt>Estimated total</dt><dd>{formatMoney(basket.reduce((sum, item) => sum + item.amountMinor, 0))}</dd></div>
               </dl>
               <div className="booking-live-note">
                 <AlertIcon />
-                <p><strong>Server hold active.</strong> Complete payment before {hold ? new Date(hold.expiresAt).toLocaleTimeString("en-MY", { hour: "2-digit", minute: "2-digit" }) : "the hold expires"}. Payment is confirmed only by the verified backend callback.</p>
+                <p><strong>Final availability is checked together.</strong> The API creates one short-lived hold for the complete basket only when you start payment. If any session has changed, no session is held. Payment is confirmed only by the verified backend callback.</p>
               </div>
               <div className="wizard-buttons">
                 <button className="wizard-back" type="button" onClick={() => goTo(3)}>Edit details</button>
-                <button className="wizard-next" type="button" disabled={!hold || requestState !== "idle"} onClick={proceedToPayment}>{requestState === "booking" ? "Creating payment…" : "Proceed to secure payment"} <ArrowRightIcon /></button>
+                <button className="wizard-back" type="button" onClick={() => goTo(0)}>Add another session</button>
+                <button className="wizard-next" type="button" disabled={!basket.length || requestState !== "idle"} onClick={proceedToPayment}>{requestState === "booking" ? "Creating payment…" : "Proceed to secure payment"} <ArrowRightIcon /></button>
               </div>
             </div>
           ) : null}
@@ -305,7 +315,7 @@ export function BookingWizard({ fields, blocks, availability, onlinePayment, api
           <dl>
             <div><dt>Date</dt><dd>{selectedDate.display}</dd></div>
             <div><dt>Field</dt><dd>{step > 0 ? field.shortName : "Choose next"}</dd></div>
-            <div><dt>Block</dt><dd>{block ? `${block.startsAt}–${block.endsAt}` : "Not selected"}</dd></div>
+            <div><dt>Sessions</dt><dd>{basket.length ? `${basket.length} selected` : "Not selected"}</dd></div>
           </dl>
           <div className="booking-summary__rule" />
           <p className="booking-summary__authority">Final availability and price always come from the ArmourXSports API.</p>
@@ -321,7 +331,7 @@ export function BookingWizard({ fields, blocks, availability, onlinePayment, api
         <div className="state-guide__grid">
           {stateExamples.map((status, index) => (
             <SlotCard
-              block={blocks[index % blocks.length]}
+              block={blocks[index % blocks.length] ?? { fieldId: "preview", id: "PREVIEW", label: "Scheduled slot", startsAt: "--:--", endsAt: "--:--", amountMinor: 0, currency: "MYR", weekdays: [] }}
               fieldName="State preview"
               key={status}
               status={status}
@@ -341,7 +351,7 @@ function getStepTitle(step: number) {
 function getStepIntro(step: number) {
   return [
     "Start with a date inside the 90-day booking window.",
-    "Current field records use the same fixed morning and evening blocks.",
+    "Choose a field. Its current slots, times and prices come from the booking API.",
     "Unavailable states stay visible, clear and non-interactive.",
     "The live service will require name, phone and email for guest booking.",
     "Check the details before the server creates a payment attempt.",

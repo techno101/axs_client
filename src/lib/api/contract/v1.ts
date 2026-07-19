@@ -10,11 +10,11 @@
  * Run: npm run contract:generate
  */
 
-export const API_CONTRACT_VERSION = "1.3.0" as const;
-export const API_CONTRACT_SHA256 = "eea87bb559dc98820c206fcf10c3fc8ebe57c155e5f3c31d371d8e6937885242" as const;
+export const API_CONTRACT_VERSION = "1.5.0" as const;
+export const API_CONTRACT_SHA256 = "cc3a935491c2480844fba4815d4f13835c95c95d005f3e078266ff97332bda97" as const;
 export const API_TIMEZONE = "Asia/Kuala_Lumpur" as const;
 
-export interface ApiMeta { requestId: string; serverTime: string; timezone: "Asia/Kuala_Lumpur"; contractVersion: "1.3.0"; nextPage?: number | null; pageSize?: number; total?: number; }
+export interface ApiMeta { requestId: string; serverTime: string; timezone: "Asia/Kuala_Lumpur"; contractVersion: "1.5.0"; nextPage?: number | null; pageSize?: number; total?: number; }
 
 export interface ApiError { code: "AUTHENTICATION_REQUIRED" | "PERMISSION_DENIED" | "CSRF_INVALID" | "RATE_LIMITED" | "VALIDATION_ERROR" | "NOT_FOUND" | "SLOT_UNAVAILABLE" | "HOLD_EXPIRED" | "IDEMPOTENCY_CONFLICT" | "BOOKING_STATE_INVALID" | "PAYMENT_PENDING" | "PAYMENT_ALREADY_CONFIRMED" | "STALE_WRITE" | "SERVICE_UNAVAILABLE" | "INTERNAL_ERROR"; message: string; fieldErrors?: { [key: string]: string; }; retryAfterSeconds?: number; }
 
@@ -22,25 +22,37 @@ export interface ErrorEnvelope { data: null; meta: ApiMeta; error: ApiError; }
 
 export interface FacilityFact { label: string; value: string; }
 
-export interface Field { id: "FIELD_01" | "FIELD_02"; slug: string; name: string; description: string; surface: string; facilityFacts: Array<FacilityFact>; imageUrl: string; imageAlt: string; features: Array<string>; }
+export interface Field { id: string; slug: string; name: string; description: string; surface: string; facilityFacts: Array<FacilityFact>; imageUrl: string; imageAlt: string; features: Array<string>; }
 
-export interface BookingBlock { code: "MORNING" | "EVENING"; label: string; startsAt: string; endsAt: string; amountMinor: 60000 | 80000; currency: "MYR"; }
+export interface ScheduledSlot { fieldId: string; code: string; label: string; startsAt: string; endsAt: string; amountMinor: number; currency: "MYR"; weekdays: Array<number>; }
 
 export type PublicAvailabilityState = "available" | "held" | "booked" | "blocked" | "closed" | "past";
 
-export interface AvailabilityEntry { fieldId: "FIELD_01" | "FIELD_02"; blockCode: "MORNING" | "EVENING"; state: PublicAvailabilityState; publicMessage?: string; }
+export interface AvailabilityEntry { fieldId: string; blockCode: string; label: string; startsAt: string; endsAt: string; amountMinor: number; currency: "MYR"; state: PublicAvailabilityState; publicMessage?: string; }
 
 export interface OnlinePaymentCapability { enabled: boolean; publicMessage?: string; }
 
-export interface PublicConfig { timezone: "Asia/Kuala_Lumpur"; bookingWindowDays: 90; cutoffMinutes: 60; onlineHoldMinutes: 10; currency: "MYR"; blocks: Array<BookingBlock>; onlinePayment: OnlinePaymentCapability; }
+export interface PublicConfig { timezone: "Asia/Kuala_Lumpur"; bookingWindowDays: 90; cutoffMinutes: 60; onlineHoldMinutes: 10; currency: "MYR"; slots: Array<ScheduledSlot>; onlinePayment: OnlinePaymentCapability; }
 
-export interface CreateHoldRequest { fieldId: "FIELD_01" | "FIELD_02"; blockCode: "MORNING" | "EVENING"; bookingDate: string; }
+export interface CreateHoldRequest { fieldId: string; blockCode: string; bookingDate: string; }
+
+export interface CreateCounterHoldRequest { fieldId: string; blockCode: string; bookingDate: string; reason: string; }
 
 export interface Hold { token: string; expiresAt: string; fieldId: string; blockCode: string; bookingDate: string; amountMinor: number; currency: "MYR"; state: "active" | "expired" | "consumed" | "released"; }
+
+export interface RequestedOccurrence { fieldId: string; blockCode: string; bookingDate: string; }
+
+export interface HeldOccurrence { fieldId: string; blockCode: string; bookingDate: string; amountMinor: number; currency: "MYR"; }
+
+export interface CreateHoldGroupRequest { occurrences: Array<RequestedOccurrence>; }
+
+export interface HoldGroup { token: string; expiresAt: string; occurrences: Array<HeldOccurrence>; state: "active" | "expired" | "consumed" | "released"; }
 
 export interface CustomerDetails { name: string; phone: string; email: string; teamName?: string; }
 
 export interface CreateBookingRequest { holdToken: string; customer: CustomerDetails; }
+
+export interface CreateOrderRequest { holdToken: string; customer: CustomerDetails; }
 
 export type BookingStatus = "payment_pending" | "confirmed" | "cancelled" | "expired" | "payment_failed" | "refund_pending" | "refunded";
 
@@ -51,6 +63,14 @@ export interface Booking { id: string; reference: string; fieldId: string; block
 export interface CreatePaymentAttemptRequest { method: "online_provider"; returnPath?: string; }
 
 export interface PaymentAttempt { id: string; bookingReference: string; state: PaymentStatus; redirectUrl?: string; }
+
+export interface OrderOccurrence { id: string; fieldId: string; blockCode: string; bookingDate: string; fieldName: string; label: string; startsAt: string; endsAt: string; amountMinor: number; currency: "MYR"; status: BookingStatus; }
+
+export interface Order { id: string; reference: string; totalAmountMinor: number; currency: "MYR"; status: BookingStatus; paymentStatus: PaymentStatus; occurrences: Array<OrderOccurrence>; accessToken?: string; }
+
+export interface PublicOrderStatus { reference: string; totalAmountMinor: number; currency: "MYR"; status: BookingStatus; paymentStatus: PaymentStatus; occurrences: Array<OrderOccurrence>; }
+
+export interface OrderPaymentAttempt { id: string; bookingReference?: string; orderReference: string; state: PaymentStatus; redirectUrl?: string; }
 
 export interface PublicBookingStatus { reference: string; fieldId: string; blockCode: string; bookingDate: string; amountMinor: number; currency: "MYR"; bookingStatus: BookingStatus; paymentStatus: PaymentStatus; }
 
@@ -66,9 +86,9 @@ export interface Article { slug: string; title: string; excerpt: string; publish
 
 export interface Faq { id: string; question: string; answer: string; }
 
-export type AdminRole = "owner" | "manager" | "counter_staff" | "content_editor" | "viewer";
+export type AdminRole = "superadmin" | "admin" | "operations" | "cashier" | "editor_developer";
 
-export type AdminPermission = "bookings.read" | "bookings.write" | "bookings.cancel" | "counter.write" | "payments.read" | "payments.write" | "attendance.write" | "customers.read" | "cms.write" | "users.manage" | "roles.manage" | "audit.read" | "settings.manage" | "integrations.manage";
+export type AdminPermission = "bookings.read" | "bookings.write" | "bookings.cancel" | "counter.write" | "payments.read" | "payments.write" | "attendance.write" | "customers.read" | "cms.write" | "users.manage" | "roles.manage" | "audit.read" | "settings.manage" | "integrations.manage" | "fields.manage" | "schedules.manage" | "catalog.manage" | "applications.read" | "logs.read" | "pos.manage";
 
 export interface AdminProfile { id: string; email: string; role: AdminRole; permissions: Array<AdminPermission>; }
 
@@ -82,11 +102,39 @@ export interface CounterCustomerDetails { name: string; phone: string; email?: s
 
 export interface ProofMetadata { objectKey: string; contentType: string; sha256: string; }
 
-export interface CreateCounterBookingRequest { fieldId: "FIELD_01" | "FIELD_02"; blockCode: "MORNING" | "EVENING"; bookingDate: string; customer: CounterCustomerDetails; paymentMethod: "cash" | "manual_duitnow"; amountReceivedMinor?: number; manualReference?: string; proof?: ProofMetadata; verificationNote?: string; }
+export interface CreateCounterBookingRequest { fieldId: string; blockCode: string; bookingDate: string; customer: CounterCustomerDetails; paymentMethod: "cash" | "manual_duitnow"; amountReceivedMinor?: number; manualReference?: string; proof?: ProofMetadata; verificationNote?: string; }
 
 export interface ReasonRequest { reason: string; }
 
-export interface RescheduleBookingRequest { fieldId: "FIELD_01" | "FIELD_02"; blockCode: "MORNING" | "EVENING"; bookingDate: string; reason: string; }
+export interface PosPairRequest { code: string; name: string; }
+
+export interface PosDevice { id: string; name: string; status: "pending" | "approved" | "paused" | "revoked"; platform: "windows"; pairedAt: string; approvedAt?: string | null; lastSeenAt?: string | null; }
+
+export interface PosPairResult { device: PosDevice; deviceSecret: string; }
+
+export interface PosStaff { id: string; displayName: string; }
+
+export interface PosLoginRequest { staffId: string; pin: string; openingFloatMinor: number; }
+
+export interface PosCounterSession { id: string; localDate: string; }
+
+export interface PosSaleRequest { actorAdminId: string; amountMinor: number; paymentMethod: "cash" | "manual_duitnow" | "manual_bank_transfer"; amountReceivedMinor?: number; manualReference?: string; evidenceNote?: string; }
+
+export interface PosSale { id: string; counterSessionId: string; paymentMethod: "cash" | "manual_duitnow" | "manual_bank_transfer"; amountMinor: number; changeMinor?: number; }
+
+export interface PosCounterHoldRequest { actorAdminId: string; fieldId: string; blockCode: string; bookingDate: string; reason: string; }
+
+export interface PosReleaseHoldRequest { actorAdminId: string; reason: string; }
+
+export interface PosCloseRequest { actorAdminId: string; countedCashMinor: number; reason?: string; }
+
+export interface PosManagerOverviewRequest { staffId: string; pin: string; }
+
+export interface PosCloseReport { id: string; localDate: string; openingFloatMinor: number; expectedCashMinor: number; countedCashMinor: number; varianceMinor: number; }
+
+export interface PosManagerOverview { manager: PosStaff; localDate: string; session: { id?: string; status?: "open" | "closed"; openingFloatMinor?: number; saleCount?: number; salesTotalMinor?: number; } | { id?: string; status?: "open" | "closed"; openingFloatMinor?: number; saleCount?: number; salesTotalMinor?: number; }; }
+
+export interface RescheduleBookingRequest { fieldId: string; blockCode: string; bookingDate: string; reason: string; }
 
 export interface CustomerCorrectionRequest { customer: CounterCustomerDetails; reason: string; }
 
@@ -96,13 +144,25 @@ export interface ReceiptPrintRequest { reason?: string; }
 
 export interface UpdateFieldPresentationRequest { name: string; description: string; surface: string; facilityFacts: Array<FacilityFact>; features: Array<string>; imageUrl: string; imageAlt: string; version: number; }
 
-export interface CreateAvailabilityBlockRequest { fieldId: "FIELD_01" | "FIELD_02"; blockCode: "MORNING" | "EVENING"; bookingDate: string; reason: string; }
+export interface CreateFieldRequest { slug: string; name: string; description: string; surface: string; facilityFacts: Array<FacilityFact>; features: Array<string>; imageUrl: string; imageAlt: string; }
+
+export interface ArchiveRequest { reason: string; version: number; }
+
+export interface SaveScheduleTemplateRequest { fieldId: string; code: string; label: string; weekdays: Array<number>; startsAt: string; endsAt: string; amountMinor: number; active: boolean; version?: number; }
+
+export interface CreateAvailabilityBlockRequest { fieldId: string; blockCode: string; bookingDate: string; mode?: "closed" | "open"; label?: string; startsAt?: string; endsAt?: string; amountMinor?: number; reason: string; }
+
+export interface SaveScheduleOverrideRequest { fieldId: string; blockCode: string; bookingDate: string; mode: "closed" | "open"; label?: string; startsAt?: string; endsAt?: string; amountMinor?: number; reason: string; version: number; }
+
+export interface SaveCatalogItemRequest { kind: "service" | "product"; name: string; description: string; amountMinor: number; active: boolean; onlineCheckoutEnabled: boolean; counterEnabled: boolean; sortOrder: number; version?: number; }
 
 export interface SaveAdminUserRequest { email: string; displayName: string; role: AdminRole; active: boolean; password?: string; version?: number; }
 
 export interface UpdateRolePermissionsRequest { permissions: Array<AdminPermission>; version: number; }
 
 export interface UpdatePublicBookingSettingsRequest { message: string; version: number; }
+
+export interface UpdateCounterManualPaymentRequest { duitNowLabel: string; duitNowInstructions: string; bankTransferLabel: string; bankTransferInstructions: string; version: number; }
 
 export type PublicationStatus = "draft" | "published" | "archived";
 
@@ -120,7 +180,7 @@ export interface CounterSlot { fieldId: string; blockCode: string; bookingDate: 
 
 export interface AdminDashboard { businessDate: string; bookingCount: number; attentionCount: number; }
 
-export interface Health { status: "ok"; service: string; contractVersion: "1.3.0"; }
+export interface Health { status: "ok"; service: string; contractVersion: "1.5.0"; }
 
 export interface Readiness { status: "ready" | "not_ready"; database: "connected" | "not_configured" | "unavailable"; authoritative: boolean; }
 
@@ -134,11 +194,19 @@ export interface PublicAvailabilityResponse { data: Array<AvailabilityEntry>; me
 
 export interface HoldResponse { data: Hold; meta: ApiMeta; error: null; }
 
+export interface HoldGroupResponse { data: HoldGroup; meta: ApiMeta; error: null; }
+
 export interface BookingResponse { data: Booking; meta: ApiMeta; error: null; }
+
+export interface OrderResponse { data: Order; meta: ApiMeta; error: null; }
 
 export interface PaymentAttemptResponse { data: PaymentAttempt; meta: ApiMeta; error: null; }
 
+export interface OrderPaymentAttemptResponse { data: OrderPaymentAttempt; meta: ApiMeta; error: null; }
+
 export interface PublicBookingStatusResponse { data: PublicBookingStatus; meta: ApiMeta; error: null; }
+
+export interface PublicOrderStatusResponse { data: PublicOrderStatus; meta: ApiMeta; error: null; }
 
 export interface LookupBookingResponse { data: PublicBookingStatus; meta: ApiMeta; error: null; }
 
@@ -149,6 +217,22 @@ export interface ArticleListResponse { data: Array<ArticleSummary>; meta: ApiMet
 export interface ArticleResponse { data: Article; meta: ApiMeta; error: null; }
 
 export interface FaqListResponse { data: Array<Faq>; meta: ApiMeta; error: null; }
+
+export interface PosPairResponse { data: PosPairResult; meta: ApiMeta; error: null; }
+
+export interface PosStaffList { deviceId: string; staff: Array<PosStaff>; }
+
+export interface PosStaffListResponse { data: PosStaffList; meta: ApiMeta; error: null; }
+
+export interface PosLoginResult { staff: PosStaff; counterSession: PosCounterSession; }
+
+export interface PosLoginResponse { data: PosLoginResult; meta: ApiMeta; error: null; }
+
+export interface PosSaleResponse { data: PosSale; meta: ApiMeta; error: null; }
+
+export interface PosCloseResponse { data: PosCloseReport; meta: ApiMeta; error: null; }
+
+export interface PosManagerOverviewResponse { data: PosManagerOverview; meta: ApiMeta; error: null; }
 
 export interface AdminSessionResponse { data: AdminSession; meta: ApiMeta; error: null; }
 

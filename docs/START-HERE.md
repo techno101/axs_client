@@ -1,22 +1,7 @@
 # Start Here: ArmourXSports Client
 
-## Identity and status
+`axs_client` owns only the Vercel public site and API consumption. Current `v2` consumes the pinned v1.5.0 contract: public data and CMS are read from the API; the booking wizard accumulates a 1-20 occurrence basket, then creates one grouped hold/order/payment attempt only when server config enables online payment. It has no database, provider secret, callback or booking authority.
 
-This repository owns the public website, customer booking UX, API consumption, and safe rendering of published content. Phase 5 continuation binds production pages to admin-owned contract v1.1, keeps booking capabilities out of URLs, and uses neutral owner-pending product language. It never owns PostgreSQL, provider credentials, callbacks, admin authorization, counter workflows, or infrastructure.
+Read `AGENTS.md`, this file, `MEMORY.md` and `API.md` first. For booking/status work also read `BUSINESS-RULES.md` and `TESTING.md`; for contract work read the admin `API.md` and regenerate/publish from admin before editing the client.
 
-## Reading sequence
-
-1. Workspace and repository `AGENTS.md`.
-2. This file and `MEMORY.md`.
-3. Read only the task-routed documents below.
-4. Inspect exact source and tests before editing.
-
-| Task | Read |
-| --- | --- |
-| Layout/content | `DESIGN.md`, `STRUCTURE.md` |
-| Booking/status/lookup | `BUSINESS-RULES.md`, `API.md`, `TESTING.md` |
-| API or contract | Both repositories' `API.md` and `MEMORY.md`, then `ARCHITECTURE.md` |
-| Deployment | `DEPLOYMENT.md`, `TESTING.md` |
-| Handoff | `MEMORY.md`, `CHANGELOG.md`, `DECISIONS.md` |
-
-The contract artifact is copied and checksum-pinned; never import admin source or create a shared package.
+With server `onlinePayment.enabled=false`, the client may show fields, schedule, prices and booking steps but must stop before any mutation and show the API public message. The API independently enforces that boundary.

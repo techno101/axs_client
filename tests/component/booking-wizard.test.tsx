@@ -29,7 +29,7 @@ describe("BookingWizard", () => {
     await user.click(screen.getByRole("button", { name: /field 1/i }));
     await user.click(screen.getByRole("button", { name: /choose block/i }));
     await user.click(screen.getAllByRole("button", { name: /available.*field 1/i })[0]);
-    await user.click(screen.getByRole("button", { name: /add details/i }));
+    await user.click(screen.getByRole("button", { name: /add to booking/i }));
 
     expect(await screen.findByRole("heading", { name: "Who is booking?" })).toBeVisible();
     expect(screen.getByLabelText("Full name")).toBeRequired();

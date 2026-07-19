@@ -12,10 +12,10 @@ export const dynamic = "force-dynamic";
 
 export default async function BookingResultPage({ searchParams }: { searchParams: Promise<{ reference?: string }> }) {
   const query = await searchParams;
-  const reference = query.reference && /^AXS-[A-Z0-9]{6,12}$/.test(query.reference) ? query.reference : "AXS-PENDING";
+  const reference = query.reference && /^AXO-[A-Z0-9]{6,16}$/.test(query.reference) ? query.reference : "AXO-PENDING";
   return (
     <>
-      <PageHero compact eyebrow="Authoritative status" title={<>Booking<br />status.</>} intro="Browser return parameters never prove payment. This page polls the verified backend booking and payment state using a private browser-held access token." />
+      <PageHero compact eyebrow="Authoritative status" title={<>Order<br />status.</>} intro="Browser return parameters never prove payment. This page polls the verified backend order and payment state using a private browser-held status handle." />
       <section className="payment-result-section">
         <div className="shell payment-result-section__grid">
           <LivePaymentResult reference={reference} apiOrigin={configuredApiOrigin()} />

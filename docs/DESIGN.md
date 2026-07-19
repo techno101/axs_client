@@ -4,7 +4,7 @@
 
 The implemented visual language is a premium night-field editorial system rather than a generic SaaS template: deep navy atmospheres, controlled acid-lime actions, accessible green labels, floodlight/glow layers, net and pitch-line geometry, compressed display typography, warm reading surfaces, full-bleed photography, and disciplined circular details. The home, fields, booking, content, policy, maintenance, error, loading, empty, and 404 experiences share one system.
 
-Phase 5 removed campaign slogans and invented facility claims. Current copy uses direct booking language, neutral `Field 1` / `Field 2` defaults, confirmed block rules, and explicit owner-pending venue facts. Temporary photography remains visually useful but is never presented as the real venue.
+Phase 5 removed campaign slogans and invented facility claims. Current copy uses direct booking language, neutral `Field 1` / `Field 2` defaults, dynamic API-supplied slot rules, and explicit owner-pending venue facts. Temporary photography remains visually useful but is never presented as the real venue.
 
 Core tokens in `src/app/globals.css`:
 
@@ -23,8 +23,8 @@ Buttons use a pill body plus circular directional control, slot cards expose tim
 
 ## Route and state patterns
 
-- Home: cinematic hero and availability dock, product statement, asymmetric field editorial, block pricing, facilities, gallery, map placeholder, FAQ, and image CTA.
-- Fields: large alternating field compositions, facts/features, and fixed-block comparison.
+- Home: cinematic hero and availability dock, product statement, asymmetric field editorial, API-driven slot pricing, facilities, gallery, map placeholder, FAQ, and image CTA.
+- Fields: large alternating field compositions, facts/features, and API-driven schedule comparison.
 - Booking: five visible steps, horizontally scrollable mobile dates, field controls, slot cards, customer fields, review, persistent desktop summary, and public-state guide.
 - Result/lookup: pending, confirmed, failed, expired, empty and fictional result states with explicit API-authority language.
 - Content/policy: structured article cards/details and a shared non-final-policy pattern that never invents operational or legal terms.

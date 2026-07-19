@@ -1,5 +1,5 @@
 # Client Architecture
 
-Next.js public routes/components call `createHttpPublicClient` using the pinned contract and `NEXT_PUBLIC_API_ORIGIN`. The API has all booking/payment authority. Browser UI handles data rendering, input validation, accessible states and navigation only.
+The public site is independently deployable on Vercel. It calls the HTTPS v1 API through a pinned static contract and contains no PostgreSQL, server secrets, payment adapter/webhook, admin authorization, PM2 or VPS configuration.
 
-No database driver, admin component, provider credential, webhook or direct `axs_admin` import is permitted. Contract changes begin in admin OpenAPI, then regenerate/publish the artifact before client changes.
+The booking UI has local presentation state only. Server config decides payment availability, server transactions decide inventory, and server order status decides results. A provider redirect is handed off only after a server-created attempt; the client does not confirm it.
