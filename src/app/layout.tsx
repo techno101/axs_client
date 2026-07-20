@@ -19,6 +19,18 @@ export const metadata: Metadata = {
   },
 };
 
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "ArmourXSports",
+  url: "https://armourxsports.example/",
+  potentialAction: {
+    "@type": "SearchAction",
+    target: "https://armourxsports.example/fields",
+    "query-input": "required name=search_term_string",
+  },
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -27,6 +39,7 @@ export default function RootLayout({
   return (
     <html lang="en" data-scroll-behavior="smooth">
       <body>
+        <script type="application/ld+json">{JSON.stringify(structuredData)}</script>
         <a className="skip-link" href="#main-content">
           Skip to main content
         </a>
