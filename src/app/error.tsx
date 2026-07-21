@@ -1,14 +1,9 @@
 "use client";
 
-import { AlertIcon } from "@/components/ui/icons";
+import { useEffect } from "react";
+import { reportOperationalEvent } from "@/lib/operational-reporting";
 
-export default function GlobalError({ reset }: { error: Error & { digest?: string }; reset: () => void }) {
-  return (
-    <section className="system-view system-view--error">
-      <div className="system-view__grid" aria-hidden="true" />
-      <div className="system-view__content">
-        <div className="system-view__icon"><AlertIcon /></div><p>Route error</p><h1>That pass did not connect.</h1><span>Nothing has been charged or booked. Retry this view or return through the main navigation.</span><div><button className="system-retry" type="button" onClick={reset}>Try again</button></div>
-      </div>
-    </section>
-  );
+export default function GlobalError({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
+  useEffect(() => { reportOperationalEvent({ category: "client_ui_error", errorCode: "CLIENT_RENDER_ERROR", summary: error.message || "The public interface could not render this screen.", routeOrScreen: "public" }); }, [error]);
+  return <html><body><main><h1>Something went wrong</h1><p>Please try again. Your booking is confirmed only by the verified backend status page.</p><button type="button" onClick={reset}>Try again</button></main></body></html>;
 }

@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { PaymentResultPanel } from "@/components/booking/payment-result-panel";
 import { createHttpPublicClient, PublicApiError } from "@/lib/api/http-client";
 import type { PaymentResult } from "@/lib/api/types";
+import { reportOperationalEvent } from "@/lib/operational-reporting";
 
 export function LivePaymentResult({ reference, apiOrigin }: { reference: string; apiOrigin: string }) {
   const client = useMemo(() => createHttpPublicClient(apiOrigin), [apiOrigin]);
@@ -29,7 +30,9 @@ export function LivePaymentResult({ reference, apiOrigin }: { reference: string;
         if (state === "pending") timer = window.setTimeout(poll, 3_000);
       } catch (pollError) {
         if (active) {
-          setError(pollError instanceof PublicApiError ? pollError.message : "Booking status could not be checked. Check your connection; the last verified state remains visible.");
+          const message = pollError instanceof PublicApiError ? pollError.message : "Booking status could not be checked. Check your connection; the last verified state remains visible.";
+          setError(message);
+          reportOperationalEvent({ category: "payment_failure", errorCode: "PAYMENT_STATUS_UNAVAILABLE", summary: message, routeOrScreen: "booking/result" });
           timer = window.setTimeout(poll, 5_000);
         }
       }

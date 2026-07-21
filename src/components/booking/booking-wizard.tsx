@@ -12,6 +12,7 @@ import type {
 } from "@/lib/api/types";
 import { formatMoney } from "@/lib/format";
 import { createHttpPublicClient, PublicApiError } from "@/lib/api/http-client";
+import { reportOperationalEvent } from "@/lib/operational-reporting";
 type BasketItem = {
   fieldId: string;
   blockCode: string;
@@ -151,7 +152,9 @@ export function BookingWizard({ fields, blocks, availability, onlinePayment, api
       if (!attempt.redirectUrl) throw new Error("The payment provider did not return a redirect URL.");
       window.location.assign(attempt.redirectUrl);
     } catch (requestError) {
-      setError(requestError instanceof PublicApiError ? requestError.message : requestError instanceof Error ? requestError.message : "Payment could not be started.");
+      const message = requestError instanceof PublicApiError ? requestError.message : requestError instanceof Error ? requestError.message : "Payment could not be started.";
+      setError(message);
+      reportOperationalEvent({ category: "payment_failure", errorCode: requestError instanceof PublicApiError ? requestError.code : "CHECKOUT_START_FAILED", summary: message, routeOrScreen: "booking" });
       setRequestState("idle");
     }
   }

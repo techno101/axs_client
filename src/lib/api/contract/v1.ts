@@ -11,7 +11,7 @@
  */
 
 export const API_CONTRACT_VERSION = "1.10.0" as const;
-export const API_CONTRACT_SHA256 = "a4d207f885b4b6250d8a8c2b83ff2badc2a50baf91d4cf2618022fe5f7f3a6ff" as const;
+export const API_CONTRACT_SHA256 = "bc84b03bb50f1c83048c955794539e26167943dc9045ddb815d4c4425411f667" as const;
 export const API_TIMEZONE = "Asia/Kuala_Lumpur" as const;
 
 export interface ApiMeta { requestId: string; serverTime: string; timezone: "Asia/Kuala_Lumpur"; contractVersion: "1.10.0"; nextPage?: number | null; pageSize?: number; total?: number; }
@@ -19,6 +19,10 @@ export interface ApiMeta { requestId: string; serverTime: string; timezone: "Asi
 export interface ApiError { code: "AUTHENTICATION_REQUIRED" | "PERMISSION_DENIED" | "CSRF_INVALID" | "RATE_LIMITED" | "VALIDATION_ERROR" | "NOT_FOUND" | "SLOT_UNAVAILABLE" | "HOLD_EXPIRED" | "IDEMPOTENCY_CONFLICT" | "BOOKING_STATE_INVALID" | "PAYMENT_PENDING" | "PAYMENT_ALREADY_CONFIRMED" | "STALE_WRITE" | "SERVICE_UNAVAILABLE" | "INTERNAL_ERROR"; message: string; fieldErrors?: { [key: string]: string; }; retryAfterSeconds?: number; }
 
 export interface ErrorEnvelope { data: null; meta: ApiMeta; error: ApiError; }
+
+export interface OperationalEventResponse { data: OperationalEventMutationResult; meta: ApiMeta; error: null; }
+
+export interface OperationalEventListResponse { data: Array<OperationalEvent>; meta: ApiMeta; error: null; }
 
 export interface FacilityFact { label: string; value: string; }
 
@@ -88,7 +92,7 @@ export interface Faq { id: string; question: string; answer: string; }
 
 export type AdminRole = "superadmin" | "admin" | "operations" | "editor_developer";
 
-export type AdminPermission = "bookings.read" | "bookings.write" | "bookings.cancel" | "counter.write" | "payments.read" | "payments.write" | "attendance.write" | "customers.read" | "cms.write" | "users.manage" | "roles.manage" | "audit.read" | "settings.manage" | "integrations.manage" | "fields.manage" | "schedules.manage" | "catalog.manage" | "applications.read" | "logs.read" | "pos.manage";
+export type AdminPermission = "bookings.read" | "bookings.write" | "bookings.cancel" | "counter.write" | "payments.read" | "payments.write" | "attendance.write" | "customers.read" | "cms.write" | "users.manage" | "roles.manage" | "audit.read" | "settings.manage" | "integrations.manage" | "fields.manage" | "schedules.manage" | "catalog.manage" | "applications.read" | "logs.read" | "logs.manage" | "pos.manage";
 
 export interface AdminProfile { id: string; username: string; displayName: string; role: AdminRole; permissions: Array<AdminPermission>; }
 
@@ -115,6 +119,16 @@ export interface PosPairingCode { code: string; expiresAt: string; }
 export interface PosDeviceStatusUpdateRequest { status: "approved" | "paused" | "revoked"; }
 
 export interface PosDeviceStatus { deviceId: string; name: string; status: "pending" | "approved" | "paused" | "revoked"; canLogin: boolean; serverTime: string; }
+
+export interface SafeTechnicalDetails { errorName?: string; safeMessage?: string; causeCode?: string; operation?: string; retryable?: boolean; retryAfterSeconds?: number; state?: string; attempt?: number; provider?: string; environment?: string; }
+
+export interface OperationalEventReportRequest { severity?: "debug" | "info" | "warning" | "error" | "critical" | "security"; category: string; errorCode: string; summary: string; technicalDetails?: SafeTechnicalDetails; routeOrScreen?: string; httpMethod?: string; httpStatus?: number; correlationId?: string; traceId?: string; releaseVersion?: string; bookingReference?: string; paymentReference?: string; }
+
+export interface OperationalEvent { id: string; sourceApplication: string; environment: "development" | "test" | "production"; severity: string; category: string; errorCode: string; summary: string; technicalDetails?: SafeTechnicalDetails; routeOrScreen?: string; httpMethod?: string; httpStatus?: number; correlationId?: string; traceId?: string; releaseVersion?: string; posDeviceId?: string; bookingReference?: string; paymentReference?: string; firstSeenAt: string; lastSeenAt: string; occurrenceCount: number; resolutionState: "unresolved" | "acknowledged" | "resolved"; resolutionNotes?: string; }
+
+export interface OperationalEventMutationResult { id: string; aggregated?: boolean; state?: "acknowledged" | "resolved"; }
+
+export interface OperationalEventActionRequest { notes?: string; }
 
 export interface PosPairResult { device: PosDevice; deviceSecret: string; }
 
