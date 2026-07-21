@@ -11,7 +11,7 @@
  */
 
 export const API_CONTRACT_VERSION = "1.10.0" as const;
-export const API_CONTRACT_SHA256 = "2e87ee580902c0253b79b3901e8c60a2b9bb312672ad4bab7c2f7a8035b569cd" as const;
+export const API_CONTRACT_SHA256 = "a4d207f885b4b6250d8a8c2b83ff2badc2a50baf91d4cf2618022fe5f7f3a6ff" as const;
 export const API_TIMEZONE = "Asia/Kuala_Lumpur" as const;
 
 export interface ApiMeta { requestId: string; serverTime: string; timezone: "Asia/Kuala_Lumpur"; contractVersion: "1.10.0"; nextPage?: number | null; pageSize?: number; total?: number; }
@@ -109,6 +109,12 @@ export interface ReasonRequest { reason: string; }
 export interface PosPairRequest { code: string; name: string; }
 
 export interface PosDevice { id: string; name: string; status: "pending" | "approved" | "paused" | "revoked"; platform: "windows"; pairedAt: string; approvedAt?: string | null; lastSeenAt?: string | null; }
+
+export interface PosPairingCode { code: string; expiresAt: string; }
+
+export interface PosDeviceStatusUpdateRequest { status: "approved" | "paused" | "revoked"; }
+
+export interface PosDeviceStatus { deviceId: string; name: string; status: "pending" | "approved" | "paused" | "revoked"; canLogin: boolean; serverTime: string; }
 
 export interface PosPairResult { device: PosDevice; deviceSecret: string; }
 
@@ -267,6 +273,14 @@ export interface ArticleResponse { data: Article; meta: ApiMeta; error: null; }
 export interface FaqListResponse { data: Array<Faq>; meta: ApiMeta; error: null; }
 
 export interface PosPairResponse { data: PosPairResult; meta: ApiMeta; error: null; }
+
+export interface PosPairingCodeResponse { data: PosPairingCode; meta: ApiMeta; error: null; }
+
+export interface PosDeviceResponse { data: PosDevice; meta: ApiMeta; error: null; }
+
+export interface PosDeviceListResponse { data: Array<PosDevice>; meta: ApiMeta; error: null; }
+
+export interface PosDeviceStatusResponse { data: PosDeviceStatus; meta: ApiMeta; error: null; }
 
 export interface PosCatalogResponse { data: PosCatalog; meta: ApiMeta; error: null; }
 

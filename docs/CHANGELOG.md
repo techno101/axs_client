@@ -1,5 +1,9 @@
 # Client Changelog
 
+## v1.10 lifecycle contract pin - 2026-07-21
+
+- Repinned the unchanged-version admin contract at checksum `a4d207f885b4b6250d8a8c2b83ff2badc2a50baf91d4cf2618022fe5f7f3a6ff`, including POS lifecycle/admin device-management types. Public client behavior did not change and it still has no POS authority.
+
 ## v1.10 pin and local API smoke - 2026-07-20
 
 - Pinned the v1.10.0 admin-generated artifact (`2e87ee580902c0253b79b3901e8c60a2b9bb312672ad4bab7c2f7a8035b569cd`) without importing admin source.
