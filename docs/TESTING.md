@@ -1,17 +1,15 @@
 # Client Testing
 
-## Final local browser verification - 2026-07-20
+## v1.12 consumer verification - 2026-07-25
 
-With the guarded local admin API selected only through ignored local configuration, `npm run test:routes` passed all listed routes, custom 404, 360-1440px reflow, 200% zoom, mobile/keyboard interactions and the disabled-payment no-hold boundary. `npm run test:a11y` passed axe on the core public, booking, lookup, contact and 404 views. Lint, typecheck, security boundary scan, 17 unit/component tests and production build also passed on v1.10.
+The client holds a byte-identical copy of the admin-owned v1.12.0 contract at `cf7e1aa1d733a66d5556879b3fffaa3e3a25a2d1ebbe253144d85750b6e18f9b`. Contract check, security scan, lint, TypeScript, all 17 unit/component tests, and the production Next.js build pass. With Next.js 16.2.11 and patched Sharp 0.35.3, the production-dependency audit reports zero vulnerabilities.
 
-Classification: public browse/disabled-payment client **PASS**; optional email/password account activation, Resend, Google OAuth and HitPay sandbox flow **CONDITIONAL PASS** pending owner systems; production deployment **NOT APPLICABLE** (not authorized).
+No public UI, customer authentication, Google route, database connection, provider secret, or POS authority was added. Admin security/export/email/update shapes remain server-owned contract information only.
+
+Current external gates remain the deployed API/domain, final venue/contact/legal content, production images, HitPay sandbox callback, and browser checks against a deployed environment. Deployment was not authorized or performed.
 
 Run from `axs_client`:
 
 ```powershell
 npm run check
 ```
-
-This verifies lint, TypeScript, pinned contract structure, security boundary tests, unit/component tests and production build. Verified local evidence covers the v1.10 pin, disabled-payment stop-before-mutation behavior, aggregate order client calls/result polling, privacy-safe analytics, and the non-indexed account/robots/sitemap/static-structured-data build boundary.
-
-Pending external evidence: a running disposable API/database environment, browser desktop/mobile screenshots against live API data, and a sandbox provider redirect/callback result. Do not start the client against a real environment file merely to obtain screenshots.

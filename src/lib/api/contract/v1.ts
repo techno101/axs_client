@@ -10,13 +10,13 @@
  * Run: npm run contract:generate
  */
 
-export const API_CONTRACT_VERSION = "1.10.0" as const;
-export const API_CONTRACT_SHA256 = "bc84b03bb50f1c83048c955794539e26167943dc9045ddb815d4c4425411f667" as const;
+export const API_CONTRACT_VERSION = "1.12.0" as const;
+export const API_CONTRACT_SHA256 = "cf7e1aa1d733a66d5556879b3fffaa3e3a25a2d1ebbe253144d85750b6e18f9b" as const;
 export const API_TIMEZONE = "Asia/Kuala_Lumpur" as const;
 
-export interface ApiMeta { requestId: string; serverTime: string; timezone: "Asia/Kuala_Lumpur"; contractVersion: "1.10.0"; nextPage?: number | null; pageSize?: number; total?: number; }
+export interface ApiMeta { requestId: string; serverTime: string; timezone: "Asia/Kuala_Lumpur"; contractVersion: "1.12.0"; nextPage?: number | null; pageSize?: number; total?: number; }
 
-export interface ApiError { code: "AUTHENTICATION_REQUIRED" | "PERMISSION_DENIED" | "CSRF_INVALID" | "RATE_LIMITED" | "VALIDATION_ERROR" | "NOT_FOUND" | "SLOT_UNAVAILABLE" | "HOLD_EXPIRED" | "IDEMPOTENCY_CONFLICT" | "BOOKING_STATE_INVALID" | "PAYMENT_PENDING" | "PAYMENT_ALREADY_CONFIRMED" | "STALE_WRITE" | "SERVICE_UNAVAILABLE" | "INTERNAL_ERROR"; message: string; fieldErrors?: { [key: string]: string; }; retryAfterSeconds?: number; }
+export interface ApiError { code: "AUTHENTICATION_REQUIRED" | "PERMISSION_DENIED" | "CSRF_INVALID" | "RATE_LIMITED" | "VALIDATION_ERROR" | "NOT_FOUND" | "SLOT_UNAVAILABLE" | "HOLD_EXPIRED" | "IDEMPOTENCY_CONFLICT" | "BOOKING_STATE_INVALID" | "PAYMENT_PENDING" | "PAYMENT_ALREADY_CONFIRMED" | "STALE_WRITE" | "SERVICE_UNAVAILABLE" | "INTERNAL_ERROR" | "POS_UPDATE_REQUIRED"; message: string; fieldErrors?: { [key: string]: string; }; retryAfterSeconds?: number; details?: { [key: string]: unknown; }; }
 
 export interface ErrorEnvelope { data: null; meta: ApiMeta; error: ApiError; }
 
@@ -32,7 +32,7 @@ export interface ScheduledSlot { fieldId: string; code: string; label: string; s
 
 export type PublicAvailabilityState = "available" | "held" | "booked" | "blocked" | "closed" | "past";
 
-export interface AvailabilityEntry { fieldId: string; blockCode: string; label: string; startsAt: string; endsAt: string; amountMinor: number; currency: "MYR"; state: PublicAvailabilityState; publicMessage?: string; }
+export interface AvailabilityEntry { fieldId: string; fieldName: string; fieldImageUrl?: string; blockCode: string; label: string; startsAt: string; endsAt: string; amountMinor: number; currency: "MYR"; state: PublicAvailabilityState; publicMessage?: string; }
 
 export interface OnlinePaymentCapability { enabled: boolean; publicMessage?: string; }
 
@@ -98,6 +98,10 @@ export interface AdminProfile { id: string; username: string; displayName: strin
 
 export interface AdminLoginRequest { username: string; password: string; }
 
+export interface StaffAccessRequest { id: string; email: string; displayName: string; status: "pending" | "approved" | "rejected"; requestedAt: string; reviewedAt: string | null; role: "admin" | "operations" | "editor_developer" | null; }
+
+export interface StaffAccessDecisionRequest { decision: "approve" | "reject"; role?: "admin" | "operations" | "editor_developer"; }
+
 export interface AdminSession { actor: AdminProfile; expiresAt: string; }
 
 export interface CsrfToken { token: string; }
@@ -110,15 +114,17 @@ export interface CreateCounterBookingRequest { fieldId: string; blockCode: strin
 
 export interface ReasonRequest { reason: string; }
 
-export interface PosPairRequest { code: string; name: string; }
+export interface PosDeviceMetadata { computerName?: string; osVersion?: string; architecture?: string; ipAddresses: Array<string>; macAddresses: Array<string>; }
 
-export interface PosDevice { id: string; name: string; status: "pending" | "approved" | "paused" | "revoked"; platform: "windows"; pairedAt: string; approvedAt?: string | null; lastSeenAt?: string | null; }
+export interface PosPairRequest { code: string; name: string; deviceMetadata: PosDeviceMetadata; }
+
+export interface PosDevice { id: string; name: string; status: "pending" | "approved" | "paused" | "revoked"; platform: "windows"; pairedAt: string; approvedAt?: string | null; lastSeenAt?: string | null; deviceDetails: PosDeviceMetadata; appVersion?: string | null; hardwareSummary?: PosHardwareSummary; }
 
 export interface PosPairingCode { code: string; expiresAt: string; }
 
 export interface PosDeviceStatusUpdateRequest { status: "approved" | "paused" | "revoked"; }
 
-export interface PosDeviceStatus { deviceId: string; name: string; status: "pending" | "approved" | "paused" | "revoked"; canLogin: boolean; serverTime: string; }
+export interface PosDeviceStatus { deviceId: string; name: string; status: "pending" | "approved" | "paused" | "revoked"; canLogin: boolean; serverTime: string; appVersion: string | null; updatePolicy: PosUpdatePolicy; }
 
 export interface SafeTechnicalDetails { errorName?: string; safeMessage?: string; causeCode?: string; operation?: string; retryable?: boolean; retryAfterSeconds?: number; state?: string; attempt?: number; provider?: string; environment?: string; }
 
@@ -153,6 +159,10 @@ export interface PosSaleLine { catalogItemId: string; code: string; name: string
 export interface PosSaleRequest { lines: Array<PosCartLineRequest>; customer?: CounterCustomerDetails; paymentMethod: "cash" | "manual_duitnow" | "manual_bank_transfer"; amountReceivedMinor?: number; manualReference?: string; evidenceNote?: string; }
 
 export interface PosSale { id: string; receiptReference: string; counterSessionId: string; paymentMethod: "cash" | "manual_duitnow" | "manual_bank_transfer"; amountMinor: number; changeMinor?: number; lines: Array<PosSaleLine>; }
+
+export interface PosReceiptEmailRequest { email: string; }
+
+export interface PosReceiptEmailQueued { status: "queued"; recipient: string; notificationId: string; saleId: string; receiptReference: string; }
 
 export interface PosVoidSaleRequest { reason: string; }
 
@@ -202,9 +212,9 @@ export interface AttendanceRequest { status: "checked_in" | "no_show" | "check_i
 
 export interface ReceiptPrintRequest { reason?: string; }
 
-export interface UpdateFieldPresentationRequest { name: string; description: string; surface: string; facilityFacts: Array<FacilityFact>; features: Array<string>; imageUrl: string; imageAlt: string; version: number; }
+export interface UpdateFieldPresentationRequest { name: string; description: string; surface: string; facilityFacts: Array<FacilityFact>; features: Array<string>; imageUrl?: string; imageAssetId?: string; imageAlt: string; version: number; }
 
-export interface CreateFieldRequest { slug: string; name: string; description: string; surface: string; facilityFacts: Array<FacilityFact>; features: Array<string>; imageUrl: string; imageAlt: string; }
+export interface CreateFieldRequest { slug: string; name: string; description: string; surface: string; facilityFacts: Array<FacilityFact>; features: Array<string>; imageUrl?: string; imageAssetId?: string; imageAlt: string; }
 
 export interface ArchiveRequest { reason: string; version: number; }
 
@@ -242,13 +252,15 @@ export interface SaveFaqRequest { question: string; answer: string; category: st
 
 export interface RegisterMediaRequest { objectKey: string; publicUrl: string; contentType: "image/jpeg" | "image/png" | "image/webp" | "image/avif"; byteSize: number; sha256: string; altText: string; }
 
+export interface MediaAsset { id: string; objectKey?: string; publicUrl: string; contentType: "image/jpeg" | "image/png" | "image/webp" | "image/avif"; byteSize: number; sha256: string; altText: string; status: "approved"; }
+
 export interface AdminBooking { id: string; reference: string; fieldId: string; blockCode: string; bookingDate: string; amountMinor: number; currency: string; status: BookingStatus; paymentStatus: PaymentStatus; attendanceStatus: "not_checked_in" | "checked_in" | "no_show" | "check_in_reversed"; }
 
 export interface CounterSlot { fieldId: string; blockCode: string; bookingDate: string; state: "available" | "held_online" | "held_counter" | "confirmed" | "blocked"; booking?: AdminBooking; }
 
 export interface AdminDashboard { businessDate: string; bookingCount: number; attentionCount: number; }
 
-export interface Health { status: "ok"; service: string; contractVersion: "1.10.0"; }
+export interface Health { status: "ok"; service: string; contractVersion: "1.12.0"; }
 
 export interface Readiness { status: "ready" | "not_ready"; database: "connected" | "not_configured" | "unavailable"; authoritative: boolean; }
 
@@ -330,6 +342,12 @@ export interface ConfigurationBundleImportResponse { data: ConfigurationBundleIm
 
 export interface PosSaleResponse { data: PosSale; meta: ApiMeta; error: null; }
 
+export interface PosReceiptEmailResponse { data: PosReceiptEmailQueued; meta: ApiMeta; error: null; }
+
+export interface StaffAccessRequestListResponse { data: Array<StaffAccessRequest>; meta: ApiMeta; error: null; }
+
+export interface MediaAssetResponse { data: MediaAsset; meta: ApiMeta; error: null; }
+
 export interface PosSaleCorrectionResponse { data: PosSaleCorrection; meta: ApiMeta; error: null; }
 
 export interface PosCloseResponse { data: PosCloseReport; meta: ApiMeta; error: null; }
@@ -344,10 +362,50 @@ export interface CounterResponse { data: Array<CounterSlot>; meta: ApiMeta; erro
 
 export interface AdminBookingListResponse { data: Array<AdminBooking>; meta: ApiMeta; error: null; }
 
-export interface OperationData { operationId?: string; }
+export interface OperationData { operationId?: string; [key: string]: unknown; }
 
 export interface OperationResponse { data: OperationData; meta: ApiMeta; error: null; }
 
 export interface HealthResponse { data: Health; meta: ApiMeta; error: null; }
 
 export interface ReadyResponse { data: Readiness; meta: ApiMeta; error: null; }
+
+export interface PosUpdatePolicy { latestVersion: string; minimumSupportedVersion: string; mode: "optional" | "recommended" | "mandatory"; enforcedAt: string | null; releaseNotes: string; enabled: boolean; updateRequired: boolean; }
+
+export interface PosHardwareCapability { kind: "receipt_printer" | "cash_drawer" | "customer_display"; state: "ready" | "not_configured" | "manual_required" | "unavailable"; profile?: "windows_driver" | "escpos" | "manual" | "serial_text" | "none"; name?: string; }
+
+export interface PosHardwareSummary { receiptPrinter?: PosHardwareCapability; cashDrawer?: PosHardwareCapability; customerDisplay?: PosHardwareCapability; }
+
+export interface NotificationDeliveryState { notificationId: string; state: "queued" | "processing" | "sent" | "failed"; attemptCount: number; nextAttemptAt?: string | null; providerMessageId?: string | null; sentAt?: string | null; failedAt?: string | null; failureCode?: string | null; }
+
+export interface SecurityEvent { id: string; event_type: string; severity: "info" | "warning" | "critical"; ip_address?: string | null; identifier?: string | null; occurred_at: string; [key: string]: unknown; }
+
+export interface AdminIpBlock { id: string; ip_address: string; state: "temporary" | "permanent" | "released" | "expired"; failure_count: number; blocked_until?: string | null; created_at: string; [key: string]: unknown; }
+
+export interface IpBlockDecisionRequest { action: "release" | "make_permanent"; reason: string; }
+
+export interface DataExportRequest { categories: Array<"bookings" | "sales" | "payments" | "receipts" | "notifications" | "staff_access" | "audit_logs" | "security_logs" | "system_logs">; from?: string; to?: string; purpose: string; }
+
+export interface DataExport { id: string; sha256: string; byte_size: number; created_at: string; [key: string]: unknown; }
+
+export interface LogPurgeRequest { categories: Array<"audit_logs" | "security_logs" | "system_logs">; reason: string; confirmation: "PURGE ELIGIBLE LOGS"; }
+
+export interface LogPurgeLedgerEntry { id: string; cutoff_at: string; categories: Array<string>; row_counts: { [key: string]: number; }; export_sha256: string; created_at: string; [key: string]: unknown; }
+
+export interface SecurityEventListResponse { data: Array<SecurityEvent>; meta: ApiMeta; error: null; }
+
+export interface AdminIpBlockListResponse { data: Array<AdminIpBlock>; meta: ApiMeta; error: null; }
+
+export interface DataExportResponse { data: DataExport; meta: ApiMeta; error: null; }
+
+export interface DataExportListResponse { data: Array<DataExport>; meta: ApiMeta; error: null; }
+
+export interface LogPurgeResponse { data: LogPurgeLedgerEntry; meta: ApiMeta; error: null; }
+
+export interface LogPurgeListResponse { data: Array<LogPurgeLedgerEntry>; meta: ApiMeta; error: null; }
+
+export interface PosUpdatePolicyAdmin { latestVersion: string; minimumSupportedVersion: string; mode: "optional" | "recommended" | "mandatory"; enforcedAt: string | null; releaseNotes: string; enabled: boolean; updateRequired?: boolean; version: number; updatedAt: string; }
+
+export interface PosUpdatePolicySaveRequest { latestVersion: string; minimumSupportedVersion: string; mode: "optional" | "recommended" | "mandatory"; enforcedAt?: string | null; releaseNotes: string; enabled: boolean; version: number; }
+
+export interface PosUpdatePolicyAdminResponse { data: PosUpdatePolicyAdmin; meta: ApiMeta; error: null; }

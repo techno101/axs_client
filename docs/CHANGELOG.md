@@ -1,5 +1,16 @@
 # Client Changelog
 
+## v1.12 contract pin - 2026-07-25
+
+- Repinned the admin-generated v1.12.0 contract at `cf7e1aa1d733a66d5556879b3fffaa3e3a25a2d1ebbe253144d85750b6e18f9b`.
+- No public UI, customer authentication, booking logic, database, provider, or POS authority changed.
+- Updated Next.js to 16.2.11, pinned patched Sharp 0.35.3, and retained deterministic npm peer resolution; the production-dependency audit reports zero vulnerabilities.
+
+## v1.11 contract pin - 2026-07-24
+
+- Repinned the admin-generated v1.11.0 contract at `181432b9a86d4fe2ba5d55f75c3779737f93b84726b4de9007f250a367b55a43`.
+- Public client behavior and authority are unchanged; POS enrollment, staff Google access, sale email requests, and media administration remain admin/POS concerns.
+
 ## v1.10 safe operational report proxy - 2026-07-21
 
 - Repinned the admin contract at `bc84b03bb50f1c83048c955794539e26167943dc9045ddb815d4c4425411f667`.

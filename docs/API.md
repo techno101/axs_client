@@ -1,6 +1,6 @@
 # Client API Contract View
 
-`axs_admin` owns v1.10.0 OpenAPI. The copied static contract artifact is `src/lib/api/contract/v1.ts`, currently checksum `bc84b03bb50f1c83048c955794539e26167943dc9045ddb815d4c4425411f667`. `npm run contract:check` verifies the local representation; admin `contract:drift` verifies this exact pin alongside POS. The client never imports admin source.
+`axs_admin` owns v1.12.0 OpenAPI. The copied static contract artifact is `src/lib/api/contract/v1.ts`, checksum `cf7e1aa1d733a66d5556879b3fffaa3e3a25a2d1ebbe253144d85750b6e18f9b`. `npm run contract:check` verifies the local representation; admin `contract:drift` verifies this exact pin alongside POS. The client never imports admin source. Security, exports, protected purge, notification delivery, POS hardware/version, and update-policy surfaces grant the public client no new authority.
 
 The browser may report bounded safe client failures to same-origin `/api/operational-events`; the client server alone rate-limits/redacts then authenticates to the admin incident endpoint. This does not expose an admin token, create a browser webhook, or confer booking/payment authority.
 
