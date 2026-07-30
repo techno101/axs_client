@@ -1,5 +1,7 @@
 # Client Memory
 
+On 2026-07-30, Checkpoint 4 on `v9` updated the pinned public payment capability with the safe effective sandbox/production mode and renders a persistent sandbox no-real-payment banner. Disabled checkout still stops before any hold/order/payment mutation. No provider secret, provider call, Vercel change, or deployment was made.
+
 On 2026-07-30, Checkpoint 3 on `v8` added optional guest email, safe active-account prefill, reference-only masked finder/PDF download, owner-only account booking history, and result-page Copy/Download plus missing-email protection. It keeps Admin authoritative and Client browser code same-origin only. Legacy guest records are never inferred into account history. Controlled local BFF route/axe/visual, unit, contract, security, lint, typecheck and build checks passed; no Vercel deployment, live email, OAuth or provider call occurred.
 
 On 2026-07-30, Checkpoint 2 on `v7` added the Customer-only same-origin BFF and account UI. The BFF sets Client-origin HttpOnly session cookies, strips raw auth/email/handoff values from JSON, applies mutation origin/CSRF checks and excludes all customer/auth routes from analytics. Guest flows remain intact; Google and email are unavailable unless separate Admin configuration is present. No provider call or deployment occurred.

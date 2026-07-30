@@ -10,7 +10,7 @@
  */
 
 export const API_CONTRACT_VERSION = "1.14.0" as const;
-export const API_CONTRACT_SHA256 = "7c65bf9c056968b9d9bc343469ea80e5bc761e14a4a133752651a9a086489ae5" as const;
+export const API_CONTRACT_SHA256 = "9d093402d67a1b32d445334c94cc1ff9b31f1970f305d3a2af17653a1e60811b" as const;
 export const API_TIMEZONE = "Asia/Kuala_Lumpur" as const;
 
 export interface ApiMeta { requestId: string; serverTime: string; timezone: "Asia/Kuala_Lumpur"; contractVersion: "1.14.0"; nextPage?: number | null; pageSize?: number; total?: number; }
@@ -55,7 +55,7 @@ export type PublicAvailabilityState = "available" | "held" | "booked" | "blocked
 
 export interface AvailabilityEntry { fieldId: string; fieldName: string; fieldImageUrl?: string; blockCode: string; label: string; startsAt: string; endsAt: string; amountMinor: number; currency: "MYR"; state: PublicAvailabilityState; publicMessage?: string; }
 
-export interface OnlinePaymentCapability { enabled: boolean; publicMessage?: string; }
+export interface OnlinePaymentCapability { enabled: boolean; publicMessage?: string; environment?: "sandbox" | "production"; }
 
 export interface PublicConfig { timezone: "Asia/Kuala_Lumpur"; bookingWindowDays: 90; cutoffMinutes: 60; onlineHoldMinutes: 10; currency: "MYR"; slots: Array<ScheduledSlot>; onlinePayment: OnlinePaymentCapability; }
 

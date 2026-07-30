@@ -175,6 +175,7 @@ export function BookingWizard({ fields, blocks, availability, onlinePayment, bus
 
   return (
     <div className="booking-wizard">
+      {onlinePayment.enabled && onlinePayment.environment === "sandbox" ? <div className="booking-live-note booking-live-note--calm" role="status"><AlertIcon /><p><strong>Sandbox checkout — no real payment will be taken.</strong> This non-production booking flow is only for authorised testing.</p></div> : null}
       <div className="booking-progress" aria-label="Booking steps">
         {steps.map((label, index) => (
           <div className={index === step ? "is-current" : index < step ? "is-complete" : ""} key={label}>

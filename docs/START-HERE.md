@@ -1,6 +1,6 @@
 # Start Here: ArmourXSports Client
 
-Checkpoint 2 on `v7` adds same-origin customer-account routes and responsive account pages. The Client remains a public/BFF consumer: it has no database, provider secret or authoritative customer session store. Guest booking remains available and existing guest bookings are not linked.
+Checkpoint 4 on `v9` consumes only the effective Admin checkout capability and displays an unmistakable sandbox/non-production warning when enabled. The Client remains a public/BFF consumer: it has no database, provider secret, webhook, or authoritative customer-session store. Guest booking remains available and existing guest bookings are not linked.
 
 `axs_client` owns only the Vercel public site, same-origin `/api/axs` boundary, and API consumption. Current `v6` consumes the pinned v1.12.0 contract (`cf7e1aa1d733a66d5556879b3fffaa3e3a25a2d1ebbe253144d85750b6e18f9b`). Browser code never receives or calls the Operations origin: public reads, booking mutations, status and CMS requests use the allowlisted BFF, which authenticates sensitive hops with a server-only credential. It has no database, provider secret, callback, admin-auth, customer-auth implementation, or POS authority.
 
