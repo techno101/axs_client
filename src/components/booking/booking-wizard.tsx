@@ -13,6 +13,7 @@ import type {
 import { formatMoney } from "@/lib/format";
 import { createHttpPublicClient, PublicApiError } from "@/lib/api/http-client";
 import { reportOperationalEvent } from "@/lib/operational-reporting";
+import { customerApi, type CustomerSessionView } from "@/lib/customer-api";
 type BasketItem = {
   fieldId: string;
   blockCode: string;
@@ -82,6 +83,7 @@ export function BookingWizard({ fields, blocks, availability, onlinePayment, bus
   const [basket, setBasket] = useState<BasketItem[]>([]);
   const [requestState, setRequestState] = useState<"idle" | "holding" | "booking">("idle");
   const [error, setError] = useState<string | null>(null);
+  const [accountPrefill, setAccountPrefill] = useState(false);
 
   const field = fields.find((item) => item.id === fieldId) ?? fields[0];
   const fieldBlocks = blocks.filter((item) => item.fieldId === fieldId);
@@ -112,6 +114,18 @@ export function BookingWizard({ fields, blocks, availability, onlinePayment, bus
     const interval = window.setInterval(refresh, 15_000);
     return () => { active = false; window.clearInterval(interval); };
   }, [client, date]);
+
+  useEffect(() => {
+    let active = true;
+    void customerApi<CustomerSessionView>("session")
+      .then(({ account }) => {
+        if (!active || account.status !== "active") return;
+        setCustomer((current) => ({ ...current, name: current.name || account.displayName, phone: current.phone || account.phone, email: current.email || account.email }));
+        setAccountPrefill(true);
+      })
+      .catch(() => undefined);
+    return () => { active = false; };
+  }, []);
 
   const goTo = (nextStep: number) => {
     setStep(Math.max(0, Math.min(steps.length - 1, nextStep)));
@@ -147,6 +161,7 @@ export function BookingWizard({ fields, blocks, availability, onlinePayment, bus
       const order = await client.createOrder({ holdToken: holdGroup.token, customer: { name: customer.name, phone: customer.phone, email: customer.email, ...(customer.team ? { teamName: customer.team } : {}) } }, crypto.randomUUID());
       if (!order.accessToken) throw new Error("The order response did not include its one-time status handle.");
       window.sessionStorage.setItem(`axs:order:${order.reference}`, order.accessToken);
+      window.sessionStorage.setItem(`axs:order-email:${order.reference}`, customer.email ? "present" : "missing");
       const attempt = await client.createOrderPaymentAttempt(order.reference, { method: "online_provider", returnPath: `/booking/result?reference=${encodeURIComponent(order.reference)}` }, crypto.randomUUID());
       if (!attempt.redirectUrl) throw new Error("The payment provider did not return a redirect URL.");
       window.location.assign(attempt.redirectUrl);
@@ -276,15 +291,15 @@ export function BookingWizard({ fields, blocks, availability, onlinePayment, bus
                   <input id="customer-phone" required inputMode="tel" autoComplete="tel" placeholder="e.g. 012 345 6789" value={customer.phone} onChange={(event) => setCustomer({ ...customer, phone: event.target.value })} />
                 </div>
                 <div className="field-control">
-                  <label htmlFor="customer-email">Email address</label>
-                  <input id="customer-email" required type="email" autoComplete="email" value={customer.email} onChange={(event) => setCustomer({ ...customer, email: event.target.value })} />
+                  <label htmlFor="customer-email">Email address <span>(optional for guests)</span></label>
+                  <input id="customer-email" type="email" autoComplete="email" value={customer.email} onChange={(event) => setCustomer({ ...customer, email: event.target.value })} />
                 </div>
                 <div className="field-control">
                   <label htmlFor="customer-team">Team name <span>(optional)</span></label>
                   <input id="customer-team" autoComplete="organization" value={customer.team} onChange={(event) => setCustomer({ ...customer, team: event.target.value })} />
                 </div>
               </div>
-              <p className="privacy-inline">Details are submitted only to the ArmourXSports booking API to create this booking.</p>
+              <p className="privacy-inline">Details are submitted only to the ArmourXSports booking API to create this booking.{accountPrefill ? " Your verified account contact is securely prefilled and remains server-controlled." : ""}</p>
               <div className="wizard-buttons">
                 <button className="wizard-back" type="button" onClick={() => goTo(2)}>Back</button>
                 <button className="wizard-next" type="submit">Review booking <ArrowRightIcon /></button>
@@ -296,13 +311,14 @@ export function BookingWizard({ fields, blocks, availability, onlinePayment, bus
             <div className="review-step">
               <dl>
                 {basket.map((item) => <div key={`${item.fieldId}-${item.blockCode}-${item.bookingDate}`}><dt>{item.bookingDate}</dt><dd>{item.fieldName} · {item.label} · {item.startsAt}–{item.endsAt}</dd></div>)}
-                <div><dt>Booking contact</dt><dd>{customer.name}<small>{customer.email}</small></dd></div>
+                <div><dt>Booking contact</dt><dd>{customer.name}<small>{customer.email || "No guest email supplied"}</small></dd></div>
                 <div className="review-step__total"><dt>Estimated total</dt><dd>{formatMoney(basket.reduce((sum, item) => sum + item.amountMinor, 0))}</dd></div>
               </dl>
               <div className="booking-live-note">
                 <AlertIcon />
                 <p><strong>Final availability is checked together.</strong> The API creates one short-lived hold for the complete basket only when you start payment. If any session has changed, no session is held. Payment is confirmed only by the verified backend callback.</p>
               </div>
+              {!customer.email ? <div className="booking-live-note booking-live-note--calm" role="alert"><AlertIcon /><p><strong>Save every booking reference and download after payment.</strong> No email address was provided, so there will be no email copy to recover later.</p></div> : null}
               <div className="wizard-buttons">
                 <button className="wizard-back" type="button" onClick={() => goTo(3)}>Edit details</button>
                 <button className="wizard-back" type="button" onClick={() => goTo(0)}>Add another session</button>
@@ -355,7 +371,7 @@ function getStepIntro(step: number) {
     "Start with a date inside the 90-day booking window.",
     "Choose a field. Its current slots, times and prices come from the booking API.",
     "Unavailable states stay visible, clear and non-interactive.",
-    "The live service will require name, phone and email for guest booking.",
+    "Name and phone are required. Guests may omit email, but must save their booking references after payment.",
     "Check the details before the server creates a payment attempt.",
   ][step];
 }

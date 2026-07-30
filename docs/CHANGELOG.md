@@ -1,5 +1,11 @@
 # Client Changelog
 
+## Checkpoint 3 booking ownership, history, lookup and download - 2026-07-30
+
+- Added account-safe contact prefill, optional guest email, reference-only finder, masked grant download and owner-only booking-history/download UI.
+- Added result-page references with Copy/Download actions and an explicit no-email save/download warning, including narrow-screen layout support.
+- Repinned the additive v1.14 Admin contract to `7c65bf9c056968b9d9bc343469ea80e5bc761e14a4a133752651a9a086489ae5`; no deployment, provider, Admin authority or POS behavior changed.
+
 ## Checkpoint 2 customer identity and verification - 2026-07-30
 
 - Added same-origin Customer BFF handlers, Client-origin secure cookie management, Google callback/handoff boundary and strict customer-route allowlist.

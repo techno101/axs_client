@@ -4,7 +4,9 @@ import { loadClientProxyConfig, type ClientProxyConfig } from "@/server/axs-prox
 const MAX_BODY_BYTES = 64 * 1024;
 const UPSTREAM_TIMEOUT_MS = 8_000;
 const REQUEST_ID = /^[A-Za-z0-9._:-]{8,120}$/;
-const REFERENCE = /^(?:AXS|AXO)-[A-Z0-9]{6,16}$/;
+const LEGACY_BOOKING_REFERENCE = /^AXS-[A-Z0-9]{6,12}$/;
+const MODERN_BOOKING_REFERENCE = /^AXS-[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{4}(?:-[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{4}){3}$/;
+const ORDER_REFERENCE = /^AXO-[A-Z0-9]{6,16}$/;
 const TOKEN = /^[A-Za-z0-9_-]{32,256}$/;
 const SLUG = /^[a-z0-9][a-z0-9-]{0,119}$/;
 const MEDIA_ID = /^[0-9a-f]{8}-[0-9a-f-]{27,45}$/i;
@@ -14,6 +16,9 @@ type RouteRule = {
   privateResponse?: boolean;
   idempotency?: boolean;
   bookingAccess?: boolean;
+  lookupGrant?: boolean;
+  customerSession?: boolean;
+  binary?: boolean;
   jsonBody?: boolean;
 };
 
@@ -26,16 +31,19 @@ function ruleFor(segments: string[]): RouteRule | null {
   if (rest.length === 2 && rest[0] === "pages" && SLUG.test(rest[1])) return { methods: ["GET"] };
   if (rest.length === 2 && rest[0] === "media" && MEDIA_ID.test(rest[1])) return { methods: ["GET"] };
   if (rest.length === 1 && ["holds", "hold-groups", "bookings", "orders"].includes(rest[0])) {
-    return { methods: ["POST"], privateResponse: true, idempotency: true, jsonBody: true };
+    return { methods: ["POST"], privateResponse: true, idempotency: true, jsonBody: true, customerSession: ["bookings", "orders"].includes(rest[0]) };
   }
   if (rest.length === 2 && rest[0] === "bookings" && rest[1] === "find") {
     return { methods: ["POST"], privateResponse: true, jsonBody: true };
   }
-  if (rest.length === 3 && ["bookings", "orders"].includes(rest[0]) && REFERENCE.test(rest[1]) && rest[2] === "status") {
+  if (rest.length === 3 && ((rest[0] === "bookings" && (LEGACY_BOOKING_REFERENCE.test(rest[1]) || MODERN_BOOKING_REFERENCE.test(rest[1]))) || (rest[0] === "orders" && ORDER_REFERENCE.test(rest[1]))) && rest[2] === "status") {
     return { methods: ["GET"], privateResponse: true, bookingAccess: true };
   }
-  if (rest.length === 3 && ["bookings", "orders"].includes(rest[0]) && REFERENCE.test(rest[1]) && rest[2] === "payment-attempts") {
+  if (rest.length === 3 && ((rest[0] === "bookings" && (LEGACY_BOOKING_REFERENCE.test(rest[1]) || MODERN_BOOKING_REFERENCE.test(rest[1]))) || (rest[0] === "orders" && ORDER_REFERENCE.test(rest[1]))) && rest[2] === "payment-attempts") {
     return { methods: ["POST"], privateResponse: true, idempotency: true, jsonBody: true };
+  }
+  if (rest.length === 3 && rest[0] === "bookings" && (LEGACY_BOOKING_REFERENCE.test(rest[1]) || MODERN_BOOKING_REFERENCE.test(rest[1])) && rest[2] === "download") {
+    return { methods: ["GET"], privateResponse: true, lookupGrant: true, binary: true };
   }
   if (rest.length === 2 && ["holds", "hold-groups"].includes(rest[0]) && TOKEN.test(rest[1])) {
     return { methods: ["DELETE"], privateResponse: true };
@@ -83,6 +91,15 @@ function safeQuery(segments: string[], search: string): boolean {
   if (segments.join("/") !== "v1/public/availability") return false;
   const params = new URLSearchParams(search);
   return [...params.keys()].every((key) => key === "date") && /^\d{4}-\d{2}-\d{2}$/.test(params.get("date") ?? "");
+}
+
+function customerSessionCookie(request: Request): string | null {
+  const encoded = request.headers.get("cookie")?.match(/(?:^|;\s*)axs_customer_session=([^;]+)/)?.[1];
+  if (!encoded) return null;
+  try {
+    const value = decodeURIComponent(encoded);
+    return /^[A-Za-z0-9_-]{40,256}$/.test(value) ? value : null;
+  } catch { return null; }
 }
 
 async function bodyFor(request: Request, rule: RouteRule, requestId: string): Promise<string | Response | undefined> {
@@ -160,6 +177,14 @@ export async function handleAxsProxy(
     const value = request.headers.get("x-booking-access-token")?.trim();
     if (value && value.length <= 256) headers.set("X-Booking-Access-Token", value);
   }
+  if (rule.lookupGrant) {
+    const value = request.headers.get("x-booking-lookup-grant")?.trim();
+    if (value && /^[A-Za-z0-9_-]{40,256}$/.test(value)) headers.set("X-Booking-Lookup-Grant", value);
+  }
+  if (rule.customerSession) {
+    const session = customerSessionCookie(request);
+    if (session) headers.set("X-AXS-Customer-Session", session);
+  }
   if (rule.privateResponse || request.method !== "GET") {
     headers.set("X-AXS-Client-Proxy-Secret", config.proxySecret);
     headers.set("X-AXS-Client-Context", clientContext(request, config.proxySecret));
@@ -181,6 +206,17 @@ export async function handleAxsProxy(
   }
 
   const contentType = response.headers.get("content-type") ?? "";
+  if (rule.binary && response.ok) {
+    const outputHeaders = new Headers({
+      "Content-Type": contentType || "application/octet-stream",
+      "Cache-Control": "private, no-store",
+      "X-Request-Id": requestId,
+      "X-Content-Type-Options": "nosniff",
+    });
+    const disposition = response.headers.get("content-disposition");
+    if (disposition) outputHeaders.set("Content-Disposition", disposition);
+    return new Response(response.body, { status: response.status, headers: outputHeaders });
+  }
   if (segments[2] === "media" && response.ok) {
     const outputHeaders = new Headers({ "Content-Type": contentType || "application/octet-stream", "X-Request-Id": requestId });
     outputHeaders.set("Cache-Control", response.headers.get("cache-control") ?? "public, max-age=300");

@@ -4,11 +4,11 @@ import { useMemo, useState, type FormEvent } from "react";
 import { SearchIcon } from "@/components/ui/icons";
 import { PaymentPill } from "@/components/ui/status-pill";
 import { createHttpPublicClient } from "@/lib/api/http-client";
-import type { PublicBookingStatus } from "@/lib/api/types";
+import type { GuestBookingLookup } from "@/lib/api/types";
 
 export function FindBookingForm() {
   const client = useMemo(() => createHttpPublicClient(), []);
-  const [result, setResult] = useState<PublicBookingStatus | null>(null);
+  const [result, setResult] = useState<GuestBookingLookup | null>(null);
   const [state, setState] = useState<"idle" | "loading" | "error">("idle");
   const [message, setMessage] = useState("");
 
@@ -18,7 +18,7 @@ export function FindBookingForm() {
     setMessage("");
     const form = new FormData(event.currentTarget);
     try {
-      setResult(await client.findBooking(String(form.get("reference") ?? "").trim().toUpperCase(), String(form.get("phone") ?? "")));
+      setResult(await client.findBooking(String(form.get("reference") ?? "").trim().toUpperCase()));
       setState("idle");
     } catch (error) {
       setResult(null);
@@ -27,19 +27,35 @@ export function FindBookingForm() {
     }
   };
 
-  const paymentState = result?.bookingStatus === "confirmed" && result.paymentStatus === "paid" ? "confirmed" : result?.bookingStatus === "expired" || result?.paymentStatus === "expired" ? "expired" : result?.bookingStatus === "payment_failed" || result?.paymentStatus === "failed" ? "failed" : "pending";
+  async function download() {
+    if (!result) return;
+    try {
+      const blob = await client.downloadGuestBooking(result.booking.reference, result.lookupGrant);
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = `ArmourXSports-booking-${result.booking.reference}.pdf`;
+      anchor.click();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "The private download is no longer available. Run the lookup again.");
+      setState("error");
+    }
+  }
+
+  const booking = result?.booking;
+  const paymentState = booking?.bookingStatus === "confirmed" && booking.paymentStatus === "paid" ? "confirmed" : booking?.bookingStatus === "expired" || booking?.paymentStatus === "expired" ? "expired" : booking?.bookingStatus === "payment_failed" || booking?.paymentStatus === "failed" ? "failed" : "pending";
 
   return (
     <div className="booking-finder">
       <form onSubmit={submit}>
-        <div className="field-control"><label htmlFor="booking-reference">Booking reference</label><input id="booking-reference" name="reference" required pattern="AXS-[A-Z0-9]{6,12}" placeholder="e.g. AXS-7K4M2P" autoComplete="off" /></div>
-        <div className="field-control"><label htmlFor="booking-phone">Mobile number used for booking</label><input id="booking-phone" name="phone" required inputMode="tel" autoComplete="tel" placeholder="e.g. 012 345 6789" /></div>
+        <div className="field-control"><label htmlFor="booking-reference">Booking reference</label><input id="booking-reference" name="reference" required pattern="AXS-(?:[A-Z0-9]{6,12}|[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{4}(?:-[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{4}){3})" placeholder="e.g. AXS-7K4M-2P8R-5T9W-3Y6Z" autoComplete="off" /></div>
         <button className="finder-submit" type="submit" disabled={state === "loading"}><SearchIcon />{state === "loading" ? "Checking…" : "Find booking"}</button>
-        <p>Both details are required. Repeated attempts are rate limited.</p>
+        <p>Only your booking reference is needed. Results are privacy-limited and repeated attempts are rate limited.</p>
         {state === "error" ? <p className="booking-error" role="alert">{message}</p> : null}
       </form>
       <div className="finder-result" aria-live="polite">
-        {result ? <><div><span>Verified result</span><PaymentPill state={paymentState} /></div><h2>{result.reference}</h2><dl><div><dt>Field</dt><dd>{result.fieldId === "FIELD_01" ? "Field 1" : "Field 2"}</dd></div><div><dt>Date</dt><dd>{result.bookingDate}</dd></div><div><dt>Block</dt><dd>{result.blockCode === "MORNING" ? "09:00–15:00" : "15:00–21:00"}</dd></div></dl><p>This privacy-limited result contains no payment identifiers or customer data.</p></> : <div className="finder-empty"><SearchIcon /><strong>Your booking will appear here</strong><span>Enter both details to run a secure lookup.</span></div>}
+        {booking ? <><div><span>Private result</span><PaymentPill state={paymentState} /></div><h2>{booking.reference}</h2><dl><div><dt>Field</dt><dd>{booking.fieldName}</dd></div><div><dt>Date</dt><dd>{booking.bookingDate}</dd></div><div><dt>Block</dt><dd>{booking.blockLabel} · {booking.startsAt}–{booking.endsAt}</dd></div><div><dt>Booking name</dt><dd>{booking.customerName}</dd></div><div><dt>Phone</dt><dd>{booking.customerPhone}</dd></div></dl><button className="customer-secondary" type="button" onClick={download}>Download masked PDF</button><p>This privacy-limited result contains no email, internal identifiers, attendance or provider data.</p></> : <div className="finder-empty"><SearchIcon /><strong>Your booking will appear here</strong><span>Enter the booking reference to run a secure lookup.</span></div>}
       </div>
     </div>
   );

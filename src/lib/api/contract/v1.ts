@@ -10,7 +10,7 @@
  */
 
 export const API_CONTRACT_VERSION = "1.14.0" as const;
-export const API_CONTRACT_SHA256 = "e3ad527748a79698d205cc7b6e88173304f364d87e7a24786c510cc680cc20ab" as const;
+export const API_CONTRACT_SHA256 = "7c65bf9c056968b9d9bc343469ea80e5bc761e14a4a133752651a9a086489ae5" as const;
 export const API_TIMEZONE = "Asia/Kuala_Lumpur" as const;
 
 export interface ApiMeta { requestId: string; serverTime: string; timezone: "Asia/Kuala_Lumpur"; contractVersion: "1.14.0"; nextPage?: number | null; pageSize?: number; total?: number; }
@@ -73,7 +73,7 @@ export interface CreateHoldGroupRequest { occurrences: Array<RequestedOccurrence
 
 export interface HoldGroup { token: string; expiresAt: string; occurrences: Array<HeldOccurrence>; state: "active" | "expired" | "consumed" | "released"; }
 
-export interface CustomerDetails { name: string; phone: string; email: string; teamName?: string; }
+export interface CustomerDetails { name: string; phone: string; email?: string | null; teamName?: string; }
 
 export interface CreateBookingRequest { holdToken: string; customer: CustomerDetails; }
 
@@ -89,7 +89,7 @@ export interface CreatePaymentAttemptRequest { method: "online_provider"; return
 
 export interface PaymentAttempt { id: string; bookingReference: string; state: PaymentStatus; redirectUrl?: string; }
 
-export interface OrderOccurrence { id: string; fieldId: string; blockCode: string; bookingDate: string; fieldName: string; label: string; startsAt: string; endsAt: string; amountMinor: number; currency: "MYR"; status: BookingStatus; }
+export interface OrderOccurrence { id: string; reference: string; fieldId: string; blockCode: string; bookingDate: string; fieldName: string; label: string; startsAt: string; endsAt: string; amountMinor: number; currency: "MYR"; status: BookingStatus; }
 
 export interface Order { id: string; reference: string; totalAmountMinor: number; currency: "MYR"; status: BookingStatus; paymentStatus: PaymentStatus; occurrences: Array<OrderOccurrence>; accessToken?: string; }
 
@@ -99,7 +99,13 @@ export interface OrderPaymentAttempt { id: string; bookingReference?: string; or
 
 export interface PublicBookingStatus { reference: string; fieldId: string; blockCode: string; bookingDate: string; amountMinor: number; currency: "MYR"; bookingStatus: BookingStatus; paymentStatus: PaymentStatus; }
 
-export interface FindBookingRequest { reference: string; phone: string; }
+export interface FindBookingRequest { reference: string; }
+
+export interface GuestBookingLookup { booking: GuestBooking; lookupGrant: string; }
+
+export interface GuestBooking { reference: string; fieldName: string; blockLabel: string; bookingDate: string; startsAt: string; endsAt: string; amountMinor: number; currency: "MYR"; bookingStatus: BookingStatus; paymentStatus: PaymentStatus; customerName: string; customerPhone: string; }
+
+export interface CustomerBooking { reference: string; fieldName: string; blockLabel: string; bookingDate: string; startsAt: string; endsAt: string; amountMinor: number; currency: "MYR"; bookingStatus: BookingStatus; paymentStatus: PaymentStatus; timelineState: "upcoming" | "past" | "cancelled"; contact: { name: string; phone: string; email?: string | null; }; }
 
 export interface ContentBlock { type: "heading" | "paragraph" | "callout" | "list"; text: string; }
 

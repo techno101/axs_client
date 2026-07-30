@@ -1,5 +1,12 @@
 # Public Booking Rules
 
+## Checkpoint 3 ownership, lookup and references
+
+- Guest email is optional; name and normalized phone remain required. An active verified account safely pre-fills its profile, but the browser never selects an account ID.
+- Only a new authenticated booking is account-owned. Existing and later guest bookings remain guest records forever, even when contact details match an account.
+- New references use `AXS-XXXX-XXXX-XXXX-XXXX`; legacy AXS references remain accepted. Successful result pages show each reference with Copy and Download. A guest who omitted email sees a prominent save/download warning; an email-present booking states that its references were sent without exposing delivery details.
+- Guest finder uses reference only and exposes masked data. Account history contains only directly owned bookings; it never falls back to guest lookup for an authenticated visitor. Booking and payment state remain separate.
+
 ## Optional customer accounts
 
 Guest booking remains the default public flow. Email/password and Google registrations start as pending and cannot access account-only behavior until the same one-time email verification link is consumed. Google does not bypass verification. Existing guest bookings and customer contacts are never claimed/backfilled. Provider absence is presented as unavailable, not as a completed email/OAuth flow.

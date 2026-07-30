@@ -26,7 +26,7 @@ try {
       deviceScaleFactor: 1,
     });
     const page = await context.newPage();
-    // Disposable database fixtures may reference the reserved cdn.example.test host.
+    // Disposable database fixtures may reference reserved CDN or Admin media hosts.
     // Keep visual verification deterministic without requesting an external image host.
     const fixtureImage = () =>
       ({
@@ -36,7 +36,15 @@ try {
     await page.route("https://cdn.example.test/**", (route) =>
       route.fulfill(fixtureImage()),
     );
+    await page.route("https://admin.example.invalid/**", (route) =>
+      route.fulfill(fixtureImage()),
+    );
     await page.route(/\/_next\/image\?.*cdn\.example\.test/, (route) =>
+      route.fulfill({
+        ...fixtureImage(),
+      }),
+    );
+    await page.route(/\/_next\/image\?.*admin\.example\.invalid/, (route) =>
       route.fulfill({
         ...fixtureImage(),
       }),

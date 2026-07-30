@@ -41,7 +41,15 @@ export type AvailabilitySlot = {
   publicMessage?: string;
 };
 
-export type PaymentResult = { reference: string; state: PaymentState; fieldName: string; blockLabel: string; bookingDate: string; amountMinor: number; currency: "MYR"; lastCheckedAt: string; };
+export type PaymentResult = { reference: string; state: PaymentState; fieldName: string; blockLabel: string; bookingDate: string; amountMinor: number; currency: "MYR"; lastCheckedAt: string; bookingReferences?: string[]; guestEmailOmitted?: boolean; };
+export type GuestBookingLookup = {
+  booking: { reference: string; fieldName: string; blockLabel: string; bookingDate: string; startsAt: string; endsAt: string; amountMinor: number; currency: "MYR"; bookingStatus: string; paymentStatus: string; customerName: string; customerPhone: string; };
+  lookupGrant: string;
+};
+export type CustomerBooking = {
+  reference: string; fieldName: string; blockLabel: string; bookingDate: string; startsAt: string; endsAt: string; amountMinor: number; currency: "MYR"; bookingStatus: string; paymentStatus: string; timelineState: "upcoming" | "past" | "cancelled";
+  contact: { name: string; phone: string; email?: string | null };
+};
 export type Article = { slug: string; category: string; title: string; excerpt: string; readTime: string; publishedLabel: string; image: string; imageAlt: string; body: Array<{ heading: string; paragraphs: string[] }>; };
 export type FaqItem = { question: string; answer: string; };
 
@@ -59,7 +67,8 @@ export interface PublicClient {
   createOrderPaymentAttempt(reference: string, input: CreatePaymentAttemptRequest, idempotencyKey: string): Promise<OrderPaymentAttempt>;
   getBookingStatus(reference: string, accessToken: string): Promise<PublicBookingStatus>;
   getOrderStatus(reference: string, accessToken: string): Promise<PublicOrderStatus>;
-  findBooking(reference: string, phone: string): Promise<PublicBookingStatus>;
+  findBooking(reference: string): Promise<GuestBookingLookup>;
+  downloadGuestBooking(reference: string, lookupGrant: string): Promise<Blob>;
   getPaymentResult(reference: string): Promise<PaymentResult>;
   getArticles(): Promise<Article[]>;
   getArticle(slug: string): Promise<Article | null>;

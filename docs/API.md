@@ -1,5 +1,11 @@
 # Client API Contract View
 
+## Checkpoint 3 booking ownership and private documents
+
+The Client sends no account ID. Its booking/order BFF rules forward only the opaque Customer cookie, letting Admin derive ownership. Public finder accepts a legacy or new AXS reference only; its masked response and short-lived grant stay at the same origin. Guest PDF requests send that grant only to the allowlisted public download route. `/api/customer/bookings`, `/[reference]`, and `/download` are owner-only BFF rules and forward the Customer cookie server-side; the browser never receives an Admin origin, database path, session token, or provider secret.
+
+The Client pins Admin v1.14 contract checksum `7c65bf9c056968b9d9bc343469ea80e5bc761e14a4a133752651a9a086489ae5` for the additive lookup/history/download shapes.
+
 ## Customer identity boundary
 
 Customer browser calls use only `/api/customer/*`. That BFF has an exact route/method map to Admin `/v1/customer/*`, validates the canonical Client Origin/Referer for mutations, forwards the trusted proxy context and keeps the opaque Customer session in a Client-origin `Secure`, `HttpOnly`, `SameSite=Lax` cookie. It also owns the temporary Google PKCE/state/nonce and one-time handoff cookies. Raw session, CSRF, verification/reset and handoff material is removed from JSON before it reaches browser code. Customer pages are excluded from analytics; email/phone/age/provider IDs/free text never become analytics properties.

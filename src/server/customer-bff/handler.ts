@@ -8,7 +8,7 @@ const GOOGLE_COOKIE = "axs_customer_google_attempt";
 const HANDOFF_COOKIE = "axs_customer_google_handoff";
 const MAX_BODY = 12 * 1024;
 
-type RouteRule = { method: string; upstream: string; mutation?: boolean; session?: boolean; csrf?: boolean; body?: boolean };
+type RouteRule = { method: string; upstream: string; mutation?: boolean; session?: boolean; csrf?: boolean; body?: boolean; binary?: boolean };
 
 const rules: Record<string, RouteRule> = {
   register: { method: "POST", upstream: "register", mutation: true, body: true },
@@ -27,6 +27,18 @@ const rules: Record<string, RouteRule> = {
   "google/link/start": { method: "POST", upstream: "google/link/start", mutation: true, session: true, csrf: true, body: true },
   "google/unlink": { method: "DELETE", upstream: "google/unlink", mutation: true, session: true, csrf: true },
 };
+
+const LEGACY_BOOKING_REFERENCE = /^AXS-[A-Z0-9]{6,12}$/;
+const MODERN_BOOKING_REFERENCE = /^AXS-[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{4}(?:-[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{4}){3}$/;
+
+function bookingRule(segments: string[]): RouteRule | null {
+  if (segments.length === 1 && segments[0] === "bookings") return { method: "GET", upstream: "bookings", session: true };
+  if (segments.length >= 2 && segments[0] === "bookings" && (LEGACY_BOOKING_REFERENCE.test(segments[1]) || MODERN_BOOKING_REFERENCE.test(segments[1]))) {
+    if (segments.length === 2) return { method: "GET", upstream: `bookings/${segments[1]}`, session: true };
+    if (segments.length === 3 && segments[2] === "download") return { method: "GET", upstream: `bookings/${segments[1]}/download`, session: true, binary: true };
+  }
+  return null;
+}
 
 type GoogleAttempt = { state: string; verifier: string; nonce: string };
 
@@ -122,13 +134,14 @@ async function upstream(request: Request, config: ClientProxyConfig, route: Rout
   if (body) headers.set("Content-Type", "application/json");
   const destination = new URL(`/v1/customer/${route.upstream}`, config.adminOrigin);
   const response = await fetch(destination, { method: route.method, headers, body: body ? JSON.stringify(body) : undefined, cache: "no-store", redirect: "manual", signal: AbortSignal.timeout(8_000) });
+  if (route.binary) return { status: response.status, body: response.body, contentType: response.headers.get("content-type"), disposition: response.headers.get("content-disposition") };
   const payload = await response.json().catch(() => ({ data: null, error: { code: "SERVICE_UNAVAILABLE", message: "The account service returned an invalid response." } }));
   return { status: response.status, payload };
 }
 
 export async function handleCustomerBff(request: Request, segments: string[], config = loadClientProxyConfig()): Promise<NextResponse> {
   const key = segments.join("/");
-  const route = rules[key];
+  const route = rules[key] ?? bookingRule(segments);
   if (!route || request.method !== route.method || segments.some((part) => !part || part === "." || part === ".." || /[\\/]/.test(part))) return noStore({ data: null, error: { code: "NOT_FOUND", message: "This account route is not available." } }, 404);
   if (route.mutation && !originIsTrusted(request, config.clientOrigin)) return noStore({ data: null, error: { code: "CSRF_INVALID", message: "Cross-site account requests are not allowed." } }, 403);
   let body: Record<string, unknown> | undefined;
@@ -138,6 +151,15 @@ export async function handleCustomerBff(request: Request, segments: string[], co
     if (!body) return noStore({ data: null, error: { code: "VALIDATION_ERROR", message: "The account request is invalid." } }, 400);
   }
   try {
+    if (route.binary) {
+      const result = await upstream(request, config, route);
+      if (result.status >= 200 && result.status < 300 && result.body) {
+        const response = new NextResponse(result.body, { status: result.status, headers: { "Content-Type": result.contentType ?? "application/pdf", "Cache-Control": "private, no-store", "X-Content-Type-Options": "nosniff" } });
+        if (result.disposition) response.headers.set("Content-Disposition", result.disposition);
+        return response;
+      }
+      return noStore({ data: null, error: { code: "NOT_FOUND", message: "Booking not found." } }, result.status === 401 ? 401 : 404);
+    }
     if (key === "google/start" || key === "google/link/start") {
       const verifier = randomBytes(48).toString("base64url");
       const nonce = randomBytes(32).toString("base64url");

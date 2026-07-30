@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
 import { CustomerApiError, customerApi, postCustomer, type CustomerAccount, type CustomerSessionView } from "@/lib/customer-api";
+import type { CustomerBooking } from "@/lib/api/types";
 
 type Notice = { tone: "error" | "success" | "info"; text: string } | null;
 const serviceMessage = "This account action is unavailable in this environment. You can still book as a guest.";
@@ -69,12 +70,27 @@ export function ResetPasswordForm() {
   return <AccountShell eyebrow="Account recovery" title="Choose a new passphrase"><NoticeBox notice={notice}/><form className="customer-form" onSubmit={submit}><label className="customer-form__wide">New passphrase<input name="password" type="password" autoComplete="new-password" required minLength={12} maxLength={128}/></label><button className="customer-submit customer-form__wide" disabled={busy}>Save passphrase</button></form><p className="customer-help"><Link href="/sign-in">Return to sign in</Link></p></AccountShell>;
 }
 
-function AccountNavigation() { return <nav className="customer-account-nav" aria-label="Account navigation"><Link href="/account">Overview</Link><Link href="/account/profile">Profile</Link><Link href="/account/security">Security</Link></nav>; }
+function AccountNavigation() { return <nav className="customer-account-nav" aria-label="Account navigation"><Link href="/account">Overview</Link><Link href="/account/bookings">Bookings</Link><Link href="/account/profile">Profile</Link><Link href="/account/security">Security</Link></nav>; }
 function AccountState({ account, children }: { account: CustomerAccount | null; children: (account: CustomerAccount) => React.ReactNode }) { if (!account) return <p className="customer-notice customer-notice--info" role="status">Loading your account…</p>; if (account.status === "pending") return <><p className="customer-notice customer-notice--info" role="status">Verify your email before using account features.</p><Link className="customer-secondary" href="/verify-email?state=pending">Verify email</Link></>; return <>{children(account)}</>; }
 
 function useAccount() { const [account, setAccount] = useState<CustomerAccount | null>(null); const [notice, setNotice] = useState<Notice>(null); useEffect(() => { void customerApi<CustomerSessionView>("session").then((value) => setAccount(value.account)).catch(() => { setNotice({ tone: "info", text: "Sign in to view your account." }); }); }, []); return { account, setAccount, notice }; }
 
 export function AccountOverview() { const { account, notice } = useAccount(); return <AccountShell eyebrow="Your account" title="Account overview"><AccountNavigation/><NoticeBox notice={notice}/><AccountState account={account}>{(value) => <div className="customer-summary"><p>Signed in as <strong>{value.displayName}</strong>.</p><dl><div><dt>Email</dt><dd>{value.email}</dd></div><div><dt>Status</dt><dd>Verified</dd></div></dl><Link className="customer-submit" href="/book">Book a field</Link></div>}</AccountState></AccountShell>; }
+
+export function AccountBookings() {
+  const { account, notice } = useAccount();
+  const [bookings, setBookings] = useState<CustomerBooking[]>([]);
+  const [local, setLocal] = useState<Notice>(null);
+  useEffect(() => { if (account?.status !== "active") return; void customerApi<CustomerBooking[]>("bookings").then(setBookings).catch((error) => setLocal(messageFor(error))); }, [account]);
+  async function download(reference: string) {
+    try {
+      const response = await fetch(`/api/customer/bookings/${encodeURIComponent(reference)}/download`, { credentials: "same-origin", cache: "no-store" });
+      if (!response.ok) throw new Error("not found");
+      const blob = await response.blob(); const url = URL.createObjectURL(blob); const anchor = document.createElement("a"); anchor.href = url; anchor.download = `ArmourXSports-booking-${reference}.pdf`; anchor.click(); URL.revokeObjectURL(url);
+    } catch { setLocal({ tone: "error", text: "This booking is no longer available in your account history." }); }
+  }
+  return <AccountShell eyebrow="Your account" title="Booking history"><AccountNavigation/><NoticeBox notice={notice ?? local}/><AccountState account={account}>{() => <div className="customer-security">{bookings.length ? bookings.map((booking) => <article key={booking.reference}><p><strong>{booking.timelineState}</strong><span>Booking: {booking.bookingStatus}</span><span>Payment: {booking.paymentStatus}</span></p><h2>{booking.fieldName}</h2><p>{booking.bookingDate} · {booking.blockLabel} · {booking.startsAt}–{booking.endsAt}</p><p>Reference: <code>{booking.reference}</code></p><button className="customer-secondary" type="button" onClick={() => void download(booking.reference)}>Download booking PDF</button></article>) : <p className="customer-notice customer-notice--info" role="status">No account-owned bookings yet. Guest bookings remain private guest records and do not appear here.</p>}</div>}</AccountState></AccountShell>;
+}
 
 export function ProfileForm() { const { account, setAccount, notice } = useAccount(); const [local, setLocal] = useState<Notice>(null); const [busy, setBusy] = useState(false); async function submit(event: FormEvent<HTMLFormElement>) { event.preventDefault(); setBusy(true); try { await customerApi("profile/update", { method: "PATCH", body: JSON.stringify(profilePayload(event.currentTarget)) }); setLocal({ tone: "success", text: "Your profile is updated. Sign in again to continue." }); window.setTimeout(() => window.location.assign("/sign-in"), 900); } catch (error) { setLocal(messageFor(error)); } finally { setBusy(false); } }
   useEffect(() => { if (account) setAccount(account); }, [account, setAccount]);

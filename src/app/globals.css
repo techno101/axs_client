@@ -2965,6 +2965,46 @@ img {
   text-transform: uppercase;
 }
 
+.booking-reference-actions {
+  margin-top: 28px;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+}
+
+.booking-reference-actions h3 {
+  margin: 0 0 14px;
+  font-size: 14px;
+}
+
+.booking-reference-actions > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 8px;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.booking-reference-actions code {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.booking-reference-actions button {
+  min-height: 40px;
+  padding: 0 13px;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  background: var(--white);
+  color: var(--ink);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.booking-reference-actions button:disabled { opacity: .55; }
+
 .payment-result-section aside h2 {
   margin: 18px 0;
   font-family: var(--font-barlow-condensed), sans-serif;
@@ -3037,6 +3077,8 @@ img {
   .booking-finder > form { padding: 35px 22px; }
   .finder-result { min-height: 440px; padding: 34px 22px; }
   .payment-result-card dl { grid-template-columns: 1fr; }
+  .booking-reference-actions > div { grid-template-columns: 1fr 1fr; }
+  .booking-reference-actions code { grid-column: 1 / -1; }
   .payment-result-section__grid { gap: 55px; }
 }
 

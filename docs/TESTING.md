@@ -1,5 +1,11 @@
 # Client Testing
 
+## Checkpoint 3 booking ownership, lookup and download - 2026-07-30
+
+- Focused wizard, BFF and proxy tests passed; full suite passed 32 tests. Lint passed with one pre-existing `brand-mark.tsx` image warning; TypeScript, contract, security and production build passed.
+- Route, axe and visual capture passed through a temporary matching local Admin/Client BFF configuration only. No ignored environment file, Vercel setting, provider credential or deployment was changed.
+- Visual capture stubs reserved fixture media hosts rather than requesting them, and covers desktop/mobile booking layouts. Live Customer login, email delivery, provider payment and deployed HTTPS acceptance remain unperformed.
+
 Checkpoint 2 adds focused tests for cross-site Customer-BFF rejection, opaque Client-cookie handling with raw token stripping, labelled keyboard-accessible account forms and full account-route analytics exclusion. The required route/a11y/visual/full-check commands remain the evidence source; no live Google or Resend provider request is part of this checkpoint.
 
 ## Checkpoint 1 same-origin integration - 2026-07-30

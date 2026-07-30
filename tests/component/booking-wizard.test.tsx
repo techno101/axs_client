@@ -33,7 +33,8 @@ describe("BookingWizard", () => {
 
     expect(await screen.findByRole("heading", { name: "Who is booking?" })).toBeVisible();
     expect(screen.getByLabelText("Full name")).toBeRequired();
-    expect(screen.getByLabelText("Email address")).toHaveAttribute("type", "email");
+    expect(screen.getByLabelText(/Email address/)).toHaveAttribute("type", "email");
+    expect(screen.getByLabelText(/Email address/)).not.toBeRequired();
   });
 
   it("stops before a public hold when online payment is disabled", async () => {

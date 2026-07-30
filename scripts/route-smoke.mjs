@@ -37,8 +37,15 @@ const browser = await chromium.launch({ channel: "chrome" });
 const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
 const consoleErrors = [];
 page.on("console", (message) => {
-  if (message.type() === "error") consoleErrors.push(message.text());
+  // A missing customer session is an expected guest-state check, not a browser failure.
+  if (message.type() === "error" && !/status of 401 \(Unauthorized\)/.test(message.text())) consoleErrors.push(message.text());
 });
+const fixtureImage = {
+  contentType: "image/svg+xml",
+  body: '<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800"><rect width="100%" height="100%" fill="#1c5e51"/></svg>',
+};
+await page.route("https://cdn.example.test/**", (route) => route.fulfill(fixtureImage));
+await page.route("https://admin.example.invalid/**", (route) => route.fulfill(fixtureImage));
 
 try {
   for (const route of routes) {

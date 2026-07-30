@@ -2,6 +2,13 @@
 
 | Decision | Result |
 | --- | --- |
+| Booking ownership | Client never sends an account ID. It forwards an opaque Customer cookie to its same-origin BFF so Admin derives active-session ownership. |
+| Guest privacy | Finder is reference-only and consumes a booking-bound short-lived grant for the redacted PDF; no email/phone lookup or direct Admin route exists. |
+| Account history | Customer history and full PDF are owner-only Client BFF routes. Guest and different-account records never fall back to the public finder while authenticated. |
+| Result recovery | Every returned booking reference gets Copy/Download actions; guests with no email receive an explicit save-before-leaving warning. |
+
+| Decision | Result |
+| --- | --- |
 | Customer session | The Client BFF sets/clears the Client-origin opaque session and CSRF cookies; JavaScript never reads the session token. |
 | Customer providers | Google return and email states are safe disabled/unavailable states without Admin provider credentials; the Client never holds those credentials. |
 | Account privacy | Account/auth/recovery/Google routes are noindex and analytics-excluded. Email, phone, age, tokens and free text are not analytics values. |

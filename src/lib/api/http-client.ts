@@ -1,5 +1,5 @@
 import type { ApiError, Article as ContractArticle, ArticleResponse, ArticleListResponse, Booking, BookingResponse, CreateBookingRequest, CreateHoldGroupRequest, CreateHoldRequest, CreateOrderRequest, CreatePaymentAttemptRequest, FaqListResponse, Hold, HoldGroup, HoldGroupResponse, HoldResponse, Order, OrderPaymentAttempt, OrderPaymentAttemptResponse, OrderResponse, PaymentAttempt, PaymentAttemptResponse, PublicAvailabilityResponse, PublicBookingStatus, PublicBookingStatusResponse, PublicConfigResponse, PublicFieldsResponse, PublicOrderStatus, PublicOrderStatusResponse } from "@/lib/api/contract/v1";
-import type { Article, AvailabilitySlot, BookingBlock, FaqItem, Field, PaymentResult, PublicClient, PublicConfigView } from "@/lib/api/types";
+import type { Article, AvailabilitySlot, BookingBlock, FaqItem, Field, GuestBookingLookup, PaymentResult, PublicClient, PublicConfigView } from "@/lib/api/types";
 import { articles as localArticles, fields as localFields, images } from "@/lib/content";
 
 type ErrorEnvelope = { data: null; error: ApiError };
@@ -49,7 +49,12 @@ export function createHttpPublicClient(base = "/api/axs"): PublicClient {
     async createOrderPaymentAttempt(reference: string, input: CreatePaymentAttemptRequest, key: string): Promise<OrderPaymentAttempt> { return responseData<OrderPaymentAttemptResponse["data"]>(await request(base, `/v1/public/orders/${encodeURIComponent(reference)}/payment-attempts`, { method: "POST", headers: { "Content-Type": "application/json", "Idempotency-Key": key }, body: JSON.stringify(input) })); },
     async getBookingStatus(reference: string, accessToken: string): Promise<PublicBookingStatus> { return responseData<PublicBookingStatusResponse["data"]>(await request(base, `/v1/public/bookings/${encodeURIComponent(reference)}/status`, { headers: { "X-Booking-Access-Token": accessToken } })); },
     async getOrderStatus(reference: string, accessToken: string): Promise<PublicOrderStatus> { return responseData<PublicOrderStatusResponse["data"]>(await request(base, `/v1/public/orders/${encodeURIComponent(reference)}/status`, { headers: { "X-Booking-Access-Token": accessToken } })); },
-    async findBooking(reference: string, phone: string): Promise<PublicBookingStatus> { return responseData<PublicBookingStatus>(await request(base, "/v1/public/bookings/find", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ reference, phone }) })); },
+    async findBooking(reference: string): Promise<GuestBookingLookup> { return responseData<GuestBookingLookup>(await request(base, "/v1/public/bookings/find", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ reference }) })); },
+    async downloadGuestBooking(reference: string, lookupGrant: string): Promise<Blob> {
+      const response = await request(base, `/v1/public/bookings/${encodeURIComponent(reference)}/download`, { headers: { "X-Booking-Lookup-Grant": lookupGrant } });
+      if (!response.ok) await responseData<never>(response);
+      return response.blob();
+    },
     async getPaymentResult(reference) {
       if (typeof window === "undefined") throw new Error("Payment status requires the browser-held access token.");
       const token = window.sessionStorage.getItem(`axs:booking:${reference}`);

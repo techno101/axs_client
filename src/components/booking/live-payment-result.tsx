@@ -8,7 +8,7 @@ import { reportOperationalEvent } from "@/lib/operational-reporting";
 
 export function LivePaymentResult({ reference }: { reference: string }) {
   const client = useMemo(() => createHttpPublicClient(), []);
-  const [result, setResult] = useState<PaymentResult>({ reference, state: "pending", fieldName: "Pending server response", blockLabel: "Pending server response", bookingDate: "Pending", amountMinor: 0, currency: "MYR", lastCheckedAt: "Checking verified backend state…" });
+  const [result, setResult] = useState<PaymentResult>({ reference, state: "pending", fieldName: "Pending server response", blockLabel: "Pending server response", bookingDate: "Pending", amountMinor: 0, currency: "MYR", lastCheckedAt: "Checking verified backend state…", guestEmailOmitted: typeof window !== "undefined" && window.sessionStorage.getItem(`axs:order-email:${reference}`) === "missing" });
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -25,7 +25,18 @@ export function LivePaymentResult({ reference }: { reference: string }) {
         const state: PaymentResult["state"] = status.status === "confirmed" && status.paymentStatus === "paid" ? "confirmed" : status.status === "expired" || status.paymentStatus === "expired" ? "expired" : status.status === "payment_failed" || status.paymentStatus === "failed" ? "failed" : "pending";
         if (!active) return;
         const first = status.occurrences[0];
-        setResult({ reference, state, fieldName: status.occurrences.length === 1 ? first?.fieldName ?? "Selected field" : `${status.occurrences.length} field sessions`, blockLabel: status.occurrences.length === 1 ? `${first?.label ?? "Selected session"} · ${first?.startsAt ?? ""}–${first?.endsAt ?? ""}` : "One payment for the complete order", bookingDate: status.occurrences.length === 1 ? first?.bookingDate ?? "Pending" : "Multiple dates", amountMinor: status.totalAmountMinor, currency: "MYR", lastCheckedAt: `Verified backend state · ${new Date().toLocaleTimeString("en-MY")}` });
+        setResult({
+          reference,
+          state,
+          fieldName: status.occurrences.length === 1 ? first?.fieldName ?? "Selected field" : `${status.occurrences.length} field sessions`,
+          blockLabel: status.occurrences.length === 1 ? `${first?.label ?? "Selected session"} · ${first?.startsAt ?? ""}–${first?.endsAt ?? ""}` : "One payment for the complete order",
+          bookingDate: status.occurrences.length === 1 ? first?.bookingDate ?? "Pending" : "Multiple dates",
+          amountMinor: status.totalAmountMinor,
+          currency: "MYR",
+          lastCheckedAt: `Verified backend state · ${new Date().toLocaleTimeString("en-MY")}`,
+          bookingReferences: status.occurrences.map((occurrence) => occurrence.reference).filter((value): value is string => Boolean(value)),
+          guestEmailOmitted: window.sessionStorage.getItem(`axs:order-email:${reference}`) === "missing",
+        });
         setError(null);
         if (state === "pending") timer = window.setTimeout(poll, 3_000);
       } catch (pollError) {
