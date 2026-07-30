@@ -6,6 +6,7 @@ import { analyticsAllowedOnPath, privacySafeAnalyticsEvent } from "@/lib/analyti
 
 export function PrivacySafeAnalytics() {
   const pathname = usePathname();
+  if (process.env.NEXT_PUBLIC_ANALYTICS_DISABLED === "true") return null;
   if (!analyticsAllowedOnPath(pathname)) return null;
   return <Analytics beforeSend={privacySafeAnalyticsEvent} />;
 }

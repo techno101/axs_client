@@ -1,7 +1,6 @@
 /*
- * PINNED CONTRACT ARTIFACT — copied from the admin-owned OpenAPI generator.
- * This is a static consumer representation, not an import from axs_admin.
- * Update only with: axs_admin npm run contract:publish-client -- <this file>
+ * PINNED CONTRACT ARTIFACT — copied from the Admin-owned OpenAPI generator.
+ * This is a static customer/public consumer representation, never an import.
  */
 
 /*
@@ -10,11 +9,33 @@
  * Run: npm run contract:generate
  */
 
-export const API_CONTRACT_VERSION = "1.12.0" as const;
-export const API_CONTRACT_SHA256 = "cf7e1aa1d733a66d5556879b3fffaa3e3a25a2d1ebbe253144d85750b6e18f9b" as const;
+export const API_CONTRACT_VERSION = "1.14.0" as const;
+export const API_CONTRACT_SHA256 = "e3ad527748a79698d205cc7b6e88173304f364d87e7a24786c510cc680cc20ab" as const;
 export const API_TIMEZONE = "Asia/Kuala_Lumpur" as const;
 
-export interface ApiMeta { requestId: string; serverTime: string; timezone: "Asia/Kuala_Lumpur"; contractVersion: "1.12.0"; nextPage?: number | null; pageSize?: number; total?: number; }
+export interface ApiMeta { requestId: string; serverTime: string; timezone: "Asia/Kuala_Lumpur"; contractVersion: "1.14.0"; nextPage?: number | null; pageSize?: number; total?: number; }
+
+export interface CustomerProfileRequest { displayName: string; phone: string; age: number; }
+
+export interface CustomerRegistrationRequest { displayName: string; phone: string; age: number; email: string; password: string; }
+
+export interface CustomerLoginRequest { email: string; password: string; }
+
+export interface CustomerEmailRequest { email: string; }
+
+export interface CustomerTokenRequest { token: string; }
+
+export interface CustomerPasswordResetRequest { token: string; password: string; }
+
+export interface CustomerPasswordSetRequest { password: string; }
+
+export interface CustomerAccount { id: string; email: string; displayName: string; phone: string; age: number; status: "pending" | "active" | "suspended"; verifiedAt: string | null; passwordSet: boolean; googleLinked: boolean; }
+
+export interface CustomerSession { account: CustomerAccount; idleExpiresAt: string; absoluteExpiresAt: string; }
+
+export interface CustomerAuthResult { accepted?: boolean; generic?: boolean; suspended?: boolean; state?: string; session?: CustomerSession; [key: string]: unknown; }
+
+export interface CustomerAuthResponse { data: CustomerAuthResult; meta: ApiMeta; error: null; }
 
 export interface ApiError { code: "AUTHENTICATION_REQUIRED" | "PERMISSION_DENIED" | "CSRF_INVALID" | "RATE_LIMITED" | "VALIDATION_ERROR" | "NOT_FOUND" | "SLOT_UNAVAILABLE" | "HOLD_EXPIRED" | "IDEMPOTENCY_CONFLICT" | "BOOKING_STATE_INVALID" | "PAYMENT_PENDING" | "PAYMENT_ALREADY_CONFIRMED" | "STALE_WRITE" | "SERVICE_UNAVAILABLE" | "INTERNAL_ERROR" | "POS_UPDATE_REQUIRED"; message: string; fieldErrors?: { [key: string]: string; }; retryAfterSeconds?: number; details?: { [key: string]: unknown; }; }
 
@@ -118,13 +139,13 @@ export interface PosDeviceMetadata { computerName?: string; osVersion?: string; 
 
 export interface PosPairRequest { code: string; name: string; deviceMetadata: PosDeviceMetadata; }
 
-export interface PosDevice { id: string; name: string; status: "pending" | "approved" | "paused" | "revoked"; platform: "windows"; pairedAt: string; approvedAt?: string | null; lastSeenAt?: string | null; deviceDetails: PosDeviceMetadata; appVersion?: string | null; hardwareSummary?: PosHardwareSummary; }
+export interface PosDevice { id: string; name: string; status: "pending" | "approved" | "paused" | "revoked"; platform: "windows"; pairedAt: string; approvedAt?: string | null; lastSeenAt?: string | null; deviceDetails: PosDeviceMetadata; appVersion?: string | null; hardwareSummary?: PosHardwareSummary; assignedOperatorId?: string | null; assignedOperatorName?: string | null; }
 
 export interface PosPairingCode { code: string; expiresAt: string; }
 
 export interface PosDeviceStatusUpdateRequest { status: "approved" | "paused" | "revoked"; }
 
-export interface PosDeviceStatus { deviceId: string; name: string; status: "pending" | "approved" | "paused" | "revoked"; canLogin: boolean; serverTime: string; appVersion: string | null; updatePolicy: PosUpdatePolicy; }
+export interface PosDeviceStatus { deviceId: string; name: string; status: "pending" | "approved" | "paused" | "revoked"; canLogin: boolean; assignedOperatorName: string | null; serverTime: string; appVersion: string | null; updatePolicy: PosUpdatePolicy; }
 
 export interface SafeTechnicalDetails { errorName?: string; safeMessage?: string; causeCode?: string; operation?: string; retryable?: boolean; retryAfterSeconds?: number; state?: string; attempt?: number; provider?: string; environment?: string; }
 
@@ -140,7 +161,7 @@ export interface PosPairResult { device: PosDevice; deviceSecret: string; }
 
 export interface PosStaff { id: string; username: string; displayName: string; role: "cashier" | "accounts"; }
 
-export interface PosLoginRequest { username: string; pin: string; openingFloatMinor?: number; }
+export interface PosLoginRequest { username?: string; pin: string; workflowMode?: "separated_v1"; openingFloatMinor?: number; }
 
 export interface PosStaffSession { id: string; token: string; expiresAt: string; }
 
@@ -159,6 +180,20 @@ export interface PosSaleLine { catalogItemId: string; code: string; name: string
 export interface PosSaleRequest { lines: Array<PosCartLineRequest>; customer?: CounterCustomerDetails; paymentMethod: "cash" | "manual_duitnow" | "manual_bank_transfer"; amountReceivedMinor?: number; manualReference?: string; evidenceNote?: string; }
 
 export interface PosSale { id: string; receiptReference: string; counterSessionId: string; paymentMethod: "cash" | "manual_duitnow" | "manual_bank_transfer"; amountMinor: number; changeMinor?: number; lines: Array<PosSaleLine>; }
+
+export interface PosOrderOccurrence { fieldId: string; blockCode: string; bookingDate: string; }
+
+export interface PosOrderRequest { occurrences: Array<PosOrderOccurrence>; lines?: Array<PosCartLineRequest>; customer: CounterCustomerDetails; paymentMethod: "cash" | "manual_duitnow" | "manual_bank_transfer"; amountReceivedMinor?: number; manualReference?: string; evidenceNote?: string; }
+
+export interface PosOrder { id: string; orderId: string; orderReference: string; receiptReference: string; counterSessionId: string; paymentMethod: "cash" | "manual_duitnow" | "manual_bank_transfer"; amountMinor: number; bookings: Array<{ [key: string]: unknown; }>; [key: string]: unknown; }
+
+export interface PosOrderCancelRequest { disposition: "void" | "refund"; reason: string; amountMinor?: number; returnMethod?: "cash" | "manual_duitnow" | "manual_bank_transfer"; manualReference?: string; evidenceNote?: string; }
+
+export interface PosOfflineEventRequest { provisionalId: string; operationKind: "order" | "cancel"; state: "received" | "accepted" | "conflicted" | "cancelled"; occurredAt: string; reason?: string; failureCode?: string; summary?: { slotCount?: number; catalogLineCount?: number; amountMinor?: number; }; }
+
+export interface PosDeviceAssignmentRequest { operatorId: string; }
+
+export interface BusinessNotificationSetting { enabled: boolean; email: string; version: number; }
 
 export interface PosReceiptEmailRequest { email: string; }
 
@@ -186,7 +221,11 @@ export interface PosLockResult { locked: true; }
 
 export interface PosClockOutResult { clockedOut: true; }
 
-export interface PosCloseRequest { countedCashMinor: number; reason?: string; }
+export interface PosAttendanceChangeRequest { operatorId: string; pin: string; }
+
+export interface PosOpenRequest { openingFloatMinor: number; pin: string; }
+
+export interface PosCloseRequest { countedCashMinor: number; pin: string; reason?: string; }
 
 export interface PosOversightUnlockRequest { pin: string; }
 
@@ -260,7 +299,7 @@ export interface CounterSlot { fieldId: string; blockCode: string; bookingDate: 
 
 export interface AdminDashboard { businessDate: string; bookingCount: number; attentionCount: number; }
 
-export interface Health { status: "ok"; service: string; contractVersion: "1.12.0"; }
+export interface Health { status: "ok"; service: string; contractVersion: "1.14.0"; }
 
 export interface Readiness { status: "ready" | "not_ready"; database: "connected" | "not_configured" | "unavailable"; authoritative: boolean; }
 

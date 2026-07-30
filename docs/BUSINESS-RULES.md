@@ -1,5 +1,9 @@
 # Public Booking Rules
 
+## Optional customer accounts
+
+Guest booking remains the default public flow. Email/password and Google registrations start as pending and cannot access account-only behavior until the same one-time email verification link is consumed. Google does not bypass verification. Existing guest bookings and customer contacts are never claimed/backfilled. Provider absence is presented as unavailable, not as a completed email/OAuth flow.
+
 - Public display content, field facts, schedule, price and availability come from the API; the browser never calculates authority.
 - The browser calls only same-origin `/api/axs`; the Client server alone knows the Operations origin and proxy credential.
 - The basket holds 1-20 unique dated field-slot occurrences. The public client sends one grouped request; it must not simulate partial success.

@@ -1,8 +1,10 @@
 # Client Testing
 
+Checkpoint 2 adds focused tests for cross-site Customer-BFF rejection, opaque Client-cookie handling with raw token stripping, labelled keyboard-accessible account forms and full account-route analytics exclusion. The required route/a11y/visual/full-check commands remain the evidence source; no live Google or Resend provider request is part of this checkpoint.
+
 ## Checkpoint 1 same-origin integration - 2026-07-30
 
-Focused proxy/adapter/component tests passed, including a controlled grouped hold → order → payment-attempt → protected-status fixture, followed by contract check, security scan, all 29 unit/component tests, lint (one pre-existing branding `<img>` warning), TypeScript and production build. The build's static bundle scan found no Operations origin, proxy secret, retired `NEXT_PUBLIC_API_ORIGIN`, or production Operations hostname. Route/reflow/keyboard/mobile checks and axe passed against a controlled local Admin fixture through `/api/axs`. No Vercel deployment, live provider, customer account or real payment mutation was performed.
+Focused proxy/adapter/component tests passed, including Customer-BFF cookie/token stripping, origin rejection and keyboard-labelled account forms, followed by contract check, security scan, 32 unit/component tests, lint (one pre-existing branding `<img>` warning), TypeScript and production build. Route/reflow/keyboard/mobile checks, accessibility and visual captures passed against a controlled disposable Admin fixture; the capture harness substitutes the reserved fixture CDN image rather than making an external request. No Vercel deployment, live Google/Resend provider, or real payment mutation was performed.
 
 ## v1.12 consumer verification - 2026-07-25
 

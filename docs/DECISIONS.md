@@ -2,6 +2,12 @@
 
 | Decision | Result |
 | --- | --- |
+| Customer session | The Client BFF sets/clears the Client-origin opaque session and CSRF cookies; JavaScript never reads the session token. |
+| Customer providers | Google return and email states are safe disabled/unavailable states without Admin provider credentials; the Client never holds those credentials. |
+| Account privacy | Account/auth/recovery/Google routes are noindex and analytics-excluded. Email, phone, age, tokens and free text are not analytics values. |
+
+| Decision | Result |
+| --- | --- |
 | Boundary | Vercel public client only; no database/provider/admin authority. |
 | API integration | Browser and Client Components use only same-origin `/api/axs`; the BFF is an explicit route/method allowlist, never an open proxy. |
 | Proxy trust | Server-only Admin origin and shared proxy credential; state changes require the canonical Client Origin/Referer and Admin receives only pseudonymous bounded client context. |

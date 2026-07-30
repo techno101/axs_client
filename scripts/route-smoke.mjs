@@ -19,6 +19,15 @@ const routes = [
   "/policies/refund",
   "/maintenance",
   "/error",
+  "/sign-up",
+  "/sign-in",
+  "/verify-email",
+  "/forgot-password",
+  "/reset-password",
+  "/google/return",
+  "/account",
+  "/account/profile",
+  "/account/security",
 ];
 const fixturePath = process.env.E2E_FIXTURE_PATH;
 const bookingFixtures = fixturePath ? JSON.parse(await readFile(fixturePath, "utf8")) : null;
@@ -51,7 +60,7 @@ try {
 
   for (const width of [360, 390, 720, 768, 1024, 1440]) {
     await page.setViewportSize({ width, height: width < 768 ? 844 : 900 });
-    for (const route of ["/", "/fields", "/book"]) {
+    for (const route of ["/", "/fields", "/book", "/sign-up", "/sign-in"]) {
       await page.goto(`${baseUrl}${route}`, { waitUntil: "domcontentloaded" });
       const overflows = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1);
       if (overflows) {
@@ -101,9 +110,10 @@ try {
   process.stdout.write("PASS keyboard navigation interaction\n");
 
   for (const route of ["/", "/fields", "/book"]) {
-    await page.setViewportSize({ width: 1024, height: 900 });
+    // A 1024px layout at 200% browser zoom has a 512px effective CSS viewport.
+    // Set that viewport directly so media queries participate as they do in a real zoomed browser.
+    await page.setViewportSize({ width: 512, height: 900 });
     await page.goto(`${baseUrl}${route}`, { waitUntil: "domcontentloaded" });
-    await page.evaluate(() => { document.documentElement.style.zoom = "2"; });
     if (await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1)) throw new Error(`${route} overflows at 200% zoom`);
   }
   process.stdout.write("PASS 200% zoom reflow on core public routes\n");

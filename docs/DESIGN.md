@@ -1,5 +1,7 @@
 # Client Design System
 
+Customer pages use the public-site typography, 50px minimum form controls, visible focus outlines, labelled fields, alert/status messaging, responsive single-column fallback and retained guest-booking links. Account routes are non-indexed and analytics-excluded because their URLs/form states can contain personal or one-time data.
+
 ## Phase 1 implementation
 
 The implemented visual language is a premium night-field editorial system rather than a generic SaaS template: deep navy atmospheres, controlled acid-lime actions, accessible green labels, floodlight/glow layers, net and pitch-line geometry, compressed display typography, warm reading surfaces, full-bleed photography, and disciplined circular details. The home, fields, booking, content, policy, maintenance, error, loading, empty, and 404 experiences share one system.

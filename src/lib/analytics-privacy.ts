@@ -1,6 +1,6 @@
 import type { BeforeSendEvent } from "@vercel/analytics";
 
-const blockedPaths = ["/booking/result", "/booking/find"];
+const blockedPaths = ["/booking/result", "/booking/find", "/account", "/sign-in", "/sign-up", "/verify-email", "/forgot-password", "/reset-password", "/google"];
 
 export function privacySafeAnalyticsEvent(event: BeforeSendEvent): BeforeSendEvent | null {
   let url: URL;

@@ -1,5 +1,7 @@
 # Client Memory
 
+On 2026-07-30, Checkpoint 2 on `v7` added the Customer-only same-origin BFF and account UI. The BFF sets Client-origin HttpOnly session cookies, strips raw auth/email/handoff values from JSON, applies mutation origin/CSRF checks and excludes all customer/auth routes from analytics. Guest flows remain intact; Google and email are unavailable unless separate Admin configuration is present. No provider call or deployment occurred.
+
 On 2026-07-30, Checkpoint 1 moved every current public API call behind same-origin `/api/axs`. Browser code no longer receives the Operations origin. The BFF is route/method allowlisted, validates same-site mutations, bounds bodies/timeouts/request IDs, forwards only required headers, rewrites Admin-owned media URLs, and authenticates private/mutating Admin hops with a server-only credential. The separate operational-events proxy remains narrow. Local fixture routes/axe, 29 tests including the grouped hold/order/payment/status fixture, security, typecheck, lint and build/bundle scanning pass; no deployment or payment enablement occurred.
 
 On 2026-07-28, the public client replaced its recreated shield/type logo with the exact supplied transparent ArmourXSports wordmark in the header, footer and metadata. The client contract pin and all booking authority remain unchanged.

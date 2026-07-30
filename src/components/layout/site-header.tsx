@@ -24,6 +24,9 @@ export function SiteHeader() {
           ))}
         </nav>
         <div className="site-header__actions">
+          <Link className="header-find" href="/sign-in">
+            Sign in
+          </Link>
           <Link className="header-find" href="/booking/find">
             Find booking
           </Link>
@@ -47,6 +50,10 @@ export function SiteHeader() {
               <Link href="/booking/find">
                 <span>06</span>
                 Find booking
+              </Link>
+              <Link href="/sign-in">
+                <span>07</span>
+                Sign in
               </Link>
             </nav>
             <ButtonLink href="/book">Book a field</ButtonLink>

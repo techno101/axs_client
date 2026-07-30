@@ -26,6 +26,21 @@ try {
       deviceScaleFactor: 1,
     });
     const page = await context.newPage();
+    // Disposable database fixtures may reference the reserved cdn.example.test host.
+    // Keep visual verification deterministic without requesting an external image host.
+    const fixtureImage = () =>
+      ({
+        contentType: "image/svg+xml",
+        body: '<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800"><rect width="100%" height="100%" fill="#1c5e51"/></svg>',
+      });
+    await page.route("https://cdn.example.test/**", (route) =>
+      route.fulfill(fixtureImage()),
+    );
+    await page.route(/\/_next\/image\?.*cdn\.example\.test/, (route) =>
+      route.fulfill({
+        ...fixtureImage(),
+      }),
+    );
     await page.goto(`${baseUrl}${capture.route}`, { waitUntil: "domcontentloaded" });
     if (capture.route === "/book") {
       await page.waitForLoadState("networkidle");
@@ -46,11 +61,21 @@ try {
       window.scrollTo(0, 0);
       await new Promise((resolve) => setTimeout(resolve, 500));
     });
-    await page.waitForFunction(
-      () => [...document.images].every((image) => image.complete && image.naturalWidth > 0),
-      undefined,
-      { timeout: 20_000 },
-    );
+    // Next Image lazily loads after intersection. Visit each image explicitly so a full-page
+    // capture verifies real assets instead of timing out on below-the-fold placeholders.
+    for (const image of await page.locator("img").all()) await image.scrollIntoViewIfNeeded();
+    const imagesReady = await page
+      .waitForFunction(() => [...document.images].every((image) => image.complete && image.naturalWidth > 0), undefined, { timeout: 8_000 })
+      .then(() => true)
+      .catch(() => false);
+    if (!imagesReady) {
+      const unloaded = await page.locator("img").evaluateAll((images) =>
+        images
+          .filter((image) => !image.complete || image.naturalWidth === 0)
+          .map((image) => ({ alt: image.alt, src: image.currentSrc || image.getAttribute("src") })),
+      );
+      throw new Error(`${capture.name} contains unloaded images: ${JSON.stringify(unloaded)}`);
+    }
     await page.screenshot({
       path: path.join(output, `${capture.name}.png`),
       fullPage: capture.fullPage,

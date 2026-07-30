@@ -1,5 +1,11 @@
 # Client Changelog
 
+## Checkpoint 2 customer identity and verification - 2026-07-30
+
+- Added same-origin Customer BFF handlers, Client-origin secure cookie management, Google callback/handoff boundary and strict customer-route allowlist.
+- Added responsive sign-up/sign-in/verify/recovery/reset/Google-return/account/profile/security routes with guest navigation retained.
+- Repinned the static Admin OpenAPI consumer artifact to v1.14.0. No deployment, live OAuth, Resend delivery, payment or POS work was performed.
+
 ## Checkpoint 1 same-origin integration - 2026-07-30
 
 - Replaced browser Operations-origin calls and rendered origin props with the allowlisted same-origin `/api/axs` BFF.
