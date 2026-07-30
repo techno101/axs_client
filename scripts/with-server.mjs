@@ -6,7 +6,11 @@ const target = process.argv[2];
 if (!target) throw new Error("Pass the verification script path to with-server.mjs");
 
 const nextBin = path.resolve("node_modules/next/dist/bin/next");
-const serverMode = process.env.E2E_USE_DEV_SERVER === "true" ? "dev" : "start";
+// Browser smoke fixtures deliberately use a loopback Admin origin. `next start`
+// forces NODE_ENV=production and rejects that safe local-only test boundary before
+// a route renders, so use Next's development server unless a caller explicitly
+// requests a production-server smoke.
+const serverMode = process.env.E2E_USE_DEV_SERVER === "false" ? "start" : "dev";
 const server = spawn(process.execPath, [nextBin, serverMode, "-p", "4173"], {
   stdio: "inherit",
   env: process.env,

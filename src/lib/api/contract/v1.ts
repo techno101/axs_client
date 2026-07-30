@@ -10,7 +10,7 @@
  */
 
 export const API_CONTRACT_VERSION = "1.14.0" as const;
-export const API_CONTRACT_SHA256 = "9d093402d67a1b32d445334c94cc1ff9b31f1970f305d3a2af17653a1e60811b" as const;
+export const API_CONTRACT_SHA256 = "8dfca65cd62b789c09099abf354bbbc936d0f5651ccf557e8eb95921cd5ccc9f" as const;
 export const API_TIMEZONE = "Asia/Kuala_Lumpur" as const;
 
 export interface ApiMeta { requestId: string; serverTime: string; timezone: "Asia/Kuala_Lumpur"; contractVersion: "1.14.0"; nextPage?: number | null; pageSize?: number; total?: number; }
@@ -333,7 +333,7 @@ export interface PublicBookingStatusResponse { data: PublicBookingStatus; meta: 
 
 export interface PublicOrderStatusResponse { data: PublicOrderStatus; meta: ApiMeta; error: null; }
 
-export interface LookupBookingResponse { data: PublicBookingStatus; meta: ApiMeta; error: null; }
+export interface LookupBookingResponse { data: GuestBookingLookup; meta: ApiMeta; error: null; }
 
 export interface PageResponse { data: Page; meta: ApiMeta; error: null; }
 

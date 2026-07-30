@@ -5,7 +5,7 @@ import { PrivacySafeAnalytics } from "@/components/analytics/privacy-safe-analyt
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://armourxsports.example"),
+  metadataBase: new URL("https://armourxsports.com"),
   title: {
     default: "ArmourXSports | Field booking",
     template: "%s | ArmourXSports",
@@ -27,10 +27,10 @@ const structuredData = {
   "@context": "https://schema.org",
   "@type": "WebSite",
   name: "ArmourXSports",
-  url: "https://armourxsports.example/",
+  url: "https://armourxsports.com/",
   potentialAction: {
     "@type": "SearchAction",
-    target: "https://armourxsports.example/fields",
+    target: "https://armourxsports.com/fields",
     "query-input": "required name=search_term_string",
   },
 };

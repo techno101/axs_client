@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: ["/booking/find", "/booking/result", "/account", "/maintenance", "/privacy", "/terms", "/policies/"],
     },
-    sitemap: "https://armourxsports.example/sitemap.xml",
+    sitemap: "https://armourxsports.com/sitemap.xml",
   };
 }
