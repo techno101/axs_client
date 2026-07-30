@@ -39,7 +39,7 @@ export function SiteFooter() {
       <div className="shell site-footer__inner">
         <div className="site-footer__brand">
           <BrandMark footer />
-          <p>Built for the full match day. Two fields, two complete blocks, one clear booking path.</p>
+          <p>Complete morning and evening field blocks with live server-authoritative availability.</p>
           <div className="footer-location">
             <PinIcon />
             <span>Venue address pending owner confirmation</span>

@@ -1,18 +1,22 @@
 # Client API Contract View
 
-The admin repository owns OpenAPI v1. This repository consumes the copied artifact at `src/lib/api/contract/v1.ts`, version `1.0.0`, checksum `b19c254c40a4624ace71cfd07de3cad5a96b0291e4e3713799ce03e2bc061a7c`. `npm run contract:check` validates the local pin and the admin command `contract:check-client` compares the exact copy.
+## Customer identity boundary
 
-`src/lib/api/http-client.ts` calls the configured `NEXT_PUBLIC_API_ORIGIN` and uses the `{ data, meta, error }` envelope. Dynamic inventory/status calls use no-store. Hold, booking, and payment-attempt mutations generate/reuse an idempotency key only for the same request.
+Customer browser calls use only `/api/customer/*`. That BFF has an exact route/method map to Admin `/v1/customer/*`, validates the canonical Client Origin/Referer for mutations, forwards the trusted proxy context and keeps the opaque Customer session in a Client-origin `Secure`, `HttpOnly`, `SameSite=Lax` cookie. It also owns the temporary Google PKCE/state/nonce and one-time handoff cookies. Raw session, CSRF, verification/reset and handoff material is removed from JSON before it reaches browser code. Customer pages are excluded from analytics; email/phone/age/provider IDs/free text never become analytics properties.
 
-| Client action | v1 endpoint |
+`axs_admin` owns v1.14.0 OpenAPI. The copied static contract artifact is `src/lib/api/contract/v1.ts`, checksum `e3ad527748a79698d205cc7b6e88173304f364d87e7a24786c510cc680cc20ab`. `npm run contract:check` verifies the local representation; the client never imports admin source. Customer identity types grant no browser authority beyond the Client BFF.
+
+All browser API calls use same-origin `/api/axs/v1/public/...`. The BFF permits only the exact public routes/methods used by this repository, bounds bodies/request IDs/timeouts, forwards only required content, idempotency and booking-access headers, validates the canonical Client Origin/Referer for state changes, and authenticates private/mutating Admin hops. It rejects Admin, POS, worker, webhook, arbitrary-host, traversal and unsupported-method requests. `AXS_ADMIN_API_ORIGIN`, `AXS_CLIENT_PROXY_SECRET`, and `PUBLIC_APP_ORIGIN` are server-only.
+
+The browser may report bounded safe client failures to same-origin `/api/operational-events`; the client server alone rate-limits/redacts then authenticates to the admin incident endpoint. This does not expose an admin token, create a browser webhook, or confer booking/payment authority.
+
+| Client flow | API boundary |
 | --- | --- |
-| Public settings/fields | `GET /v1/public/config`, `/fields`, `/fields/{slug}` |
-| Live slots | `GET /v1/public/availability?date=` |
-| Acquire/read hold | `POST /v1/public/holds`, `GET /holds/{token}` |
-| Create booking | `POST /v1/public/bookings` |
-| Begin provider payment | `POST /v1/public/bookings/{reference}/payment-attempts` |
-| Poll authoritative result | `GET /v1/public/bookings/{reference}/status?accessToken=` |
-| Privacy-limited recovery | `POST /v1/public/bookings/find` |
-| Published content | `GET /v1/public/pages/{slug}`, `/articles`, `/articles/{slug}`, `/faqs` |
+| Browse | config, fields, availability and published CMS data |
+| Aggregate checkout | `hold-groups` → `orders` → one order payment attempt |
+| Authoritative result | order status with the dedicated access-token header |
+| Legacy compatibility | single booking endpoints remain but new public flow uses orders |
 
-Availability, price, hold expiry, and payment confirmation are never browser authority. The Billplz redirect is navigation only; only verified backend state can produce a paid/confirmed result. The client sends no cookies cross-origin and requires the server's exact-origin CORS response.
+`onlinePayment.enabled` is server-authoritative. If false, the client stops before mutations; any attempted public mutation is still rejected by the API before a write. Hosted checkout redirects are navigation only. Browser analytics/session state must never contain customer data, payment IDs, access tokens in analytics payloads, or free text.
+
+The client has no POS authority: its static artifact may contain POS types but it does not call or expose those routes. Customer account UI is implemented; Google/email remain safe unavailable states until the separate Admin-owned provider configuration is installed. Guest history is never backfilled.

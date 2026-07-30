@@ -6,7 +6,8 @@ const target = process.argv[2];
 if (!target) throw new Error("Pass the verification script path to with-server.mjs");
 
 const nextBin = path.resolve("node_modules/next/dist/bin/next");
-const server = spawn(process.execPath, [nextBin, "start", "-p", "4173"], {
+const serverMode = process.env.E2E_USE_DEV_SERVER === "true" ? "dev" : "start";
+const server = spawn(process.execPath, [nextBin, serverMode, "-p", "4173"], {
   stdio: "inherit",
   env: process.env,
 });

@@ -1,11 +1,20 @@
 import AxeBuilder from "@axe-core/playwright";
 import { chromium } from "@playwright/test";
+import { readFile } from "node:fs/promises";
 
 const baseUrl = process.env.BASE_URL ?? "http://127.0.0.1:4173";
-const routes = ["/", "/book", "/booking/result?reference=AXS-ACCESSIBILITY", "/booking/find", "/contact", "/this-route-does-not-exist"];
+const fixturePath = process.env.E2E_FIXTURE_PATH;
+const bookingFixtures = fixturePath ? JSON.parse(await readFile(fixturePath, "utf8")) : null;
+const routes = ["/", "/book", "/booking/find", "/contact", "/sign-up", "/sign-in", "/verify-email", "/forgot-password", "/reset-password", "/this-route-does-not-exist"];
+if (bookingFixtures) routes.push(...Object.values(bookingFixtures).map((fixture) => `/booking/result?reference=${fixture.reference}`));
 const browser = await chromium.launch({ channel: "chrome" });
 const context = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
 const page = await context.newPage();
+if (bookingFixtures) {
+  await page.addInitScript((fixtures) => {
+    for (const fixture of Object.values(fixtures)) window.sessionStorage.setItem(`axs:booking:${fixture.reference}`, fixture.accessToken);
+  }, bookingFixtures);
+}
 
 try {
   for (const route of routes) {

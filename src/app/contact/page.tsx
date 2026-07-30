@@ -13,8 +13,8 @@ export default function ContactPage() {
     <>
       <PageHero
         compact
-        eyebrow="Talk to the ground"
-        title={<>Let’s sort<br />the details.</>}
+        eyebrow="Contact ArmourXSports"
+        title={<>Contact details<br />are pending.</>}
         intro="Approved phone, email, venue address and support hours are still pending. This route keeps every placeholder explicit."
       />
       <section className="contact-section">

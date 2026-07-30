@@ -1,77 +1,64 @@
-import type { Booking, CreateBookingRequest, CreateHoldRequest, CreatePaymentAttemptRequest, CustomerDetails, Hold, PaymentAttempt, PublicAvailabilityState, PublicBookingStatus } from "@/lib/api/contract/v1";
+import type { Booking, CreateBookingRequest, CreateHoldGroupRequest, CreateHoldRequest, CreateOrderRequest, CreatePaymentAttemptRequest, CustomerDetails, FacilityFact, Hold, HoldGroup, OnlinePaymentCapability, Order, OrderPaymentAttempt, PaymentAttempt, PublicAvailabilityState, PublicBookingStatus, PublicOrderStatus } from "@/lib/api/contract/v1";
 
-// UI-specific view models adapt the pinned admin-owned v1 contract artifact
-// without moving booking authority into the public repository.
 export type AvailabilityStatus = PublicAvailabilityState;
-
 export type PaymentState = "pending" | "confirmed" | "failed" | "expired";
 
 export type Field = {
-  id: "FIELD_01" | "FIELD_02";
-  slug: "field-one" | "field-two";
+  id: string;
+  slug: string;
   name: string;
   shortName: string;
   description: string;
   surface: string;
-  size: string;
+  facilityFacts: FacilityFact[];
   image: string;
   imageAlt: string;
   features: string[];
 };
 
 export type BookingBlock = {
-  id: "MORNING" | "EVENING";
+  fieldId: string;
+  id: string;
   label: string;
   startsAt: string;
   endsAt: string;
-  amountMinor: 60000 | 80000;
+  amountMinor: number;
   currency: "MYR";
+  weekdays: number[];
 };
 
+export type PublicConfigView = { slots: BookingBlock[]; onlinePayment: OnlinePaymentCapability; };
+
 export type AvailabilitySlot = {
-  fieldId: Field["id"];
-  blockId: BookingBlock["id"];
+  fieldId: string;
+  blockId: string;
+  label?: string;
+  startsAt?: string;
+  endsAt?: string;
+  amountMinor?: number;
+  currency?: "MYR";
   status: AvailabilityStatus;
   publicMessage?: string;
 };
 
-export type PaymentResult = {
-  reference: string;
-  state: PaymentState;
-  fieldName: string;
-  blockLabel: string;
-  bookingDate: string;
-  amountMinor: number;
-  currency: "MYR";
-  lastCheckedAt: string;
-};
-
-export type Article = {
-  slug: string;
-  category: string;
-  title: string;
-  excerpt: string;
-  readTime: string;
-  publishedLabel: string;
-  image: string;
-  imageAlt: string;
-  body: Array<{ heading: string; paragraphs: string[] }>;
-};
-
-export type FaqItem = {
-  question: string;
-  answer: string;
-};
+export type PaymentResult = { reference: string; state: PaymentState; fieldName: string; blockLabel: string; bookingDate: string; amountMinor: number; currency: "MYR"; lastCheckedAt: string; };
+export type Article = { slug: string; category: string; title: string; excerpt: string; readTime: string; publishedLabel: string; image: string; imageAlt: string; body: Array<{ heading: string; paragraphs: string[] }>; };
+export type FaqItem = { question: string; answer: string; };
 
 export interface PublicClient {
   getFields(): Promise<Field[]>;
   getField(slug: string): Promise<Field | null>;
+  getConfig(): Promise<PublicConfigView>;
   getBlocks(): Promise<BookingBlock[]>;
   getAvailability(date: string): Promise<AvailabilitySlot[]>;
   createHold(input: CreateHoldRequest, idempotencyKey: string): Promise<Hold>;
+  createHoldGroup(input: CreateHoldGroupRequest, idempotencyKey: string): Promise<HoldGroup>;
   createBooking(input: CreateBookingRequest, idempotencyKey: string): Promise<Booking>;
+  createOrder(input: CreateOrderRequest, idempotencyKey: string): Promise<Order>;
   createPaymentAttempt(reference: string, input: CreatePaymentAttemptRequest, idempotencyKey: string): Promise<PaymentAttempt>;
+  createOrderPaymentAttempt(reference: string, input: CreatePaymentAttemptRequest, idempotencyKey: string): Promise<OrderPaymentAttempt>;
   getBookingStatus(reference: string, accessToken: string): Promise<PublicBookingStatus>;
+  getOrderStatus(reference: string, accessToken: string): Promise<PublicOrderStatus>;
   findBooking(reference: string, phone: string): Promise<PublicBookingStatus>;
   getPaymentResult(reference: string): Promise<PaymentResult>;
   getArticles(): Promise<Article[]>;
@@ -79,4 +66,4 @@ export interface PublicClient {
   getFaqs(): Promise<FaqItem[]>;
 }
 
-export type { CustomerDetails, Hold, Booking, PaymentAttempt, PublicBookingStatus };
+export type { CustomerDetails, Hold, HoldGroup, Booking, Order, PaymentAttempt, OrderPaymentAttempt, PublicBookingStatus, PublicOrderStatus };

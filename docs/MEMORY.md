@@ -1,20 +1,21 @@
-# Client Current State
+# Client Memory
 
-## Phase 4 - verified 2026-07-16
+On 2026-07-30, Checkpoint 2 on `v7` added the Customer-only same-origin BFF and account UI. The BFF sets Client-origin HttpOnly session cookies, strips raw auth/email/handoff values from JSON, applies mutation origin/CSRF checks and excludes all customer/auth routes from analytics. Guest flows remain intact; Google and email are unavailable unless separate Admin configuration is present. No provider call or deployment occurred.
 
-Public pages use `createHttpPublicClient`, a typed v1 HTTP adapter configured only by `NEXT_PUBLIC_API_ORIGIN`. Fields, availability, holds, booking creation, Billplz attempt redirect, authoritative status polling, reference-plus-phone lookup, pages, articles, and FAQs are live contract consumers. Booking dates are generated from Malaysia-local current time instead of a phase fixture date.
+On 2026-07-30, Checkpoint 1 moved every current public API call behind same-origin `/api/axs`. Browser code no longer receives the Operations origin. The BFF is route/method allowlisted, validates same-site mutations, bounds bodies/timeouts/request IDs, forwards only required headers, rewrites Admin-owned media URLs, and authenticates private/mutating Admin hops with a server-only credential. The separate operational-events proxy remains narrow. Local fixture routes/axe, 29 tests including the grouped hold/order/payment/status fixture, security, typecheck, lint and build/bundle scanning pass; no deployment or payment enablement occurred.
 
-The booking flow stores only the opaque status access token in session storage for the result transition. Redirect parameters never confirm payment; the result page polls backend booking/payment state. Marketing presentation remains client-owned while inventory identity, availability, price, hold expiry, booking reference, and payment truth remain server-owned.
+On 2026-07-28, the public client replaced its recreated shield/type logo with the exact supplied transparent ArmourXSports wordmark in the header, footer and metadata. The client contract pin and all booking authority remain unchanged.
 
-`src/lib/api/mock-client.ts` is retained only for isolated unit/component fixtures. Production pages do not import it. The client has no PostgreSQL driver, admin code, provider secret, callback, or payment authority.
+On 2026-07-25, the client copied the admin-owned API v1.12.0 pin (`cf7e1aa1d733a66d5556879b3fffaa3e3a25a2d1ebbe253144d85750b6e18f9b`). No public UI or customer authentication was added; admin security, exports/purge, delivery, and POS updater/hardware types do not grant client authority.
 
-## Verification
+On 2026-07-24, the client copied the admin-owned API v1.11.0 pin (`181432b9a86d4fe2ba5d55f75c3779737f93b84726b4de9007f250a367b55a43`). No public UI or business behavior changed, and the client still has no database, provider, Google employee-access, or POS authority.
 
-- 13 unit/component tests pass, including the HTTP adapter.
-- Lint, strict TypeScript, contract pin, security boundary, and production build pass.
-- Browser verification loaded live booking data through exact-origin CORS with no application CORS error.
-- Contract checksum: `b19c254c40a4624ace71cfd07de3cad5a96b0291e4e3713799ce03e2bc061a7c`.
+Against the guarded local API, native-Chrome route and axe smoke checks passed for the core public routes, desktop/mobile reflow, zoom, keyboard/mobile navigation and disabled-payment pre-mutation boundary. This is local-only evidence; provider callbacks, email/OAuth and deployment remain external gates.
 
-## External gates
+`axs_client` is an independent Vercel public consumer of the admin-generated pinned v1.12.0 contract (`cf7e1aa1d733a66d5556879b3fffaa3e3a25a2d1ebbe253144d85750b6e18f9b`). It owns no server authority, database connection, payment secret, webhook, admin UI or POS behavior. Its same-origin operational-report server route holds a server-only source token, rate-limits and recursively redacts bounded safe browser failure reports before forwarding them to admin; no browser bundle receives the token.
 
-Set the approved API origin in the Vercel environment, complete a live Billplz merchant sandbox flow, approve final venue/legal/policy/media content, configure production headers/domain/monitoring, and deploy. Never place server or provider secrets in this repository.
+The current booking wizard reads real config/field/availability data, supports a local basket of up to 20 dated slots and uses the v1.5 grouped hold → order → one hosted-payment-attempt flow when payment is enabled. It persists only the order access token under its short-lived session key for result polling. With payment disabled, it makes no hold/order/payment request.
+
+HitPay checkout redirect is not confirmation. The result page reads authoritative order status. Sandbox setup and production payment enablement remain admin/owner gates. Owner-pending contacts/legal/policies/media remain visibly pending rather than invented.
+
+SEO has static metadata, robots, sitemap and WebSite JSON-LD against the placeholder origin. Analytics excludes customer/result paths. `/account` is a non-indexed inactive boundary: email/password accounts need admin-owned account/session/email work; Google OAuth and Resend remain disabled without owner configuration, and guest history is never backfilled.

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { FindBookingForm } from "@/components/booking/find-booking-form";
 import { PageHero } from "@/components/layout/page-hero";
-import { configuredApiOrigin } from "@/lib/api/http-client";
 
 export const metadata: Metadata = {
   title: "Find a booking",
@@ -22,7 +21,7 @@ export default function FindBookingPage() {
       />
       <section className="finder-section">
         <div className="shell">
-          <FindBookingForm apiOrigin={configuredApiOrigin()} />
+          <FindBookingForm />
         </div>
       </section>
     </>

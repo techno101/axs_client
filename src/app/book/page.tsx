@@ -1,27 +1,26 @@
 import type { Metadata } from "next";
 import { BookingWizard } from "@/components/booking/booking-wizard";
 import { PageHero } from "@/components/layout/page-hero";
-import { configuredApiOrigin, createHttpPublicClient } from "@/lib/api/http-client";
+import { createServerPublicClient } from "@/lib/api/server-client";
 import { images } from "@/lib/content";
 import { toMalaysiaDateInput } from "@/lib/format";
 
 export const metadata: Metadata = {
   title: "Book a field",
-  description: "Preview the accessible ArmourXSports field booking route.",
+  description: "Choose a date, field and complete block using live ArmourXSports availability.",
 };
 
 export const dynamic = "force-dynamic";
 
 export default async function BookPage() {
-  const apiOrigin = configuredApiOrigin();
   const businessDate = toMalaysiaDateInput(new Date());
   const initial = new Date(`${businessDate}T00:00:00.000Z`);
   initial.setUTCDate(initial.getUTCDate() + 2);
   const initialDate = initial.toISOString().slice(0, 10);
-  const publicClient = createHttpPublicClient(apiOrigin);
-  const [fields, blocks, availability] = await Promise.all([
+  const publicClient = createServerPublicClient();
+  const [fields, config, availability] = await Promise.all([
     publicClient.getFields(),
-    publicClient.getBlocks(),
+    publicClient.getConfig(),
     publicClient.getAvailability(initialDate),
   ]);
 
@@ -30,12 +29,12 @@ export default async function BookPage() {
       <PageHero
         compact
         eyebrow="Live booking"
-        title={<>Build your<br />match day.</>}
+        title={<>Book a<br />field.</>}
         intro="Choose a date, field and complete block. Availability, price, holds and payment state are confirmed by the ArmourXSports API."
         image={images.nightPlayer}
         imageAlt="Player on a football pitch under floodlights"
       />
-      <BookingWizard fields={fields} blocks={blocks} availability={availability} apiOrigin={apiOrigin} businessDate={businessDate} initialDate={initialDate} />
+      <BookingWizard fields={fields} blocks={config.slots} availability={availability} onlinePayment={config.onlinePayment} businessDate={businessDate} initialDate={initialDate} />
     </>
   );
 }

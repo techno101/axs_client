@@ -1,11 +1,7 @@
-# Client Deployment
+# Deployment
 
-The only runtime value is the public HTTPS API origin:
+Checkpoint 2 customer deployment is NOT PERFORMED. Vercel requires only the existing server-only Admin origin, Client proxy credential and canonical public origin. Customer Google/Resend credentials remain Admin/VPS-only. Do not configure them, deploy them, or claim sender/OAuth readiness until the separate owner acceptance checkpoint.
 
-```text
-NEXT_PUBLIC_API_ORIGIN=https://api.example.invalid
-```
+`axs_client` deploys independently through Vercel. It never owns VPS scripts, PM2, database migrations or provider webhook configuration. Vercel must hold server-only `AXS_ADMIN_API_ORIGIN`, `AXS_CLIENT_PROXY_SECRET`, `PUBLIC_APP_ORIGIN`, and the existing optional `OBSERVABILITY_INGEST_TOKEN`; none may use `NEXT_PUBLIC_`.
 
-Developer public values belong in ignored `.env.local`; hosted values belong in the Vercel environment dashboard. Database, Billplz, session, callback, worker, and admin secrets never belong here.
-
-Before release: verify the pinned contract, build, configure the exact matching admin CORS origin, apply nonce CSP/security headers at the hosting edge, validate no-store behavior for availability/status, run booking-to-confirmation against the live merchant sandbox, test domain/TLS/monitoring/rollback, and approve final content/assets. No deployment occurred in Phase 4.
+Use separate Preview and Production values, keep the Admin origin HTTPS when hosted, and install the matching proxy secret in Admin before enabling sensitive Client requests. No Vercel deployment or environment change was made in Checkpoint 1.

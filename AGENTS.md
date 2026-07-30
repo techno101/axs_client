@@ -2,7 +2,7 @@
 
 ## Boundary
 
-This repository owns only the public website and customer booking experience. It consumes the admin-owned `/v1` API. It has no admin pages, database driver/ORM, Billplz secret, webhook handler, authoritative price/availability calculation, or direct import from `axs_admin`.
+This repository owns only the public website and customer booking experience. It consumes the admin-owned `/v1` API. It has no admin pages, database driver/ORM, provider secret, webhook handler, authoritative price/availability calculation, or direct import from `axs_admin`.
 
 ## Required workflow
 

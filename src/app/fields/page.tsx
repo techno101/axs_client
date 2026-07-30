@@ -5,18 +5,18 @@ import { PageHero } from "@/components/layout/page-hero";
 import { ButtonLink } from "@/components/ui/button-link";
 import { ArrowUpRightIcon, CheckIcon } from "@/components/ui/icons";
 import { SectionHeading } from "@/components/ui/section-heading";
-import { configuredApiOrigin, createHttpPublicClient } from "@/lib/api/http-client";
+import { createServerPublicClient } from "@/lib/api/server-client";
 import { images } from "@/lib/content";
 import { formatMoney } from "@/lib/format";
 
 export const metadata: Metadata = {
   title: "Football fields",
-  description: "Compare Armour Field One and Armour Field Two before choosing a complete booking block.",
+  description: "Review current field inventory before choosing a complete booking block.",
 };
 export const dynamic = "force-dynamic";
 
 export default async function FieldsPage() {
-  const publicClient = createHttpPublicClient(configuredApiOrigin());
+  const publicClient = createServerPublicClient();
   const [fields, blocks] = await Promise.all([
     publicClient.getFields(),
     publicClient.getBlocks(),
@@ -25,9 +25,9 @@ export default async function FieldsPage() {
   return (
     <>
       <PageHero
-        eyebrow="The Armour ground"
-        title={<>Pick your<br />field.</>}
-        intro="Two full football fields, the same clear block format, and enough time to build a real match day."
+        eyebrow="Available fields"
+        title={<>Review each<br />field.</>}
+        intro="Review the current field records and choose a fixed morning or evening block."
         image={images.aerialPitch}
         imageAlt="Aerial view of a green football pitch inside a stadium"
       />
@@ -35,8 +35,8 @@ export default async function FieldsPage() {
         <div className="shell">
           <SectionHeading
             eyebrow="Field inventory"
-            title={<>Two ways to<br />take the ground.</>}
-            intro="Temporary visual content gives each field its own mood while final venue photography and specifications await approval."
+            title={<>Current field<br />records.</>}
+            intro="Temporary imagery is clearly labelled while final venue photography and specifications await owner approval."
           />
           <div className="field-listing">
             {fields.map((field, index) => (
@@ -49,11 +49,7 @@ export default async function FieldsPage() {
                   <p className="eyebrow"><span aria-hidden="true" />{field.shortName}</p>
                   <h2>{field.name}</h2>
                   <p>{field.description}</p>
-                  <ul>
-                    {field.features.map((feature) => (
-                      <li key={feature}><CheckIcon />{feature}</li>
-                    ))}
-                  </ul>
+                  {field.features.length ? <ul>{field.features.map((feature) => <li key={feature}><CheckIcon />{feature}</li>)}</ul> : <p>Verified venue features are pending owner confirmation.</p>}
                   <Link href={`/fields/${field.slug}`}>
                     Explore {field.shortName}
                     <ArrowUpRightIcon />
@@ -68,11 +64,11 @@ export default async function FieldsPage() {
         <div className="shell block-comparison__grid">
           <div>
             <p className="eyebrow eyebrow--light"><span aria-hidden="true" />Fixed launch blocks</p>
-            <h2>Choose the time.<br />The field is yours.</h2>
+            <h2>Compare the two<br />booking blocks.</h2>
           </div>
           <div className="block-comparison__rows">
             {blocks.map((block) => (
-              <div key={block.id}>
+              <div key={`${block.fieldId}-${block.id}`}>
                 <span>{block.label}</span>
                 <strong>{block.startsAt}—{block.endsAt}</strong>
                 <b>{formatMoney(block.amountMinor)}</b>

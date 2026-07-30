@@ -11,26 +11,26 @@ import {
   PinIcon,
 } from "@/components/ui/icons";
 import { SectionHeading } from "@/components/ui/section-heading";
-import { configuredApiOrigin, createHttpPublicClient } from "@/lib/api/http-client";
+import { createServerPublicClient } from "@/lib/api/server-client";
 import { images } from "@/lib/content";
 import { formatMoney } from "@/lib/format";
 
 export const metadata: Metadata = {
-  title: "Own the pitch",
+  title: "Football field booking",
   description:
     "Discover ArmourXSports and preview complete morning or evening football field blocks.",
 };
 export const dynamic = "force-dynamic";
 
 const facilities = [
-  ["01", "Floodlit play", "Balanced light across the full field"],
-  ["02", "Team-ready", "Shelters and changing access"],
-  ["03", "Easy arrival", "On-site parking and clear entry"],
-  ["04", "Full block", "Six hours without hourly handovers"],
+  ["01", "Fixed windows", "09:00–15:00 or 15:00–21:00"],
+  ["02", "Live authority", "Availability and price come from the API"],
+  ["03", "Guest booking", "No customer account is required"],
+  ["04", "Venue details", "Awaiting owner confirmation"],
 ];
 
 export default async function HomePage() {
-  const publicClient = createHttpPublicClient(configuredApiOrigin());
+  const publicClient = createServerPublicClient();
   const [fields, blocks, faqs] = await Promise.all([
     publicClient.getFields(),
     publicClient.getBlocks(),
@@ -56,19 +56,19 @@ export default async function HomePage() {
           <div className="home-hero__copy">
             <p className="eyebrow eyebrow--light">
               <span aria-hidden="true" />
-              Two fields · Complete blocks
+              Complete field blocks
             </p>
             <h1>
-              Own the <em>pitch.</em>
+              Book a <em>field.</em>
             </h1>
             <p>
-              Built for match days that need room to breathe. Choose your field, take the full block,
-              and bring the team.
+              Choose a date, field and fixed block. Live availability and authoritative pricing come
+              from the booking service.
             </p>
             <div className="home-hero__actions">
               <ButtonLink href="/book">Book a field</ButtonLink>
               <Link className="hero-text-link" href="#fields">
-                Explore the ground
+                Review fields
                 <ArrowRightIcon />
               </Link>
             </div>
@@ -81,7 +81,7 @@ export default async function HomePage() {
         <div className="shell hero-booking-bar">
           <div className="hero-booking-bar__intro">
             <span>Quick start</span>
-            <strong>Plan your match day</strong>
+            <strong>Start a booking</strong>
           </div>
           <div className="hero-booking-bar__detail">
             <CalendarIcon />
@@ -93,7 +93,7 @@ export default async function HomePage() {
           <div className="hero-booking-bar__detail">
             <ClockIcon />
             <span>
-              <small>Two daily blocks</small>
+              <small>Daily blocks</small>
               09:00–15:00 · 15:00–21:00
             </span>
           </div>
@@ -107,17 +107,17 @@ export default async function HomePage() {
       <section className="home-intro">
         <div className="shell home-intro__grid">
           <div className="home-intro__statement">
-            <p>Football, uninterrupted.</p>
-            <h2>Six hours. One field. Every minute belongs to your team.</h2>
+            <p>Complete-block booking.</p>
+            <h2>Choose one field and one fixed booking window.</h2>
           </div>
           <div className="home-intro__aside">
             <span className="oversized-x" aria-hidden="true">X</span>
             <p>
-              No hourly shuffle and no fragmented schedule. ArmourXSports launches with two full fields
-              and two clear daily windows.
+              The current launch rules define morning and evening blocks. Field specifications and venue
+              facilities remain pending owner confirmation.
             </p>
             <Link href="/about">
-              Why complete blocks
+              Read the confirmed facts
               <ArrowRightIcon />
             </Link>
           </div>
@@ -128,9 +128,9 @@ export default async function HomePage() {
         <div className="shell">
           <div className="fields-showcase__top">
             <SectionHeading
-              eyebrow="Choose your ground"
-              title={<>Two fields.<br />One standard.</>}
-              intro="A consistent full-block format, with a distinct match-day feel on each pitch."
+              eyebrow="Choose a field"
+              title={<>Current field<br />inventory.</>}
+              intro="Names and availability come from the live service. Final venue specifications remain pending."
             />
             <ButtonLink href="/fields" variant="dark">View both fields</ButtonLink>
           </div>
@@ -175,7 +175,7 @@ export default async function HomePage() {
             />
             <div className="price-list">
               {blocks.map((block, index) => (
-                <div className="price-row" key={block.id}>
+                <div className="price-row" key={`${block.fieldId}-${block.id}`}>
                   <span className="price-row__index">0{index + 1}</span>
                   <div>
                     <p>{block.label}</p>
@@ -193,9 +193,9 @@ export default async function HomePage() {
       <section className="facilities-section">
         <div className="shell">
           <SectionHeading
-            eyebrow="Ready around the pitch"
-            title={<>The details that<br />keep play moving.</>}
-            intro="A focused venue experience for teams, organisers and spectators. Final venue facts will be confirmed before production launch."
+            eyebrow="Confirmed launch facts"
+            title={<>What the service<br />can verify now.</>}
+            intro="Only confirmed booking rules are presented as facts. Venue facilities remain explicitly owner-pending."
           />
           <div className="facility-list">
             {facilities.map(([index, title, description]) => (
@@ -213,8 +213,8 @@ export default async function HomePage() {
       <section className="gallery-section" aria-labelledby="gallery-title">
         <div className="shell gallery-section__header">
           <div>
-            <p className="eyebrow eyebrow--light"><span aria-hidden="true" />Inside the lines</p>
-            <h2 id="gallery-title">Match-day atmosphere.</h2>
+            <p className="eyebrow eyebrow--light"><span aria-hidden="true" />Venue imagery</p>
+            <h2 id="gallery-title">Temporary venue imagery.</h2>
           </div>
           <p>Temporary licensed demo imagery. Venue photography will replace it before launch.</p>
         </div>
@@ -286,8 +286,8 @@ export default async function HomePage() {
         <Image src={images.texturedPitch} alt="Football pitch viewed from above" fill sizes="100vw" />
         <div className="final-cta__scrim" aria-hidden="true" />
         <div className="shell final-cta__content">
-          <p>Bring the squad.</p>
-          <h2>Make the field yours.</h2>
+          <p>Ready to check a date?</p>
+          <h2>View live field availability.</h2>
           <ButtonLink href="/book">Book a field</ButtonLink>
         </div>
       </section>

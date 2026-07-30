@@ -1,12 +1,7 @@
 # Client Architecture
 
-The client remains an independently deployed, database-free, secret-free v1 consumer.
+Customer identity is a same-origin BFF extension: browser -> `/api/customer` -> Admin `/v1/customer`. The BFF can read/write Client-origin cookies and is the only Client code that forwards the opaque session to Admin. It is not a proxy for Admin/POS/webhook paths and does not expose Admin origin, proxy secret, Google secret, Resend key or a database value.
 
-```text
-React pages -> httpPublicClient -> admin-owned HTTPS /v1 -> private PostgreSQL/providers
-            -> source-controlled renderers for structured CMS data
-```
+The public site is independently deployable on Vercel. Browser code calls the pinned HTTPS v1 API only through the allowlisted same-origin `/api/axs` BFF. Vercel holds the server-only Admin origin and Client-proxy credential, but the repository contains no PostgreSQL, provider credential, payment adapter/webhook, admin authorization, PM2 or VPS configuration.
 
-`src/lib/api/http-client.ts` maps generated contract shapes into client-owned display models and consistent customer-safe errors. Booking UI requests live availability, acquires an opaque hold, creates the booking, requests a server-created payment attempt, and navigates to the provider. The result page ignores redirect claims and polls with the opaque access token.
-
-CMS strings are rendered through React text nodes and allowlisted components. The client has no `dangerouslySetInnerHTML`, runtime JSX/JavaScript evaluator, database code, payment SDK/secret, webhook, or admin source import. The mock adapter exists only for isolated tests.
+The booking UI has local presentation state only. Server config decides payment availability, server transactions decide inventory, and server order status decides results. A provider redirect is handed off only after a server-created attempt; the client does not confirm it. The v1.10 control-panel and POS access additions remain server/POS-only and do not widen the public-client trust boundary.

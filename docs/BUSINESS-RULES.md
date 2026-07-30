@@ -1,25 +1,14 @@
-# Client Business Rules
+# Public Booking Rules
 
-This is the canonical public-facing behavior document. Admin operational behavior is canonical in `axs_admin/docs/BUSINESS-RULES.md`.
+## Optional customer accounts
 
-## Confirmed launch rules
+Guest booking remains the default public flow. Email/password and Google registrations start as pending and cannot access account-only behavior until the same one-time email verification link is consumed. Google does not bypass verification. Existing guest bookings and customer contacts are never claimed/backfilled. Provider absence is presented as unavailable, not as a completed email/OAuth flow.
 
-| Item | Rule |
-| --- | --- |
-| Inventory | Field 1 (`FIELD_01`) and Field 2 (`FIELD_02`); four field-blocks maximum per day |
-| Morning | 09:00–15:00, RM600 / `60000` sen |
-| Evening | 15:00–21:00, RM800 / `80000` sen |
-| Booking | Complete blocks only; no hourly selection; guest booking enabled |
-| Window | Up to 90 days ahead; closes 60 minutes before block start |
-| Online hold | 10 minutes; server expiry is authoritative |
-| Customer data | Name and phone required; email required online; team name optional; notes only if API enables them |
-
-Public availability values are `available`, `held`, `booked`, `blocked`, `closed`, and derived `past`. A counter or online hold appears as `held`; stale data never becomes available optimistically. The public browser refreshes visible availability every 15 seconds and always requests a final hold.
-
-## Booking and payment behavior
-
-Prices arrive from the API; the browser displays MYR but never calculates authority. Payment result presentation is `pending`, `confirmed`, `failed`, or `expired`, derived from backend booking/payment records. Payment retry creates a new attempt through the API and must not duplicate a booking. A valid webhook may confirm payment after the browser closes.
-
-The result and find-booking routes are non-indexable. Booking retrieval requires a reference plus matching phone and returns limited data. Do not put PII, payment identifiers, or access tokens in analytics or durable URLs.
-
-Cancellation, rescheduling, refunds, public-safe blocked reasons, and final policy copy are **Pending client confirmation**. Display approved policy content rather than inventing rules. All dates/times use `Asia/Kuala_Lumpur`; monetary authority uses integer sen.
+- Public display content, field facts, schedule, price and availability come from the API; the browser never calculates authority.
+- The browser calls only same-origin `/api/axs`; the Client server alone knows the Operations origin and proxy credential.
+- The basket holds 1-20 unique dated field-slot occurrences. The public client sends one grouped request; it must not simulate partial success.
+- If online payment is disabled, the visitor can browse and review but cannot create a hold, order or payment attempt.
+- Online guest booking requires name, mobile number and email. Counter customers may remain email-optional because their records are created by the authorized counter workflow, not this public site.
+- Redirect/query parameters never prove payment. Result states come from the order-status endpoint with its dedicated access token.
+- Current customer information is shown only in the active flow. The browser stores only a short-lived order access handle; no customer data/free text enters browser analytics.
+- Contact, address, policy, legal and final-media claims remain marked pending until owner-approved CMS content exists.
