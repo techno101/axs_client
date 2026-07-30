@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { PageHero } from "@/components/layout/page-hero";
 import { ArrowUpRightIcon } from "@/components/ui/icons";
-import { configuredApiOrigin, createHttpPublicClient } from "@/lib/api/http-client";
+import { createServerPublicClient } from "@/lib/api/server-client";
 import { images } from "@/lib/content";
 
 export const metadata: Metadata = {
@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function ArticlesPage() {
-  const articles = await createHttpPublicClient(configuredApiOrigin()).getArticles();
+  const articles = await createServerPublicClient().getArticles();
   return (
     <>
       <PageHero

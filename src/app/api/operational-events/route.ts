@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
   const forwarded = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
   if (!limited(forwarded)) return NextResponse.json({ error: "Too many reports." }, { status: 429 });
   const token = process.env.OBSERVABILITY_INGEST_TOKEN?.trim();
-  const origin = process.env.NEXT_PUBLIC_API_ORIGIN?.trim();
+  const origin = process.env.AXS_ADMIN_API_ORIGIN?.trim();
   if (!token || token.length < 32 || !origin) return NextResponse.json({ accepted: false }, { status: 202 });
   const raw = await request.text();
   if (new TextEncoder().encode(raw).byteLength > 8_192) return NextResponse.json({ error: "Invalid report." }, { status: 413 });

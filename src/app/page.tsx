@@ -11,7 +11,7 @@ import {
   PinIcon,
 } from "@/components/ui/icons";
 import { SectionHeading } from "@/components/ui/section-heading";
-import { configuredApiOrigin, createHttpPublicClient } from "@/lib/api/http-client";
+import { createServerPublicClient } from "@/lib/api/server-client";
 import { images } from "@/lib/content";
 import { formatMoney } from "@/lib/format";
 
@@ -30,7 +30,7 @@ const facilities = [
 ];
 
 export default async function HomePage() {
-  const publicClient = createHttpPublicClient(configuredApiOrigin());
+  const publicClient = createServerPublicClient();
   const [fields, blocks, faqs] = await Promise.all([
     publicClient.getFields(),
     publicClient.getBlocks(),
@@ -175,7 +175,7 @@ export default async function HomePage() {
             />
             <div className="price-list">
               {blocks.map((block, index) => (
-                <div className="price-row" key={block.id}>
+                <div className="price-row" key={`${block.fieldId}-${block.id}`}>
                   <span className="price-row__index">0{index + 1}</span>
                   <div>
                     <p>{block.label}</p>

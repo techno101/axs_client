@@ -3,6 +3,8 @@
 | Decision | Result |
 | --- | --- |
 | Boundary | Vercel public client only; no database/provider/admin authority. |
+| API integration | Browser and Client Components use only same-origin `/api/axs`; the BFF is an explicit route/method allowlist, never an open proxy. |
+| Proxy trust | Server-only Admin origin and shared proxy credential; state changes require the canonical Client Origin/Referer and Admin receives only pseudonymous bounded client context. |
 | Contract | Consume the admin-generated pinned v1.10 artifact; never a shared package. |
 | Checkout | New flow uses grouped holds/orders, one aggregate payment attempt and authority-status polling. |
 | Payment | Disabled server capability stops the browser before mutation; redirect is never confirmation. |

@@ -18,5 +18,7 @@ for (const file of files) {
   // data-only; executable payment, database and webhook code is forbidden.
   if (!file.includes(`${path.sep}api${path.sep}contract${path.sep}`) && /\bpg\b|DATABASE_URL|webhook/i.test(content)) throw new Error(`Public client boundary violation found in ${file}.`);
   if (/NEXT_PUBLIC_(?:.*SECRET|.*DATABASE|.*TOKEN|.*PASSWORD|.*KEY)/i.test(content)) throw new Error(`Sensitive public environment reference found in ${file}.`);
+  if (/NEXT_PUBLIC_API_ORIGIN/.test(content)) throw new Error(`Retired browser Operations origin found in ${file}.`);
+  if (/["']use client["']/.test(content) && /AXS_ADMIN_API_ORIGIN|AXS_CLIENT_PROXY_SECRET/.test(content)) throw new Error(`Server-only proxy configuration reached a Client Component in ${file}.`);
 }
 process.stdout.write(`PASS public-client boundary scan (${files.length} source files).\n`);

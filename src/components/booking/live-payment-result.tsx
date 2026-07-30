@@ -6,8 +6,8 @@ import { createHttpPublicClient, PublicApiError } from "@/lib/api/http-client";
 import type { PaymentResult } from "@/lib/api/types";
 import { reportOperationalEvent } from "@/lib/operational-reporting";
 
-export function LivePaymentResult({ reference, apiOrigin }: { reference: string; apiOrigin: string }) {
-  const client = useMemo(() => createHttpPublicClient(apiOrigin), [apiOrigin]);
+export function LivePaymentResult({ reference }: { reference: string }) {
+  const client = useMemo(() => createHttpPublicClient(), []);
   const [result, setResult] = useState<PaymentResult>({ reference, state: "pending", fieldName: "Pending server response", blockLabel: "Pending server response", bookingDate: "Pending", amountMinor: 0, currency: "MYR", lastCheckedAt: "Checking verified backend state…" });
   const [error, setError] = useState<string | null>(null);
 

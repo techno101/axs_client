@@ -5,7 +5,7 @@ import { PageHero } from "@/components/layout/page-hero";
 import { ButtonLink } from "@/components/ui/button-link";
 import { ArrowUpRightIcon, CheckIcon } from "@/components/ui/icons";
 import { SectionHeading } from "@/components/ui/section-heading";
-import { configuredApiOrigin, createHttpPublicClient } from "@/lib/api/http-client";
+import { createServerPublicClient } from "@/lib/api/server-client";
 import { images } from "@/lib/content";
 import { formatMoney } from "@/lib/format";
 
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function FieldsPage() {
-  const publicClient = createHttpPublicClient(configuredApiOrigin());
+  const publicClient = createServerPublicClient();
   const [fields, blocks] = await Promise.all([
     publicClient.getFields(),
     publicClient.getBlocks(),
@@ -68,7 +68,7 @@ export default async function FieldsPage() {
           </div>
           <div className="block-comparison__rows">
             {blocks.map((block) => (
-              <div key={block.id}>
+              <div key={`${block.fieldId}-${block.id}`}>
                 <span>{block.label}</span>
                 <strong>{block.startsAt}—{block.endsAt}</strong>
                 <b>{formatMoney(block.amountMinor)}</b>

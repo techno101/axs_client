@@ -3,13 +3,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRightIcon } from "@/components/ui/icons";
-import { configuredApiOrigin, createHttpPublicClient } from "@/lib/api/http-client";
+import { createServerPublicClient } from "@/lib/api/server-client";
 
 type ArticlePageProps = { params: Promise<{ slug: string }> };
 
 export const dynamic = "force-dynamic";
 
-function client() { return createHttpPublicClient(configuredApiOrigin()); }
+function client() { return createServerPublicClient(); }
 
 export async function generateMetadata({ params }: ArticlePageProps): Promise<Metadata> {
   const { slug } = await params;

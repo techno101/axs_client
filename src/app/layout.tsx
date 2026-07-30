@@ -12,6 +12,10 @@ export const metadata: Metadata = {
   },
   description:
     "Book complete morning or evening football field blocks with ArmourXSports.",
+  icons: {
+    icon: "/brand/armourxsports-logo.png",
+    apple: "/brand/armourxsports-logo.png",
+  },
   openGraph: {
     title: "ArmourXSports",
     description: "Check live availability and book a complete morning or evening field block.",

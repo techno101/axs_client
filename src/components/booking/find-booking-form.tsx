@@ -6,8 +6,8 @@ import { PaymentPill } from "@/components/ui/status-pill";
 import { createHttpPublicClient } from "@/lib/api/http-client";
 import type { PublicBookingStatus } from "@/lib/api/types";
 
-export function FindBookingForm({ apiOrigin }: { apiOrigin: string }) {
-  const client = useMemo(() => createHttpPublicClient(apiOrigin), [apiOrigin]);
+export function FindBookingForm() {
+  const client = useMemo(() => createHttpPublicClient(), []);
   const [result, setResult] = useState<PublicBookingStatus | null>(null);
   const [state, setState] = useState<"idle" | "loading" | "error">("idle");
   const [message, setMessage] = useState("");

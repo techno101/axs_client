@@ -1,5 +1,9 @@
 # Client Memory
 
+On 2026-07-30, Checkpoint 1 moved every current public API call behind same-origin `/api/axs`. Browser code no longer receives the Operations origin. The BFF is route/method allowlisted, validates same-site mutations, bounds bodies/timeouts/request IDs, forwards only required headers, rewrites Admin-owned media URLs, and authenticates private/mutating Admin hops with a server-only credential. The separate operational-events proxy remains narrow. Local fixture routes/axe, 29 tests including the grouped hold/order/payment/status fixture, security, typecheck, lint and build/bundle scanning pass; no deployment or payment enablement occurred.
+
+On 2026-07-28, the public client replaced its recreated shield/type logo with the exact supplied transparent ArmourXSports wordmark in the header, footer and metadata. The client contract pin and all booking authority remain unchanged.
+
 On 2026-07-25, the client copied the admin-owned API v1.12.0 pin (`cf7e1aa1d733a66d5556879b3fffaa3e3a25a2d1ebbe253144d85750b6e18f9b`). No public UI or customer authentication was added; admin security, exports/purge, delivery, and POS updater/hardware types do not grant client authority.
 
 On 2026-07-24, the client copied the admin-owned API v1.11.0 pin (`181432b9a86d4fe2ba5d55f75c3779737f93b84726b4de9007f250a367b55a43`). No public UI or business behavior changed, and the client still has no database, provider, Google employee-access, or POS authority.

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { PageHero } from "@/components/layout/page-hero";
-import { configuredApiOrigin, createHttpPublicClient } from "@/lib/api/http-client";
+import { createServerPublicClient } from "@/lib/api/server-client";
 
 export const dynamic = "force-dynamic";
 
@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 };
 
 export default async function FaqPage() {
-  const faqs = await createHttpPublicClient(configuredApiOrigin()).getFaqs();
+  const faqs = await createServerPublicClient().getFaqs();
   return (
     <>
       <PageHero

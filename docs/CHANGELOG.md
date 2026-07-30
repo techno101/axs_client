@@ -1,5 +1,16 @@
 # Client Changelog
 
+## Checkpoint 1 same-origin integration - 2026-07-30
+
+- Replaced browser Operations-origin calls and rendered origin props with the allowlisted same-origin `/api/axs` BFF.
+- Added server-only Admin origin, Client origin and proxy-secret validation; bounded bodies, timeouts, request IDs, stable errors, exact state-change origin checks, narrow header forwarding and Admin-media URL rewriting.
+- Added proxy/security tests and a post-build browser-bundle scan. No deployment, customer authentication, payment enablement or provider change occurred.
+
+## Official branding - 2026-07-28
+
+- Replaced the recreated shield/type treatment with the exact supplied transparent ArmourXSports wordmark in the responsive header, footer and metadata.
+- Kept the existing public booking contract and business behavior unchanged.
+
 ## v1.12 contract pin - 2026-07-25
 
 - Repinned the admin-generated v1.12.0 contract at `cf7e1aa1d733a66d5556879b3fffaa3e3a25a2d1ebbe253144d85750b6e18f9b`.

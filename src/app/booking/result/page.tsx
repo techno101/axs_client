@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { LivePaymentResult } from "@/components/booking/live-payment-result";
 import { PageHero } from "@/components/layout/page-hero";
-import { configuredApiOrigin } from "@/lib/api/http-client";
 
 export const metadata: Metadata = {
   title: "Booking status",
@@ -18,7 +17,7 @@ export default async function BookingResultPage({ searchParams }: { searchParams
       <PageHero compact eyebrow="Authoritative status" title={<>Order<br />status.</>} intro="Browser return parameters never prove payment. This page polls the verified backend order and payment state using a private browser-held status handle." />
       <section className="payment-result-section">
         <div className="shell payment-result-section__grid">
-          <LivePaymentResult reference={reference} apiOrigin={configuredApiOrigin()} />
+          <LivePaymentResult reference={reference} />
           <aside><p className="eyebrow"><span aria-hidden="true" />Payment integrity</p><h2>Backend state decides.</h2><p>The redirect improves the customer experience only. A verified, amount-matched, idempotent provider callback is required before this page can show confirmation.</p></aside>
         </div>
       </section>

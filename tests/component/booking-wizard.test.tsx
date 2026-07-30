@@ -22,7 +22,7 @@ describe("BookingWizard", () => {
       { fieldId: "FIELD_02", blockId: "MORNING", status: "booked" },
       { fieldId: "FIELD_02", blockId: "EVENING", status: "blocked" },
     ];
-    render(<BookingWizard fields={fields} blocks={blocks} availability={availability} onlinePayment={{ enabled: true }} apiOrigin="http://127.0.0.1:49999" businessDate="2026-07-16" initialDate="2026-07-18" />);
+    render(<BookingWizard fields={fields} blocks={blocks} availability={availability} onlinePayment={{ enabled: true }} businessDate="2026-07-16" initialDate="2026-07-18" />);
 
     expect(screen.getByRole("heading", { name: "Choose your date" })).toBeVisible();
     await user.click(screen.getByRole("button", { name: /choose field/i }));
@@ -47,7 +47,7 @@ describe("BookingWizard", () => {
       { fieldId: "FIELD_01", blockId: "MORNING", status: "available" },
       { fieldId: "FIELD_01", blockId: "EVENING", status: "available" },
     ];
-    render(<BookingWizard fields={fields} blocks={blocks} availability={availability} onlinePayment={{ enabled: false, publicMessage: "Online payment is awaiting merchant verification." }} apiOrigin="http://127.0.0.1:49999" businessDate="2026-07-16" initialDate="2026-07-18" />);
+    render(<BookingWizard fields={fields} blocks={blocks} availability={availability} onlinePayment={{ enabled: false, publicMessage: "Online payment is awaiting merchant verification." }} businessDate="2026-07-16" initialDate="2026-07-18" />);
 
     await user.click(screen.getByRole("button", { name: /choose field/i }));
     await user.click(screen.getByRole("button", { name: /field 1/i }));

@@ -57,13 +57,12 @@ type BookingWizardProps = {
   blocks: BookingBlock[];
   availability: AvailabilitySlot[];
   onlinePayment: PublicConfigView["onlinePayment"];
-  apiOrigin: string;
   businessDate: string;
   initialDate: string;
 };
 
-export function BookingWizard({ fields, blocks, availability, onlinePayment, apiOrigin, businessDate, initialDate }: BookingWizardProps) {
-  const client = useMemo(() => createHttpPublicClient(apiOrigin), [apiOrigin]);
+export function BookingWizard({ fields, blocks, availability, onlinePayment, businessDate, initialDate }: BookingWizardProps) {
+  const client = useMemo(() => createHttpPublicClient(), []);
   const dateOptions = useMemo(() => Array.from({ length: 5 }, (_, index) => {
     const value = addIsoDays(businessDate, index);
     return { value, day: displayDate(value, { weekday: "short" }), date: displayDate(value, { day: "2-digit" }), month: displayDate(value, { month: "short" }), label: index === 0 ? "Today" : displayDate(value, { weekday: "long" }), display: displayDate(value, { weekday: "long", day: "numeric", month: "long", year: "numeric" }) };

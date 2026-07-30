@@ -1,6 +1,6 @@
 # Start Here: ArmourXSports Client
 
-`axs_client` owns only the Vercel public site and API consumption. Current `v5` consumes the pinned v1.12.0 contract (`cf7e1aa1d733a66d5556879b3fffaa3e3a25a2d1ebbe253144d85750b6e18f9b`). Public data and CMS are read from the API; the booking wizard creates grouped holds/orders only when server config enables online payment. It has no database, provider secret, callback, admin-auth, customer-auth implementation, or POS authority. The v1.12 update changes only its generated contract pin.
+`axs_client` owns only the Vercel public site, same-origin `/api/axs` boundary, and API consumption. Current `v6` consumes the pinned v1.12.0 contract (`cf7e1aa1d733a66d5556879b3fffaa3e3a25a2d1ebbe253144d85750b6e18f9b`). Browser code never receives or calls the Operations origin: public reads, booking mutations, status and CMS requests use the allowlisted BFF, which authenticates sensitive hops with a server-only credential. It has no database, provider secret, callback, admin-auth, customer-auth implementation, or POS authority.
 
 Read `AGENTS.md`, this file, `MEMORY.md` and `API.md` first. For booking/status work also read `BUSINESS-RULES.md` and `TESTING.md`; for contract work read the admin `API.md` and regenerate/publish from admin before editing the client.
 

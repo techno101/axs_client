@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { BookingWizard } from "@/components/booking/booking-wizard";
 import { PageHero } from "@/components/layout/page-hero";
-import { configuredApiOrigin, createHttpPublicClient } from "@/lib/api/http-client";
+import { createServerPublicClient } from "@/lib/api/server-client";
 import { images } from "@/lib/content";
 import { toMalaysiaDateInput } from "@/lib/format";
 
@@ -13,12 +13,11 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function BookPage() {
-  const apiOrigin = configuredApiOrigin();
   const businessDate = toMalaysiaDateInput(new Date());
   const initial = new Date(`${businessDate}T00:00:00.000Z`);
   initial.setUTCDate(initial.getUTCDate() + 2);
   const initialDate = initial.toISOString().slice(0, 10);
-  const publicClient = createHttpPublicClient(apiOrigin);
+  const publicClient = createServerPublicClient();
   const [fields, config, availability] = await Promise.all([
     publicClient.getFields(),
     publicClient.getConfig(),
@@ -35,7 +34,7 @@ export default async function BookPage() {
         image={images.nightPlayer}
         imageAlt="Player on a football pitch under floodlights"
       />
-      <BookingWizard fields={fields} blocks={config.slots} availability={availability} onlinePayment={config.onlinePayment} apiOrigin={apiOrigin} businessDate={businessDate} initialDate={initialDate} />
+      <BookingWizard fields={fields} blocks={config.slots} availability={availability} onlinePayment={config.onlinePayment} businessDate={businessDate} initialDate={initialDate} />
     </>
   );
 }

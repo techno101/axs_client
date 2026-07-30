@@ -5,14 +5,14 @@ import { PageHero } from "@/components/layout/page-hero";
 import { ButtonLink } from "@/components/ui/button-link";
 import { CheckIcon } from "@/components/ui/icons";
 import { SectionHeading } from "@/components/ui/section-heading";
-import { configuredApiOrigin, createHttpPublicClient } from "@/lib/api/http-client";
+import { createServerPublicClient } from "@/lib/api/server-client";
 import { formatMoney } from "@/lib/format";
 
 type FieldDetailProps = { params: Promise<{ slug: string }> };
 
 export const dynamic = "force-dynamic";
 
-function client() { return createHttpPublicClient(configuredApiOrigin()); }
+function client() { return createServerPublicClient(); }
 
 export async function generateMetadata({ params }: FieldDetailProps): Promise<Metadata> {
   const { slug } = await params;
@@ -74,8 +74,8 @@ export default async function FieldDetailPage({ params }: FieldDetailProps) {
             <h2>Choose a complete block.</h2>
           </div>
           <div>
-            {blocks.map((block) => (
-              <div className="field-block-line" key={block.id}>
+            {blocks.filter((block) => block.fieldId === field.id).map((block) => (
+              <div className="field-block-line" key={`${block.fieldId}-${block.id}`}>
                 <span>{block.label}</span>
                 <strong>{block.startsAt}—{block.endsAt}</strong>
                 <b>{formatMoney(block.amountMinor)}</b>
