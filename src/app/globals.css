@@ -135,40 +135,7 @@ img {
   color: var(--white);
 }
 
-.brand-mark__shield {
-  width: 34px;
-  height: 39px;
-  overflow: visible;
-}
 
-.brand-mark__shield path:first-child {
-  fill: var(--lime);
-  stroke: var(--lime);
-}
-
-.brand-mark__shield path:last-child {
-  fill: none;
-  stroke: var(--ink-deep);
-  stroke-width: 2.3;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.brand-mark__type {
-  display: flex;
-  flex-direction: column;
-  font-family: var(--font-barlow-condensed), "Arial Narrow", sans-serif;
-  font-size: 17px;
-  font-weight: 600;
-  line-height: 0.85;
-  letter-spacing: 0.06em;
-}
-
-.brand-mark__type strong {
-  color: var(--lime);
-  font-size: 19px;
-  letter-spacing: 0.03em;
-}
 
 .site-header__nav {
   display: flex;
@@ -519,18 +486,7 @@ img {
   font-size: 15px;
 }
 
-.brand-mark--footer .brand-mark__shield {
-  width: 46px;
-  height: 52px;
-}
 
-.brand-mark--footer .brand-mark__type {
-  font-size: 22px;
-}
-
-.brand-mark--footer .brand-mark__type strong {
-  font-size: 25px;
-}
 
 .footer-location {
   display: flex;
@@ -769,18 +725,7 @@ img {
     min-height: 76px;
   }
 
-  .brand-mark__shield {
-    width: 29px;
-    height: 34px;
-  }
 
-  .brand-mark__type {
-    font-size: 14px;
-  }
-
-  .brand-mark__type strong {
-    font-size: 16px;
-  }
 
   .mobile-menu summary span {
     display: none;
