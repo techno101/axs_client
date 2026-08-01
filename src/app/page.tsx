@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { VenueMap } from "@/components/map/venue-map";
 import { ButtonLink } from "@/components/ui/button-link";
 import {
   ArrowRightIcon,
@@ -42,8 +43,8 @@ export default async function HomePage() {
       <section className="home-hero">
         <Image
           className="home-hero__image"
-          src={images.nightStadium}
-          alt="Floodlit stadium viewed from above at night"
+          src={images.heroAerial}
+          alt="ArmourXSports venue aerial view"
           fill
           priority
           sizes="100vw"
@@ -248,11 +249,8 @@ export default async function HomePage() {
             </div>
             <ButtonLink href="/contact" variant="dark">Contact the venue</ButtonLink>
           </div>
-          <div className="map-art" role="img" aria-label="Stylised map placeholder; venue address pending confirmation">
-            <div className="map-art__roads" aria-hidden="true" />
-            <div className="map-art__pitch" aria-hidden="true"><span /></div>
-            <div className="map-art__pin"><PinIcon /><span>AXS</span></div>
-            <p>Verified map coming before launch</p>
+          <div className="map-art">
+            <VenueMap />
           </div>
         </div>
       </section>

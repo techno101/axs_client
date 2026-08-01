@@ -1,6 +1,7 @@
 import type { Article, BookingBlock, FaqItem, Field } from "@/lib/api/types";
 
 export const images = {
+  heroAerial: "/images/hero-aerial.png",
   nightStadium: "/images/demo/night-stadium.jpg",
   aerialPitch: "/images/demo/aerial-pitch.jpg",
   nightPlayer: "/images/demo/night-player.jpg",

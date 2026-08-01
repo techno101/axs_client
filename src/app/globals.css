@@ -1461,6 +1461,34 @@ img {
   box-shadow: var(--shadow);
 }
 
+.venue-map {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.venue-map .leaflet-tile-pane { filter: saturate(0.6); }
+.venue-map .leaflet-control-attribution { display: none; }
+
+.venue-map__marker {
+  display: grid !important;
+  width: 40px !important;
+  height: 40px !important;
+  place-items: center;
+  border-radius: 50% 50% 50% 6px;
+  transform: rotate(-45deg);
+  background: var(--ink) !important;
+  color: var(--lime);
+  font-size: 10px;
+  font-weight: 900;
+  border: 2px solid var(--lime);
+}
+
+.venue-map__marker span {
+  display: block;
+  transform: rotate(45deg);
+}
+
 .map-art__roads {
   position: absolute;
   inset: -12%;
