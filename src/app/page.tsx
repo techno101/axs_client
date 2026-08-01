@@ -50,8 +50,6 @@ export default async function HomePage() {
           sizes="100vw"
         />
         <div className="home-hero__veil" aria-hidden="true" />
-        <div className="home-hero__floodlight home-hero__floodlight--one" aria-hidden="true" />
-        <div className="home-hero__floodlight home-hero__floodlight--two" aria-hidden="true" />
         <div className="home-hero__net" aria-hidden="true" />
         <div className="shell home-hero__content">
           <div className="home-hero__copy">
