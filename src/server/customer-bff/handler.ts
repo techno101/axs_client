@@ -36,6 +36,7 @@ function bookingRule(segments: string[]): RouteRule | null {
   if (segments.length >= 2 && segments[0] === "bookings" && (LEGACY_BOOKING_REFERENCE.test(segments[1]) || MODERN_BOOKING_REFERENCE.test(segments[1]))) {
     if (segments.length === 2) return { method: "GET", upstream: `bookings/${segments[1]}`, session: true };
     if (segments.length === 3 && segments[2] === "download") return { method: "GET", upstream: `bookings/${segments[1]}/download`, session: true, binary: true };
+    if (segments.length === 3 && segments[2] === "reschedule") return { method: "POST", upstream: `bookings/${segments[1]}/reschedule`, mutation: true, session: true, csrf: true, body: true };
   }
   return null;
 }

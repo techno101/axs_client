@@ -3893,7 +3893,23 @@ body:has(.customer-page) .site-header { background: var(--ink-deep); }
 .customer-security { display: grid; gap: 18px; }
 .customer-security > p { display: flex; justify-content: space-between; gap: 20px; margin: 0; padding: 16px 0; border-bottom: 1px solid var(--line); font-size: 13px; }
 .customer-security > p span { color: var(--muted); }
+.customer-booking { display: grid; gap: 14px; padding: 0 0 24px; border-bottom: 1px solid var(--line); }
+.customer-booking:last-child { border-bottom: 0; padding-bottom: 0; }
+.customer-booking > p { margin: 0; }
+.customer-booking > p:first-child { display: flex; flex-wrap: wrap; gap: 8px 14px; color: var(--muted); font-size: 11px; text-transform: uppercase; }
+.customer-booking > p:first-child strong { color: var(--grass); }
+.customer-booking > p code { margin-left: 6px; font-size: .82em; overflow-wrap: anywhere; }
+.customer-reschedule { display: grid; gap: 14px; padding: 16px; border: 1px solid #b8c8c7; border-left: 3px solid var(--grass); background: #f5f8f4; }
+.customer-reschedule > p { display: grid; gap: 4px; margin: 0; }
+.customer-reschedule > p span, .customer-booking__policy { color: var(--muted); font-size: 12px; line-height: 1.55; }
+.customer-reschedule .customer-notice { margin: 0; }
+.customer-reschedule__form select, .customer-reschedule__form textarea { width: 100%; border: 1px solid var(--line); border-radius: 5px; background: var(--white); color: var(--ink); font: inherit; letter-spacing: normal; text-transform: none; }
+.customer-reschedule__form select { min-height: 50px; padding: 0 14px; }
+.customer-reschedule__form textarea { min-height: 84px; padding: 12px 14px; resize: vertical; }
+.customer-reschedule__actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.customer-booking__policy { margin: 0; padding-left: 12px; border-left: 2px solid var(--line); }
 @media (max-width: 767px) { .customer-page { padding: 130px 0 75px; } .customer-page__grid, .customer-form { grid-template-columns: 1fr; } .customer-page__grid { gap: 38px; } .customer-form__wide { grid-column: auto; } .customer-card { padding: 25px 18px; } .customer-page aside h1 { font-size: 62px; } .customer-summary dl { grid-template-columns: 1fr; } }
+@media (max-width: 767px) { .customer-reschedule__actions { grid-template-columns: 1fr; } }
 
 /* Shared motion primitives retained for non-home marketing routes. */
 html.lenis,

@@ -20,6 +20,7 @@
 | Visual signature | The continuous pitch line is the sole recurring motion motif. No custom cursor, WebGL, confetti, autoplay video or blocking loader. |
 | Fixture independence | Client route/accessibility/visual tests use a deterministic contract-shaped local fixture and do not require a sibling Admin checkout. |
 | Release gate | A version branch may hold the validated candidate, but `main`/production promotion requires a controlled sandbox payment, verified webhook confirmation and post-deploy live checks. |
+| Customer reschedule | The Client sends field/date/session/reason only through the owner-only BFF; Admin derives the account and decides time, price, closure and occupancy eligibility transactionally. |
 
 | Decision | Result |
 | --- | --- |

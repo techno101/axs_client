@@ -28,4 +28,23 @@ describe("same-origin customer BFF", () => {
     expect(fetcher.mock.calls[0][1].headers.get("X-AXS-Client-Proxy-Secret")).toBe(config.proxySecret);
     vi.unstubAllGlobals();
   });
+
+  it("forwards only the exact owner-booking reschedule mutation with the Client cookie and CSRF proof", async () => {
+    const reference = "AXS-ABCD-EFGH-JKMN-PRST";
+    const session = "s".repeat(43);
+    const csrf = "c".repeat(43);
+    const fetcher = vi.fn().mockResolvedValue(new Response(JSON.stringify({ data: { reference, fieldId: "FIELD_02", blockCode: "MORNING", bookingDate: "2026-08-20", amountMinor: 60000, currency: "MYR" }, meta: {}, error: null }), { status: 200, headers: { "content-type": "application/json" } }));
+    vi.stubGlobal("fetch", fetcher);
+    const request = new Request(`https://client.example.test/api/customer/bookings/${reference}/reschedule`, { method: "POST", headers: { Origin: config.clientOrigin, "Content-Type": "application/json", Cookie: `axs_customer_session=${session}; axs_customer_csrf=${csrf}`, "X-CSRF-Token": csrf }, body: JSON.stringify({ fieldId: "FIELD_02", blockCode: "MORNING", bookingDate: "2026-08-20", reason: "Team availability changed" }) });
+    const response = await handleCustomerBff(request, ["bookings", reference, "reschedule"], config);
+    expect(response.status).toBe(200);
+    expect(fetcher).toHaveBeenCalledTimes(1);
+    const [destination, init] = fetcher.mock.calls[0];
+    expect(String(destination)).toBe(`https://admin.example.test/v1/customer/bookings/${reference}/reschedule`);
+    expect(init.method).toBe("POST");
+    expect(init.headers.get("X-AXS-Customer-Session")).toBe(session);
+    expect(init.headers.get("X-CSRF-Token")).toBe(csrf);
+    expect(JSON.parse(init.body)).toMatchObject({ fieldId: "FIELD_02", blockCode: "MORNING", bookingDate: "2026-08-20" });
+    vi.unstubAllGlobals();
+  });
 });

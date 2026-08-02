@@ -1,5 +1,11 @@
 # Client Changelog
 
+## v14 Checkpoint 2 candidate - 2026-08-03
+
+- Repinned the Client contract consumer to Admin v1.15.0 and its checked checksum. The Client keeps payment-provider selection, keys, callbacks and confirmation authority entirely server-side in Admin.
+- Added the exact owner-only `POST /api/customer/bookings/{reference}/reschedule` BFF route and account interface. It forwards only the opaque customer cookie and CSRF proof; no browser input can select a customer account.
+- Added safe receipt/payment reference display and explicit customer-facing eligibility/rejection states. This candidate does not assert that an online provider is configured, payment is enabled or a booking has been rescheduled in a live environment.
+
 ## v13 Checkpoint 1 static-poster implementation - 2026-08-02
 
 - Replaced the rejected v12 homepage with the bilingual **Match Cut** candidate: an editorial contact sheet settles into the real SSR navigation, hero and **Book your spot** action instead of a loading screen.

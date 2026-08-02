@@ -1,5 +1,19 @@
 # Client Testing
 
+## v14 Checkpoint 2 candidate - 2026-08-03
+
+Run from `axs_client`:
+
+```powershell
+npm run contract:check
+npm test
+npm run lint
+npm run typecheck
+npm run build
+```
+
+Focused BFF coverage proves that a reschedule request uses only the exact allowlisted Admin route, opaque customer session and Client CSRF proof. Contract coverage pins the additive customer reschedule/payment-reference shapes. On 2026-08-03, `npm run check` passed lint, typecheck, contract validation, the 76-file Client boundary scan, 34 tests and the production build/bundle scan; `npm audit --omit=dev --json` reported zero production vulnerabilities. Live customer fixtures, database-backed schedule mutation, provider checkout/callback, Vercel deployment and production payment acceptance are separate gates and are not implied by these checks.
+
 ## v13 Checkpoint 1 Match Cut candidate - 2026-08-02
 
 Run from `axs_client`:

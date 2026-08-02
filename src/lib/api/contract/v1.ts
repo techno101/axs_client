@@ -9,11 +9,11 @@
  * Run: npm run contract:generate
  */
 
-export const API_CONTRACT_VERSION = "1.14.0" as const;
-export const API_CONTRACT_SHA256 = "8dfca65cd62b789c09099abf354bbbc936d0f5651ccf557e8eb95921cd5ccc9f" as const;
+export const API_CONTRACT_VERSION = "1.15.0" as const;
+export const API_CONTRACT_SHA256 = "fb56a46557d58a0709761d5dbe5ddb7059d6f907a34b77c605fdf2d690bc6341" as const;
 export const API_TIMEZONE = "Asia/Kuala_Lumpur" as const;
 
-export interface ApiMeta { requestId: string; serverTime: string; timezone: "Asia/Kuala_Lumpur"; contractVersion: "1.14.0"; nextPage?: number | null; pageSize?: number; total?: number; }
+export interface ApiMeta { requestId: string; serverTime: string; timezone: "Asia/Kuala_Lumpur"; contractVersion: "1.15.0"; nextPage?: number | null; pageSize?: number; total?: number; }
 
 export interface CustomerProfileRequest { displayName: string; phone: string; age: number; }
 
@@ -103,9 +103,13 @@ export interface FindBookingRequest { reference: string; }
 
 export interface GuestBookingLookup { booking: GuestBooking; lookupGrant: string; }
 
-export interface GuestBooking { reference: string; fieldName: string; blockLabel: string; bookingDate: string; startsAt: string; endsAt: string; amountMinor: number; currency: "MYR"; bookingStatus: BookingStatus; paymentStatus: PaymentStatus; customerName: string; customerPhone: string; }
+export interface GuestBooking { reference: string; fieldName: string; blockLabel: string; bookingDate: string; startsAt: string; endsAt: string; amountMinor: number; currency: "MYR"; bookingStatus: BookingStatus; paymentStatus: PaymentStatus; paymentMethod: string; receiptReference: string | null; customerName: string; customerPhone: string; }
 
-export interface CustomerBooking { reference: string; fieldName: string; blockLabel: string; bookingDate: string; startsAt: string; endsAt: string; amountMinor: number; currency: "MYR"; bookingStatus: BookingStatus; paymentStatus: PaymentStatus; timelineState: "upcoming" | "past" | "cancelled"; contact: { name: string; phone: string; email?: string | null; }; }
+export interface CustomerBooking { reference: string; fieldName: string; blockLabel: string; bookingDate: string; startsAt: string; endsAt: string; amountMinor: number; currency: "MYR"; bookingStatus: BookingStatus; paymentStatus: PaymentStatus; paymentMethod: string; receiptReference: string | null; timelineState: "upcoming" | "past" | "cancelled"; contact: { name: string; phone: string; email?: string | null; }; reschedule: CustomerRescheduleEligibility; }
+
+export interface CustomerRescheduleEligibility { eligible: boolean; deadline: string | null; reasonCode: "eligible" | "booking_not_confirmed" | "payment_not_paid" | "deadline_passed"; }
+
+export interface CustomerRescheduleResult { reference: string; fieldId: string; blockCode: string; bookingDate: string; amountMinor: number; currency: "MYR"; }
 
 export interface ContentBlock { type: "heading" | "paragraph" | "callout" | "list"; text: string; }
 
@@ -134,6 +138,8 @@ export interface AdminSession { actor: AdminProfile; expiresAt: string; }
 export interface CsrfToken { token: string; }
 
 export interface CounterCustomerDetails { name: string; phone: string; email?: string; teamName?: string; }
+
+export interface RescheduleBookingRequest { fieldId: string; blockCode: string; bookingDate: string; reason: string; }
 
 export interface ProofMetadata { objectKey: string; contentType: string; sha256: string; }
 
@@ -305,7 +311,7 @@ export interface CounterSlot { fieldId: string; blockCode: string; bookingDate: 
 
 export interface AdminDashboard { businessDate: string; bookingCount: number; attentionCount: number; }
 
-export interface Health { status: "ok"; service: string; contractVersion: "1.14.0"; }
+export interface Health { status: "ok"; service: string; contractVersion: "1.15.0"; }
 
 export interface Readiness { status: "ready" | "not_ready"; database: "connected" | "not_configured" | "unavailable"; authoritative: boolean; }
 

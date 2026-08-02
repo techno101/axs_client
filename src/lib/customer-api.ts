@@ -3,10 +3,10 @@
 export type CustomerAccount = { id: string; email: string; displayName: string; phone: string; age: number; status: "pending" | "active" | "suspended"; verifiedAt: string | null; passwordSet: boolean; googleLinked: boolean };
 export type CustomerSessionView = { account: CustomerAccount; idleExpiresAt?: string; absoluteExpiresAt?: string };
 
-type Envelope<T> = { data: T | null; error: null | { code: string; message: string; fieldErrors?: Record<string, string> } };
+type Envelope<T> = { data: T | null; error: null | { code: string; message: string; fieldErrors?: Record<string, string>; details?: Record<string, unknown> } };
 
 export class CustomerApiError extends Error {
-  constructor(readonly code: string, message: string, readonly fieldErrors?: Record<string, string>) { super(message); }
+  constructor(readonly code: string, message: string, readonly fieldErrors?: Record<string, string>, readonly details?: Record<string, unknown>) { super(message); }
 }
 
 function csrf() {
@@ -23,7 +23,7 @@ export async function customerApi<T>(path: string, init: RequestInit = {}): Prom
   }
   const response = await fetch(`/api/customer/${path}`, { ...init, headers, credentials: "same-origin", cache: "no-store" });
   const payload = await response.json().catch(() => null) as Envelope<T> | null;
-  if (!response.ok || !payload?.data) throw new CustomerApiError(payload?.error?.code ?? "SERVICE_UNAVAILABLE", payload?.error?.message ?? "The account service is temporarily unavailable.", payload?.error?.fieldErrors);
+  if (!response.ok || !payload?.data) throw new CustomerApiError(payload?.error?.code ?? "SERVICE_UNAVAILABLE", payload?.error?.message ?? "The account service is temporarily unavailable.", payload?.error?.fieldErrors, payload?.error?.details);
   return payload.data;
 }
 
