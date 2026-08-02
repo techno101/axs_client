@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --webpack",
+    "dev": "next dev --webpack -p 4173",
     "build": "next build --webpack && node scripts/check-browser-bundles.mjs",
     "start": "next start",
     "start:test": "next start -p 4173",
