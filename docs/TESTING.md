@@ -1,5 +1,22 @@
 # Client Testing
 
+## v12 release-candidate evidence - 2026-08-02
+
+Run from `axs_client`:
+
+```powershell
+npm run check
+npm run test:routes
+npm run test:a11y
+npm run test:motion
+npm run visual:capture
+npm audit --omit=dev
+```
+
+`npm run check` passes lint, typecheck, pinned-contract validation, the 75-file Client security-boundary scan, 33 Vitest tests and the Next.js production build/browser-bundle scan. The route suite passes English/BM document language, canonical/hreflang and sitemap assertions; all listed routes; 360/390/720/768/1024/1440 responsive overflow; mobile navigation; keyboard booking; 200% reflow; and the disabled-payment pre-mutation boundary. Axe passes `/`, `/bm`, booking, finder, contact, authentication/recovery and 404 routes. Motion checks pass desktop smooth scroll at LCP 1280 ms/CLS 0.000 and reduced-motion native scroll. Visual capture covers English/BM desktop/mobile, tablet/laptop, fields and booking. Production dependency audit reports zero vulnerabilities.
+
+These results use the standalone contract-shaped fixture and prove local Client behavior only. Provider checkout, callback confirmation, Vercel deployment and live post-deploy capture are `BLOCKED`/not performed, not passed.
+
 ## Checkpoint 3 booking ownership, lookup and download - 2026-07-30
 
 - Focused wizard, BFF and proxy tests passed; full suite passed 32 tests. Lint passed with one pre-existing `brand-mark.tsx` image warning; TypeScript, contract, security and production build passed.

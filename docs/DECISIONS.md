@@ -1,5 +1,16 @@
 # Client Decisions
 
+| v12 foundation decision | Result |
+| --- | --- |
+| Brand thesis | “The field is yours,” expressed through a Dusk-to-floodlights palette, twin-field geometry and one continuous pitch line rather than a generic dark/neon sports kit. |
+| Bilingual foundation | English remains at root URLs; Bahasa Melayu begins at `/bm`. Locale selection is explicit, persistent in navigation and never inferred through an automatic browser-language redirect. |
+| Content ownership | Homepage and shared-shell strings live in typed locale dictionaries. Full route and legal parity remains Checkpoint 3 work and must not be claimed early. |
+| Photography | Use approved real venue/player photography only. Responsive WebP derivatives are committed; generated imagery is excluded. |
+| Motion boundary | GSAP/Lenis are marketing-only on fine-pointer devices without reduced motion. Booking, account, authentication, touch and reduced-motion experiences use native scroll and visible static content. |
+| Visual signature | The continuous pitch line is the sole recurring motion motif. No custom cursor, WebGL, confetti, autoplay video or blocking loader. |
+| Fixture independence | Client route/accessibility/visual tests use a deterministic contract-shaped local fixture and do not require a sibling Admin checkout. |
+| Release gate | A version branch may hold the validated candidate, but `main`/production promotion requires a controlled sandbox payment, verified webhook confirmation and post-deploy live checks. |
+
 | Decision | Result |
 | --- | --- |
 | Booking ownership | Client never sends an account ID. It forwards an opaque Customer cookie to its same-origin BFF so Admin derives active-session ownership. |

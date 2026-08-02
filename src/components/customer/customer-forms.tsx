@@ -6,7 +6,7 @@ import { CustomerApiError, customerApi, postCustomer, type CustomerAccount, type
 import type { CustomerBooking } from "@/lib/api/types";
 
 type Notice = { tone: "error" | "success" | "info"; text: string } | null;
-const serviceMessage = "This account action is unavailable in this environment. You can still book as a guest.";
+const serviceMessage = "This account action is unavailable right now. You can still book as a guest.";
 
 function messageFor(error: unknown): Notice {
   if (error instanceof CustomerApiError) return { tone: "error", text: error.code === "SERVICE_UNAVAILABLE" ? serviceMessage : error.message };
@@ -14,7 +14,7 @@ function messageFor(error: unknown): Notice {
 }
 
 function AccountShell({ eyebrow, title, children }: { eyebrow: string; title: string; children: React.ReactNode }) {
-  return <section className="customer-page"><div className="shell customer-page__grid"><aside><p className="eyebrow">{eyebrow}</p><h1>{title}</h1><p>Guest booking works without an account. Sign up to track your bookings, download receipts, and never lose a reference again.</p><Link href="/book" className="customer-text-link">Book as guest</Link></aside><div className="customer-card">{children}</div></div></section>;
+  return <section className="customer-page"><div className="shell customer-page__grid"><aside><p className="eyebrow">{eyebrow}</p><h1>{title}</h1><p>Guest booking works without an account. Sign up to track your bookings, download receipts, and keep your history in one place.</p><Link href="/book" className="customer-text-link">Book as guest</Link></aside><div className="customer-card">{children}</div></div></section>;
 }
 
 function NoticeBox({ notice }: { notice: Notice }) { return notice ? <p className={`customer-notice customer-notice--${notice.tone}`} role={notice.tone === "error" ? "alert" : "status"}>{notice.text}</p> : null; }
@@ -50,16 +50,16 @@ export function SignInForm() {
 
 export function VerifyEmailForm() {
   const initialState = typeof window === "undefined" ? "" : new URLSearchParams(window.location.search).get("state") ?? "";
-  const [notice, setNotice] = useState<Notice>(initialState === "unavailable" ? { tone: "error", text: "Email verification is unavailable in this environment. Your account remains pending." } : { tone: "info", text: "Check your inbox for a one-time verification link. The link expires after 24 hours." }); const [busy, setBusy] = useState(false);
+  const [notice, setNotice] = useState<Notice>(initialState === "unavailable" ? { tone: "error", text: "Email verification is unavailable right now. Your account is not active yet." } : { tone: "info", text: "Check your inbox for a one-time verification link. The link expires after 24 hours." }); const [busy, setBusy] = useState(false);
   const token = typeof window === "undefined" ? "" : new URLSearchParams(window.location.search).get("token") ?? "";
   useEffect(() => { if (!token) return; void (async () => { setBusy(true); try { const result = await postCustomer<{ state: string }>("verification/confirm", { token }); if (result.state === "verified") { setNotice({ tone: "success", text: "Your email is verified. You can now use your account." }); } else if (result.state === "replayed") setNotice({ tone: "error", text: "This verification link has already been used. Sign in to continue." }); else if (result.state === "suspended") setNotice({ tone: "error", text: "This account is suspended." }); else setNotice({ tone: "error", text: "This verification link has expired. Request a new link below." }); } catch (error) { setNotice(messageFor(error)); } finally { setBusy(false); } })(); }, [token]);
-  async function resend(event: FormEvent<HTMLFormElement>) { event.preventDefault(); setBusy(true); const values = new FormData(event.currentTarget); try { const result = await postCustomer<{ deliveryAvailable?: boolean }>("verification/resend", { email: String(values.get("email") ?? "") }); setNotice(result.deliveryAvailable === false ? { tone: "error", text: "Email verification is unavailable in this environment." } : { tone: "success", text: "If verification is needed, a new email will be sent. Please wait a minute before trying again." }); } catch (error) { setNotice(messageFor(error)); } finally { setBusy(false); } }
+  async function resend(event: FormEvent<HTMLFormElement>) { event.preventDefault(); setBusy(true); const values = new FormData(event.currentTarget); try { const result = await postCustomer<{ deliveryAvailable?: boolean }>("verification/resend", { email: String(values.get("email") ?? "") }); setNotice(result.deliveryAvailable === false ? { tone: "error", text: "Email verification is unavailable right now." } : { tone: "success", text: "If verification is needed, a new email will be sent. Please wait a minute before trying again." }); } catch (error) { setNotice(messageFor(error)); } finally { setBusy(false); } }
   return <AccountShell eyebrow="Email verification" title="Verify your email"><NoticeBox notice={notice}/><form className="customer-form" onSubmit={resend}><label className="customer-form__wide">Email<input name="email" type="email" autoComplete="email" required/></label><button className="customer-submit customer-form__wide" disabled={busy}>Send a new link</button></form><p className="customer-help"><Link href="/sign-in">Return to sign in</Link></p></AccountShell>;
 }
 
 export function ForgotPasswordForm() {
   const [notice, setNotice] = useState<Notice>(null); const [busy, setBusy] = useState(false);
-  async function submit(event: FormEvent<HTMLFormElement>) { event.preventDefault(); setBusy(true); const values = new FormData(event.currentTarget); try { const result = await postCustomer<{ deliveryAvailable?: boolean }>("password/forgot", { email: String(values.get("email") ?? "") }); setNotice(result.deliveryAvailable === false ? { tone: "error", text: "Password recovery email is unavailable in this environment." } : { tone: "success", text: "If the account is eligible, a reset link will arrive shortly. It expires after 30 minutes." }); } catch (error) { setNotice(messageFor(error)); } finally { setBusy(false); } }
+  async function submit(event: FormEvent<HTMLFormElement>) { event.preventDefault(); setBusy(true); const values = new FormData(event.currentTarget); try { const result = await postCustomer<{ deliveryAvailable?: boolean }>("password/forgot", { email: String(values.get("email") ?? "") }); setNotice(result.deliveryAvailable === false ? { tone: "error", text: "Password recovery email is unavailable right now." } : { tone: "success", text: "If the account is eligible, a reset link will arrive shortly. It expires after 30 minutes." }); } catch (error) { setNotice(messageFor(error)); } finally { setBusy(false); } }
   return <AccountShell eyebrow="Account recovery" title="Reset your passphrase"><NoticeBox notice={notice}/><form className="customer-form" onSubmit={submit}><label className="customer-form__wide">Email<input name="email" type="email" autoComplete="email" required/></label><button className="customer-submit customer-form__wide" disabled={busy}>Send reset link</button></form><p className="customer-help"><Link href="/sign-in">Return to sign in</Link></p></AccountShell>;
 }
 

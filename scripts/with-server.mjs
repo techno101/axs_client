@@ -6,6 +6,9 @@ const target = process.argv[2];
 if (!target) throw new Error("Pass the verification script path to with-server.mjs");
 
 const nextBin = path.resolve("node_modules/next/dist/bin/next");
+const fixtureAdmin = process.env.E2E_USE_FIXTURE_ADMIN === "false"
+  ? null
+  : spawn(process.execPath, [path.resolve("scripts/fixture-admin.mjs")], { stdio: "inherit", env: process.env });
 // Browser smoke fixtures deliberately use a loopback Admin origin. `next start`
 // forces NODE_ENV=production and rejects that safe local-only test boundary before
 // a route renders, so use Next's development server unless a caller explicitly
@@ -16,25 +19,32 @@ const server = spawn(process.execPath, [nextBin, serverMode, "-p", "4173"], {
   env: process.env,
 });
 
-async function waitForServer() {
-  for (let attempt = 0; attempt < 40; attempt += 1) {
+async function waitForUrl(url, label) {
+  for (let attempt = 0; attempt < 60; attempt += 1) {
     try {
-      const response = await fetch("http://127.0.0.1:4173");
+      const response = await fetch(url);
       if (response.ok) return;
     } catch {
-      // The server is still starting.
+      // Process is still starting.
     }
     await new Promise((resolve) => setTimeout(resolve, 250));
   }
-  throw new Error("Next server did not become ready on port 4173");
+  throw new Error(`${label} did not become ready`);
+}
+
+async function waitForServer() {
+  if (fixtureAdmin) await waitForUrl("http://127.0.0.1:3000/api/ready", "Fixture Admin");
+  await waitForUrl("http://127.0.0.1:4173", "Next server on port 4173");
 }
 
 function stopServer() {
-  if (server.exitCode !== null) return;
   if (process.platform === "win32") {
-    spawnSync("taskkill", ["/pid", String(server.pid), "/T", "/F"], { stdio: "ignore" });
+    for (const processToStop of [server, fixtureAdmin]) {
+      if (processToStop && processToStop.exitCode === null) spawnSync("taskkill", ["/pid", String(processToStop.pid), "/T", "/F"], { stdio: "ignore" });
+    }
   } else {
-    server.kill("SIGTERM");
+    if (server.exitCode === null) server.kill("SIGTERM");
+    if (fixtureAdmin?.exitCode === null) fixtureAdmin.kill("SIGTERM");
   }
 }
 

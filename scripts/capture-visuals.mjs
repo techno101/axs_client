@@ -8,9 +8,11 @@ await mkdir(output, { recursive: true });
 
 const captures = [
   { name: "home-desktop-1440", route: "/", width: 1440, height: 1000, fullPage: true },
+  { name: "home-bm-desktop-1440", route: "/bm", width: 1440, height: 1000, fullPage: true },
   { name: "home-laptop-1024", route: "/", width: 1024, height: 900, fullPage: true },
   { name: "home-tablet-768", route: "/", width: 768, height: 900, fullPage: true },
   { name: "home-mobile-390", route: "/", width: 390, height: 844, fullPage: true },
+  { name: "home-bm-mobile-390", route: "/bm", width: 390, height: 844, fullPage: true },
   { name: "home-mobile-360", route: "/", width: 360, height: 800, fullPage: true },
   { name: "booking-desktop-1440", route: "/book", width: 1440, height: 1000, fullPage: true },
   { name: "booking-mobile-390", route: "/book", width: 390, height: 844, fullPage: true },
@@ -56,8 +58,8 @@ try {
         Object.keys(document.querySelector(".booking-wizard") ?? {}).some((key) => key.startsWith("__reactProps$")),
       );
       await page.getByRole("button", { name: /choose field/i }).click();
-      await page.getByRole("button", { name: /choose block/i }).click();
-      await page.getByText("Online booking is not available yet.").waitFor();
+      await page.getByRole("button", { name: /choose session/i }).click();
+      await page.getByText("Online booking is unavailable right now.").waitFor();
       const availableBlock = page.locator(".slot-card--available").first();
       if (await availableBlock.isEnabled()) await availableBlock.click();
     }

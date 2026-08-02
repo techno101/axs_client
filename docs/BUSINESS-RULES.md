@@ -1,5 +1,13 @@
 # Public Booking Rules
 
+## v12 customer-language rules
+
+- Customer copy uses field, session, booking and payment language; it does not expose API, backend, inventory, owner-confirmation or developer-state terminology.
+- English is the root experience and Bahasa Melayu starts at `/bm`. Locale choice is explicit; names, references, addresses and authoritative business values are not mistranslated.
+- When online payment is disabled, visitors may review dates, fields, sessions and authoritative prices, but no hold/order/payment mutation is made and the UI states that no session has been reserved.
+- Marketing motion cannot gate content or booking. Booking/account/authentication, touch and reduced-motion modes use native scrolling.
+- Public imagery is approved real photography. No generated venue image may imply facilities or conditions that were not photographed and approved.
+
 ## Checkpoint 3 ownership, lookup and references
 
 - Guest email is optional; name and normalized phone remain required. An active verified account safely pre-fills its profile, but the browser never selects an account ID.

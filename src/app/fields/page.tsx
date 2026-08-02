@@ -11,7 +11,7 @@ import { formatMoney } from "@/lib/format";
 
 export const metadata: Metadata = {
   title: "The fields",
-  description: "Two fields. One venue. Floodlit. Full-size. Compare and book your block.",
+  description: "Two full-size football fields at ArmourX Sports, Sunway City. Field 1 and Field 2. Compare and book.",
 };
 export const dynamic = "force-dynamic";
 
@@ -26,17 +26,17 @@ export default async function FieldsPage() {
     <>
       <PageHero
         eyebrow="The fields"
-        title={<>Two fields.<br /><em>One venue.</em></>}
-        intro="Floodlit. Full-size. Game-ready. Compare both fields and pick your block."
+        title={<>Field&nbsp;1 and<br /><em>Field&nbsp;2.</em></>}
+        intro="Two full-size pitches. Same venue. Same pricing. Both floodlit. Book the one you prefer — or both."
         image={images.aerialPitch}
-        imageAlt="Aerial view of a green football pitch inside a stadium"
+        imageAlt="Aerial view of ArmourX Sports football fields in Sunway City"
       />
       <section className="field-listing-section">
         <div className="shell">
           <SectionHeading
-              eyebrow="Field inventory"
-              title={<>What&apos;s<br />available.</>}
-              intro="Real venue photos on the way. For now, book the field you want — the pitch is the same either way."
+            eyebrow="What is available"
+            title={<>Both fields.<br />Full-size.<br />Game-ready.</>}
+            intro="Every session is six hours. Morning 9AM–3PM or evening 3PM–9PM. RM 600 or RM 800. The whole field. No sharing. No time-splitting."
           />
           <div className="field-listing">
             {fields.map((field, index) => (
@@ -49,9 +49,9 @@ export default async function FieldsPage() {
                   <p className="eyebrow"><span aria-hidden="true" />{field.shortName}</p>
                   <h2>{field.name}</h2>
                   <p>{field.description}</p>
-                  {field.features.length ? <ul>{field.features.map((feature) => <li key={feature}><CheckIcon />{feature}</li>)}</ul> : <p>Full specs coming soon. Floodlit. Full-size. Game-ready.</p>}
+                  {field.features.length ? <ul>{field.features.map((feature) => <li key={feature}><CheckIcon />{feature}</li>)}</ul> : <p>Full-size. Floodlit. Game-ready.</p>}
                   <Link href={`/fields/${field.slug}`}>
-                    Explore {field.shortName}
+                    {field.shortName} details
                     <ArrowUpRightIcon />
                   </Link>
                 </div>
@@ -63,8 +63,8 @@ export default async function FieldsPage() {
       <section className="block-comparison">
         <div className="shell block-comparison__grid">
           <div>
-            <p className="eyebrow eyebrow--light"><span aria-hidden="true" />Fixed launch blocks</p>
-            <h2>Compare the two<br />booking blocks.</h2>
+            <p className="eyebrow eyebrow--light"><span aria-hidden="true" />Daily sessions</p>
+            <h2>Morning or evening.<br />Your choice.</h2>
           </div>
           <div className="block-comparison__rows">
             {blocks.map((block) => (

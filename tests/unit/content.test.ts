@@ -10,7 +10,8 @@ describe("local display content", () => {
     expect(blocks.map((block) => block.amountMinor)).toEqual([60000, 80000]);
   });
 
-  it("marks venue specifications as pending instead of inventing facilities", () => {
-    expect(fields.every((field) => field.description.includes("pending owner confirmation"))).toBe(true);
+  it("uses approved venue facts without exposing internal content status", () => {
+    expect(fields.every((field) => field.description.includes("full-size"))).toBe(true);
+    expect(fields.every((field) => !field.description.toLowerCase().includes("pending"))).toBe(true);
   });
 });

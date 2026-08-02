@@ -1,62 +1,48 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { BrandMark } from "@/components/ui/brand-mark";
 import { ButtonLink } from "@/components/ui/button-link";
 import { MenuIcon } from "@/components/ui/icons";
-
-const navItems = [
-  { href: "/fields", label: "Fields" },
-  { href: "/about", label: "About" },
-  { href: "/articles", label: "Notes" },
-  { href: "/faq", label: "FAQ" },
-  { href: "/contact", label: "Contact" },
-];
+import { homeHref, localeFromPath, shellCopy } from "@/lib/site-copy";
 
 export function SiteHeader() {
+  const pathname = usePathname();
+  const locale = localeFromPath(pathname);
+  const copy = shellCopy[locale];
+  const isBm = locale === "bm";
+  const navItems = [
+    { href: isBm ? "/bm#fields" : "/fields", label: copy.fields },
+    { href: isBm ? "/bm#venue" : "/about", label: copy.about },
+    { href: isBm ? "/bm#faq" : "/articles", label: copy.notes },
+    { href: isBm ? "/bm#faq" : "/faq", label: copy.faq },
+    { href: isBm ? "/bm#venue" : "/contact", label: copy.contact },
+  ];
+
   return (
     <header className="site-header">
       <div className="site-header__inner shell">
-        <BrandMark />
-        <nav className="site-header__nav" aria-label="Primary navigation">
-          {navItems.map((item) => (
-            <Link href={item.href} key={item.href}>
-              {item.label}
-            </Link>
-          ))}
+        <BrandMark href={homeHref(locale)} />
+        <nav className="site-header__nav" aria-label={copy.navLabel}>
+          {navItems.map((item) => <Link href={item.href} key={`${item.href}-${item.label}`}>{item.label}</Link>)}
         </nav>
         <div className="site-header__actions">
-          <Link className="header-find" href="/sign-in">
-            Sign in
-          </Link>
-          <Link className="header-find" href="/booking/find">
-            Find booking
-          </Link>
-          <ButtonLink href="/book" compact>
-            Book a field
-          </ButtonLink>
+          <Link className="header-language" href={isBm ? "/" : "/bm"} hrefLang={isBm ? "en" : "ms"} aria-label={copy.switchLanguage}>{isBm ? "EN" : "BM"}</Link>
+          <Link className="header-find" href="/sign-in">{copy.signIn}</Link>
+          <Link className="header-find" href="/booking/find">{copy.findBooking}</Link>
+          <ButtonLink href="/book" compact>{copy.book}</ButtonLink>
         </div>
-        <details className="mobile-menu">
-          <summary aria-label="Open navigation">
-            <MenuIcon />
-            <span>Menu</span>
-          </summary>
+        <details className="mobile-menu" suppressHydrationWarning>
+          <summary aria-label={copy.menu}><MenuIcon /><span>{copy.menu}</span></summary>
           <div className="mobile-menu__panel">
-            <nav aria-label="Mobile navigation">
-              {navItems.map((item, index) => (
-                <Link href={item.href} key={item.href}>
-                  <span>0{index + 1}</span>
-                  {item.label}
-                </Link>
-              ))}
-              <Link href="/booking/find">
-                <span>06</span>
-                Find booking
-              </Link>
-              <Link href="/sign-in">
-                <span>07</span>
-                Sign in
-              </Link>
+            <nav aria-label={copy.navLabel}>
+              {navItems.map((item) => <Link href={item.href} key={`${item.href}-${item.label}`}>{item.label}</Link>)}
+              <Link href="/booking/find">{copy.findBooking}</Link>
+              <Link href="/sign-in">{copy.signIn}</Link>
+              <Link href={isBm ? "/" : "/bm"} hrefLang={isBm ? "en" : "ms"}>{isBm ? "English" : "Bahasa Melayu"}</Link>
             </nav>
-            <ButtonLink href="/book">Book a field</ButtonLink>
+            <ButtonLink href="/book">{copy.book}</ButtonLink>
           </div>
         </details>
       </div>

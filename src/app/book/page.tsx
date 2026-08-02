@@ -29,8 +29,8 @@ export default async function BookPage() {
       <PageHero
         compact
         eyebrow="Book now"
-        title={<>Claim your<em>block.</em></>}
-        intro="Pick a field. Pick a window. Done. Availability, price, and confirmation are live — no phone calls, no guesswork."
+        title={<>Pick your<em>game.</em></>}
+        intro="Select a date, choose Field 1 or Field 2, pick morning or evening. Confirmed instantly. RM 600 or RM 800 for six hours."
         image={images.nightPlayer}
         imageAlt="Player on a football pitch under floodlights"
       />

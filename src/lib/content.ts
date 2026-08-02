@@ -1,11 +1,11 @@
 import type { Article, BookingBlock, FaqItem, Field } from "@/lib/api/types";
 
 export const images = {
-  heroAerial: "/images/hero-aerial.png",
-  nightStadium: "/images/demo/night-stadium.jpg",
-  aerialPitch: "/images/aerial-pitch.png",
-  nightPlayer: "/images/demo/night-player.jpg",
-  texturedPitch: "/images/demo/textured-pitch.jpg",
+  heroAerial: "/images/hero-aerial.webp",
+  nightStadium: "/images/night-stadium.webp",
+  aerialPitch: "/images/aerial-pitch.webp",
+  nightPlayer: "/images/night-player.webp",
+  texturedPitch: "/images/textured-pitch.webp",
 } as const;
 
 export const fields: Field[] = [
@@ -14,26 +14,24 @@ export const fields: Field[] = [
     slug: "field-one",
     name: "Field 1",
     shortName: "Field 1",
-    description:
-      "Field details and approved venue specifications are pending owner confirmation.",
-    surface: "Venue specification pending",
+    description: "A full-size, floodlit football field at ArmourX Sports in Sunway City.",
+    surface: "Full-size football field",
     facilityFacts: [],
     image: images.nightStadium,
     imageAlt: "Floodlit stadium viewed from above at night",
-    features: ["09:00–15:00 block", "15:00–21:00 block", "Venue details pending"],
+    features: ["09:00–15:00 session", "15:00–21:00 session", "LED floodlights"],
   },
   {
     id: "FIELD_02",
     slug: "field-two",
     name: "Field 2",
     shortName: "Field 2",
-    description:
-      "Field details and approved venue specifications are pending owner confirmation.",
-    surface: "Venue specification pending",
+    description: "A full-size, floodlit football field at ArmourX Sports in Sunway City.",
+    surface: "Full-size football field",
     facilityFacts: [],
     image: images.aerialPitch,
     imageAlt: "Aerial view of a green football pitch inside a stadium",
-    features: ["09:00–15:00 block", "15:00–21:00 block", "Venue details pending"],
+    features: ["09:00–15:00 session", "15:00–21:00 session", "LED floodlights"],
   },
 ];
 
@@ -41,7 +39,7 @@ export const blocks: BookingBlock[] = [
   {
     fieldId: "FIELD_01",
     id: "MORNING",
-    label: "Morning block",
+    label: "Morning session",
     startsAt: "09:00",
     endsAt: "15:00",
     amountMinor: 60000,
@@ -51,7 +49,7 @@ export const blocks: BookingBlock[] = [
   {
     fieldId: "FIELD_01",
     id: "EVENING",
-    label: "Evening block",
+    label: "Evening session",
     startsAt: "15:00",
     endsAt: "21:00",
     amountMinor: 80000,
@@ -64,27 +62,27 @@ export const faqs: FaqItem[] = [
   {
     question: "Do I book by the hour?",
     answer:
-      "No. Launch bookings use complete blocks only: 09:00–15:00 or 15:00–21:00 for one field.",
+      "No. Bookings use complete six-hour sessions: 09:00–15:00 or 15:00–21:00 for one field.",
   },
   {
     question: "How long is a selected slot held?",
     answer:
-      "When online payment is enabled, the booking service creates a 10-minute server-controlled hold before customer details are submitted. No hold is created while online payment is disabled.",
+      "Your selected field and session are held for ten minutes while you complete the booking details and payment.",
   },
   {
     question: "Can I book without an account?",
     answer:
-      "Yes. Guest booking is supported. Name, phone and email are required for an online booking; team name is optional.",
+      "Yes. Guest booking is supported. Your name and phone are required; email and team name are optional.",
   },
   {
     question: "When is an online payment confirmed?",
     answer:
-      "Only after the backend verifies the payment. A browser redirect never confirms a booking by itself.",
+      "After payment is verified. The booking result page shows the current confirmation status.",
   },
   {
     question: "What are the cancellation and refund terms?",
     answer:
-      "Those policies are awaiting owner approval. The published policy pages will show the final approved terms before launch.",
+      "Contact the ArmourX Sports team with your booking reference. Cancellation and refund requests are assessed manually.",
   },
 ];
 
@@ -92,25 +90,24 @@ export const articles: Article[] = [
   {
     slug: "how-booking-status-is-verified",
     category: "Booking guide",
-    title: "How booking status is verified",
-    excerpt:
-      "Why availability, holds and payment confirmation always come from the ArmourXSports API.",
+    title: "How booking confirmation works",
+    excerpt: "What happens between choosing a session and seeing your field confirmed.",
     readTime: "4 min read",
     publishedLabel: "Field notes · 12 July 2026",
     image: images.nightPlayer,
     imageAlt: "Football player on a lit pitch at night",
     body: [
       {
-        heading: "Availability is server-authoritative",
+        heading: "Availability is checked live",
         paragraphs: [
-          "The booking page displays the latest field, date and block state returned by the API. A browser cannot reserve inventory without a server-created hold.",
-          "A hold expires on the server clock. Refreshing or changing browser state cannot extend it.",
+          "The booking page shows the latest field, date and session availability. Your selection is checked again before payment.",
+          "A selection is held briefly while checkout is completed. If it expires, return to availability and choose again.",
         ],
       },
       {
         heading: "Payment redirects are not confirmation",
         paragraphs: [
-          "The result page polls the protected booking status. Only a verified provider callback can move an online booking to confirmed and paid.",
+          "The result page checks the payment status for you. A return from the payment page is not confirmation on its own.",
         ],
       },
     ],
@@ -120,7 +117,7 @@ export const articles: Article[] = [
     category: "Booking guide",
     title: "Morning or evening: choose the right block",
     excerpt:
-      "Compare the two fixed booking windows and their authoritative prices.",
+      "Compare the two fixed booking windows and their current prices.",
     readTime: "3 min read",
     publishedLabel: "Booking guide · 10 July 2026",
     image: images.aerialPitch,
@@ -129,13 +126,13 @@ export const articles: Article[] = [
       {
         heading: "Morning, 09:00–15:00",
         paragraphs: [
-          "The morning block runs from 09:00 to 15:00 and the authoritative launch price is RM600.",
+          "The morning session runs from 09:00 to 15:00 at RM600.",
         ],
       },
       {
         heading: "Evening, 15:00–21:00",
         paragraphs: [
-          "The evening block runs from 15:00 to 21:00 and the authoritative launch price is RM800. Live checkout always uses the API amount.",
+          "The evening session runs from 15:00 to 21:00 at RM800. The current total is shown again before payment.",
         ],
       },
     ],
@@ -154,7 +151,7 @@ export const articles: Article[] = [
       {
         heading: "Prepare before checking out",
         paragraphs: [
-          "Agree the preferred field, block and backup date first. Keep the booking contact’s phone and email ready so the server-controlled hold is used for confirmation, not coordination.",
+          "Agree the preferred field, session and backup date first. Keep the booking contact’s phone and email ready so checkout can be completed without delay.",
         ],
       },
     ],

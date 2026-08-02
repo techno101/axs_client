@@ -17,7 +17,7 @@ export default function FindBookingPage() {
         compact
         eyebrow="Private lookup"
         title={<>Find your<br />booking.</>}
-        intro="Enter the booking reference. The live API rate-limits attempts and returns privacy-limited details only."
+        intro="Enter your booking reference to view the latest privacy-protected booking details."
       />
       <section className="finder-section">
         <div className="shell">

@@ -8,7 +8,7 @@ import { reportOperationalEvent } from "@/lib/operational-reporting";
 
 export function LivePaymentResult({ reference }: { reference: string }) {
   const client = useMemo(() => createHttpPublicClient(), []);
-  const [result, setResult] = useState<PaymentResult>({ reference, state: "pending", fieldName: "Pending server response", blockLabel: "Pending server response", bookingDate: "Pending", amountMinor: 0, currency: "MYR", lastCheckedAt: "Checking verified backend state…", guestEmailOmitted: typeof window !== "undefined" && window.sessionStorage.getItem(`axs:order-email:${reference}`) === "missing" });
+  const [result, setResult] = useState<PaymentResult>({ reference, state: "pending", fieldName: "Checking field", blockLabel: "Checking session", bookingDate: "Checking date", amountMinor: 0, currency: "MYR", lastCheckedAt: "Checking payment status…", guestEmailOmitted: typeof window !== "undefined" && window.sessionStorage.getItem(`axs:order-email:${reference}`) === "missing" });
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -33,7 +33,7 @@ export function LivePaymentResult({ reference }: { reference: string }) {
           bookingDate: status.occurrences.length === 1 ? first?.bookingDate ?? "Pending" : "Multiple dates",
           amountMinor: status.totalAmountMinor,
           currency: "MYR",
-          lastCheckedAt: `Verified backend state · ${new Date().toLocaleTimeString("en-MY")}`,
+          lastCheckedAt: `Status checked · ${new Date().toLocaleTimeString("en-MY")}`,
           bookingReferences: status.occurrences.map((occurrence) => occurrence.reference).filter((value): value is string => Boolean(value)),
           guestEmailOmitted: window.sessionStorage.getItem(`axs:order-email:${reference}`) === "missing",
         });

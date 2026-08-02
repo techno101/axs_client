@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { BookingWizard } from "@/components/booking/booking-wizard";
@@ -27,7 +27,7 @@ describe("BookingWizard", () => {
     expect(screen.getByRole("heading", { name: "Choose your date" })).toBeVisible();
     await user.click(screen.getByRole("button", { name: /choose field/i }));
     await user.click(screen.getByRole("button", { name: /field 1/i }));
-    await user.click(screen.getByRole("button", { name: /choose block/i }));
+    await user.click(screen.getByRole("button", { name: /choose session/i }));
     await user.click(screen.getAllByRole("button", { name: /available.*field 1/i })[0]);
     await user.click(screen.getByRole("button", { name: /add to booking/i }));
 
@@ -52,7 +52,7 @@ describe("BookingWizard", () => {
 
     await user.click(screen.getByRole("button", { name: /choose field/i }));
     await user.click(screen.getByRole("button", { name: /field 1/i }));
-    await user.click(screen.getByRole("button", { name: /choose block/i }));
+    await user.click(screen.getByRole("button", { name: /choose session/i }));
     await user.click(screen.getAllByRole("button", { name: /available.*field 1/i })[0]);
 
     expect(screen.getByText(/online payment is awaiting merchant verification/i)).toBeVisible();
@@ -62,9 +62,9 @@ describe("BookingWizard", () => {
     expect(screen.queryByRole("heading", { name: "Who is booking?" })).not.toBeInTheDocument();
   });
 
-  it("keeps an unmistakable non-production banner visible for sandbox checkout", () => {
+  it("keeps an unmistakable non-production banner visible for sandbox checkout", async () => {
     vi.stubGlobal("fetch", vi.fn(async () => Response.json({ data: [], meta: {}, error: null })));
     render(<BookingWizard fields={fields} blocks={blocks} availability={[]} onlinePayment={{ enabled: true, environment: "sandbox" }} businessDate="2026-07-16" initialDate="2026-07-18" />);
-    expect(screen.getByText(/sandbox checkout.*no real payment/i)).toBeVisible();
+    await waitFor(() => expect(screen.getByText(/sandbox checkout.*no real payment/i)).toBeVisible());
   });
 });

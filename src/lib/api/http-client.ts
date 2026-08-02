@@ -20,9 +20,13 @@ async function responseData<T>(response: Response): Promise<T> {
 
 function request(base: string, path: string, init?: RequestInit) { return fetch(`${base}${path}`, { ...init, headers: { Accept: "application/json", ...init?.headers }, cache: "no-store" }); }
 
+function localImage(value: string | null | undefined, fallback: string) {
+  return value?.startsWith("/") ? value : fallback;
+}
+
 function fieldView(field: PublicFieldsResponse["data"][number]): Field {
   const local = localFields.find((item) => item.id === field.id);
-  return local ? { ...local, id: field.id, slug: field.slug, name: field.name, shortName: field.name, description: field.description, surface: field.surface, facilityFacts: field.facilityFacts, image: field.imageUrl || local.image, imageAlt: field.imageAlt || local.imageAlt, features: field.features } : { id: field.id, slug: field.slug, name: field.name, shortName: field.name, description: field.description, surface: field.surface, facilityFacts: field.facilityFacts, image: field.imageUrl || images.aerialPitch, imageAlt: field.imageAlt || "Temporary field image pending owner-approved photography", features: field.features };
+  return local ? { ...local, id: field.id, slug: field.slug, name: field.name, shortName: field.name, description: field.description, surface: field.surface, facilityFacts: field.facilityFacts, image: localImage(field.imageUrl, local.image), imageAlt: field.imageAlt || local.imageAlt, features: field.features } : { id: field.id, slug: field.slug, name: field.name, shortName: field.name, description: field.description, surface: field.surface, facilityFacts: field.facilityFacts, image: localImage(field.imageUrl, images.aerialPitch), imageAlt: field.imageAlt || "ArmourX Sports football field", features: field.features };
 }
 
 function blockView(block: PublicConfigResponse["data"]["slots"][number]): BookingBlock { return { fieldId: block.fieldId, id: block.code, label: block.label, startsAt: block.startsAt, endsAt: block.endsAt, amountMinor: block.amountMinor, currency: block.currency, weekdays: block.weekdays }; }

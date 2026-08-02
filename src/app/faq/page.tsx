@@ -17,7 +17,7 @@ export default async function FaqPage() {
         compact
         eyebrow="Good to know"
         title={<>Questions,<br />answered clearly.</>}
-        intro="Confirmed launch rules are separated from policies that still require owner approval."
+        intro="Clear answers about sessions, payment, guest booking and the venue."
       />
       <section className="faq-page-section">
         <div className="shell faq-page-section__grid">

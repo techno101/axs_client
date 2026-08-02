@@ -2,8 +2,8 @@
 
 import { useEffect, useRef } from "react";
 
-const VENUE_LAT = 3.1390;
-const VENUE_LNG = 101.6869;
+const VENUE_LAT = 1.3940655;
+const VENUE_LNG = 103.6340126;
 const DEFAULT_ZOOM = 16;
 
 export function VenueMap() {

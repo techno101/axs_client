@@ -44,9 +44,9 @@ export default async function FieldDetailPage({ params }: FieldDetailProps) {
       <section className="field-detail-intro">
         <div className="shell field-detail-intro__grid">
           <SectionHeading
-            eyebrow="Field information"
+            eyebrow="Details"
             title={<>What you<br />need to know.</>}
-            intro="Live details from the venue. Everything here is confirmed. We don&apos;t guess."
+            intro="Everything confirmed about this field. No guesses."
           />
           <div className="field-fact-grid">
             <div><span>Surface</span><strong>{field.surface}</strong></div>

@@ -5,7 +5,6 @@ import { SlotCard } from "@/components/booking/slot-card";
 import { AlertIcon, ArrowRightIcon, CalendarIcon, CheckIcon } from "@/components/ui/icons";
 import type {
   AvailabilitySlot,
-  AvailabilityStatus,
   BookingBlock,
   Field,
   PublicConfigView,
@@ -25,7 +24,7 @@ type BasketItem = {
   amountMinor: number;
 };
 
-const steps = ["Date", "Field", "Block", "Details", "Review"] as const;
+const steps = ["Date", "Field", "Session", "Details", "Review"] as const;
 
 function addIsoDays(value: string, days: number): string {
   const date = new Date(`${value}T00:00:00.000Z`);
@@ -36,15 +35,6 @@ function addIsoDays(value: string, days: number): string {
 function displayDate(value: string, options: Intl.DateTimeFormatOptions): string {
   return new Intl.DateTimeFormat("en-MY", { ...options, timeZone: "UTC" }).format(new Date(`${value}T00:00:00.000Z`));
 }
-
-const stateExamples: AvailabilityStatus[] = [
-  "available",
-  "held",
-  "booked",
-  "blocked",
-  "closed",
-  "past",
-];
 
 type CustomerDetails = {
   name: string;
@@ -225,7 +215,7 @@ export function BookingWizard({ fields, blocks, availability, onlinePayment, bus
               </div>
               <div className="booking-live-note">
                 <AlertIcon />
-                <p><strong>Live availability:</strong> Malaysia time, the 90-day window and the 60-minute cut-off are enforced by the booking API.</p>
+                <p><strong>Live availability:</strong> Times are shown in Malaysia time. You can book up to 90 days ahead, until 60 minutes before the session.</p>
               </div>
               <button className="wizard-next" type="button" onClick={() => goTo(1)}>
                 Choose field <ArrowRightIcon />
@@ -251,14 +241,14 @@ export function BookingWizard({ fields, blocks, availability, onlinePayment, bus
               ))}
               <div className="wizard-buttons">
                 <button className="wizard-back" type="button" onClick={() => goTo(0)}>Back</button>
-                <button className="wizard-next" type="button" onClick={() => goTo(2)}>Choose block <ArrowRightIcon /></button>
+                <button className="wizard-next" type="button" onClick={() => goTo(2)}>Choose session <ArrowRightIcon /></button>
               </div>
             </div>
           ) : null}
 
           {step === 2 ? (
             <div className="slot-step">
-              {!onlinePayment.enabled ? <div className="booking-live-note booking-live-note--calm" role="status"><AlertIcon /><p><strong>Online booking is not available yet.</strong> {onlinePayment.publicMessage ?? "You can still review fields, sessions and prices."} No field block has been held.</p></div> : null}
+              {!onlinePayment.enabled ? <div className="booking-live-note booking-live-note--calm" role="status"><AlertIcon /><p><strong>Online booking is unavailable right now.</strong> {onlinePayment.publicMessage ?? "You can still review fields, sessions and prices."} No session has been reserved.</p></div> : null}
               <div className="slot-grid">
                 {slots.map(({ block: item, status }) => (
                   <SlotCard
@@ -300,7 +290,7 @@ export function BookingWizard({ fields, blocks, availability, onlinePayment, bus
                   <input id="customer-team" autoComplete="organization" value={customer.team} onChange={(event) => setCustomer({ ...customer, team: event.target.value })} />
                 </div>
               </div>
-              <p className="privacy-inline">Details are submitted only to the ArmourXSports booking API to create this booking.{accountPrefill ? " Your verified account contact is securely prefilled and remains server-controlled." : ""}</p>
+              <p className="privacy-inline">We use these details only to create and manage this booking.{accountPrefill ? " Your saved account contact has been filled in for you." : ""}</p>
               <div className="wizard-buttons">
                 <button className="wizard-back" type="button" onClick={() => goTo(2)}>Back</button>
                 <button className="wizard-next" type="submit">Review booking <ArrowRightIcon /></button>
@@ -317,9 +307,9 @@ export function BookingWizard({ fields, blocks, availability, onlinePayment, bus
               </dl>
               <div className="booking-live-note">
                 <AlertIcon />
-                <p><strong>Final availability is checked together.</strong> The API creates one short-lived hold for the complete basket only when you start payment. If any session has changed, no session is held. Payment is confirmed only by the verified backend callback.</p>
+                <p><strong>We check every selected session before payment.</strong> If availability has changed, nothing is reserved and you can choose again. Your field is confirmed only after payment is verified.</p>
               </div>
-              {!customer.email ? <div className="booking-live-note booking-live-note--calm" role="alert"><AlertIcon /><p><strong>You skipped the email. This is your only proof of booking.</strong> Copy the reference. Screenshot this page. Email it to yourself. Without an email on file, there is no way to recover this later.</p></div> : null}
+              {!customer.email ? <div className="booking-live-note booking-live-note--calm" role="alert"><AlertIcon /><p><strong>No email provided.</strong> Copy your booking reference now. Screenshot this page. Save it somewhere safe. Without an email, you cannot recover your booking later.</p></div> : null}
               <div className="wizard-buttons">
                 <button className="wizard-back" type="button" onClick={() => goTo(3)}>Edit details</button>
                 <button className="wizard-back" type="button" onClick={() => goTo(0)}>Add another session</button>
@@ -337,42 +327,24 @@ export function BookingWizard({ fields, blocks, availability, onlinePayment, bus
             <div><dt>Sessions</dt><dd>{basket.length ? `${basket.length} selected` : "Not selected"}</dd></div>
           </dl>
           <div className="booking-summary__rule" />
-          <p className="booking-summary__authority">Final availability and price always come from the ArmourXSports API.</p>
+          <p className="booking-summary__authority">Availability and prices are checked again before payment.</p>
         </aside>
       </div>
 
-      <section className="state-guide" aria-labelledby="state-guide-title">
-        <div className="state-guide__heading">
-          <p className="eyebrow"><span aria-hidden="true" />Public state guide</p>
-          <h2 id="state-guide-title">Availability state examples.</h2>
-          <p>Compact examples show that no unavailable state is styled like an action.</p>
-        </div>
-        <div className="state-guide__grid">
-          {stateExamples.map((status, index) => (
-            <SlotCard
-              block={blocks[index % blocks.length] ?? { fieldId: "preview", id: "PREVIEW", label: "Scheduled slot", startsAt: "--:--", endsAt: "--:--", amountMinor: 0, currency: "MYR", weekdays: [] }}
-              fieldName="State preview"
-              key={status}
-              status={status}
-              compact
-            />
-          ))}
-        </div>
-      </section>
     </div>
   );
 }
 
 function getStepTitle(step: number) {
-  return ["Choose your date", "Select a field", "Pick a complete block", "Who is booking?", "Review booking"][step];
+  return ["Choose your date", "Select a field", "Pick a session", "Who is booking?", "Review booking"][step];
 }
 
 function getStepIntro(step: number) {
   return [
     "Start with a date inside the 90-day booking window.",
-    "Choose a field. Its current slots, times and prices come from the booking API.",
+    "Choose either field. Current session times and prices are shown before you continue.",
     "Unavailable states stay visible, clear and non-interactive.",
     "Name and phone are required. Guests may omit email, but must save their booking references after payment.",
-    "Check the details before the server creates a payment attempt.",
+    "Check every detail before continuing to secure payment.",
   ][step];
 }

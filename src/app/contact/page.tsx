@@ -4,8 +4,8 @@ import { PageHero } from "@/components/layout/page-hero";
 import { PinIcon } from "@/components/ui/icons";
 
 export const metadata: Metadata = {
-  title: "Get in touch",
-  description: "Questions about bookings, the venue, or anything else. Real people. Real answers.",
+  title: "Contact ArmourX Sports",
+  description: "Get in touch with ArmourX Sports SDN BHD. Booking questions, venue enquiries, partnerships.",
 };
 
 export default function ContactPage() {
@@ -13,17 +13,18 @@ export default function ContactPage() {
     <>
       <PageHero
         compact
-        eyebrow="Contact us"
-        title={<>Talk to us.<br /><em>Not a bot.</em></>}
-        intro="Questions, feedback, or partnership enquiries. We respond within 24 hours. Real people. Real answers."
+        eyebrow="Get in touch"
+        title={<>Questions?<br /><em>We answer.</em></>}
+        intro="Fill in the form and we will get back to you within 24 hours. For booking issues, include your booking reference if you have one."
       />
       <section className="contact-section">
         <div className="shell contact-section__grid">
           <div className="contact-details">
-            <p className="eyebrow"><span aria-hidden="true" />Reach us</p>
-            <h2>One form.<br />Direct response.</h2>
-            <p>No ticket numbers. No automated replies. Fill in the form and we&apos;ll get back to you. Usually within a day.</p>
-            <div><PinIcon /><span><strong>ArmourXSports</strong>Sunway City · Kuala Lumpur<br />Full address and phone coming soon</span></div>
+            <p className="eyebrow"><span aria-hidden="true" />Reach us directly</p>
+            <h2>Real people.<br />Real answers.</h2>
+            <p>No ticket numbers. No automated replies. Write to us and we will respond — usually within a day.</p>
+            <div><PinIcon /><span><strong>ArmourX Sports SDN BHD</strong>LOT 165132, Persiaran Medini 3<br />Sunway City, 79250 Iskandar Puteri<br />Johor Darul Ta&apos;zim</span></div>
+            <div style={{ marginTop: 16 }}><span><strong>Email</strong><br />armourxsports@gmail.com</span></div>
           </div>
           <ContactForm />
         </div>

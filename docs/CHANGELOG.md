@@ -1,5 +1,14 @@
 # Client Changelog
 
+## v12 bilingual brand foundation release candidate - 2026-08-02
+
+- Rebuilt the homepage and shared shell around “The field is yours” and “Dusk to floodlights,” using approved venue photography, twin-field geometry and one continuous pitch-line signature.
+- Added typed English/Bahasa Melayu homepage and shell dictionaries, explicit `/bm`, locale switching, SSR document language, canonical/hreflang metadata and localized sitemap coverage without browser-language redirects.
+- Added GSAP, `@gsap/react` and Lenis for desktop marketing routes only, with cleanup, reduced-motion and touch fallbacks, and native scrolling for booking/account/authentication.
+- Added optimized WebP venue/logo derivatives, same-origin media validation, deterministic standalone Client fixtures, motion/performance checks and broader route/metadata/responsive validation.
+- Removed customer-facing internal terminology and the booking state gallery; corrected error-document nesting, lint/test warnings, contact-form false success, and disabled-payment copy.
+- Local verification passes. Production promotion remains blocked because public checkout is disabled and no controlled sandbox callback/payment confirmation has been evidenced; no `main` push or Vercel deployment is claimed.
+
 ## Checkpoint 3 booking ownership, history, lookup and download - 2026-07-30
 
 - Added account-safe contact prefill, optional guest email, reference-only finder, masked grant download and owner-only booking-history/download UI.
