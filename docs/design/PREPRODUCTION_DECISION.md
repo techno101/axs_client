@@ -42,7 +42,7 @@ The first review was **REVISE**, recorded in [INDEPENDENT_VISUAL_REVIEW.md](INDE
 - High-resolution asset batch: `DEFERRED` (four approved anchors only)
 - Homepage component coding: `PASSED` for the static-poster candidate
 - Local validation/build gate: `PASSED`; release gate remains `BLOCKED`
-- Remote `v13` push: recorded in the completion entry after the reviewed commit
+- Remote `v13` push: `PASSED` at `424bbb8bf8c4546e2b591fc6e929ddb690a9e503`; documentation outcome commit follows
 - `origin/main` promotion: `NOT PERFORMED`
 - Vercel/canonical live verification: `NOT PERFORMED`
 - Checkpoint 2: `NOT PERFORMED`

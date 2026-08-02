@@ -8,6 +8,7 @@
 - Used the four approved fictional campaign roles once each (`M01/M03` are the documented same-player Match Cut continuity exception; M08 v3 and `M13` are distinct). The manifest now records the default no-repeated-face rule. The independent implemented-home review is `APPROVED` after it verified the M08 correction and static touch/reduced state.
 - Added scoped GSAP opening/reveal/action choreography: scroll, touch, pointer, keyboard, navigation, media failure and reduced motion settle safely; Lenis remains fine-pointer marketing only and native scroll remains on touch/reduced/task routes.
 - Preserved booking/BFF/payment authority, existing owner-local files and all Checkpoint 2 work. The provider clip and full master batch remain blocked/deferred; no `main` promotion, deployment or payment change is claimed.
+- Pushed the reviewed candidate commit `424bbb8bf8c4546e2b591fc6e929ddb690a9e503` to `origin/v13`; `origin/main` remains at the accepted v11 baseline.
 - Passed lint, typecheck, contract/security checks, 33 tests, production build, bundle scan, Axe on 11 routes, normal/reduced-motion smoke, keyboard interruption and media-title fallback tests. The direct fixture visual route remains environment-blocked by the active owner dev server and production loopback boundary.
 
 ## v13 Checkpoint 1 pre-production pack - 2026-08-02
