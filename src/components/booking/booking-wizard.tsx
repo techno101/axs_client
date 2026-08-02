@@ -319,7 +319,7 @@ export function BookingWizard({ fields, blocks, availability, onlinePayment, bus
                 <AlertIcon />
                 <p><strong>Final availability is checked together.</strong> The API creates one short-lived hold for the complete basket only when you start payment. If any session has changed, no session is held. Payment is confirmed only by the verified backend callback.</p>
               </div>
-              {!customer.email ? <div className="booking-live-note booking-live-note--calm" role="alert"><AlertIcon /><p><strong>Save every booking reference and download after payment.</strong> No email address was provided, so there will be no email copy to recover later.</p></div> : null}
+              {!customer.email ? <div className="booking-live-note booking-live-note--calm" role="alert"><AlertIcon /><p><strong>You skipped the email. This is your only proof of booking.</strong> Copy the reference. Screenshot this page. Email it to yourself. Without an email on file, there is no way to recover this later.</p></div> : null}
               <div className="wizard-buttons">
                 <button className="wizard-back" type="button" onClick={() => goTo(3)}>Edit details</button>
                 <button className="wizard-back" type="button" onClick={() => goTo(0)}>Add another session</button>

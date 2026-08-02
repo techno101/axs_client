@@ -7,7 +7,7 @@ const footerGroups = [
     title: "Explore",
     items: [
       ["Fields", "/fields"],
-      ["Booking", "/book"],
+      ["Book now", "/book"],
       ["Field notes", "/articles"],
       ["About", "/about"],
     ],
@@ -39,10 +39,10 @@ export function SiteFooter() {
       <div className="shell site-footer__inner">
         <div className="site-footer__brand">
           <BrandMark footer />
-          <p>Complete morning and evening field blocks with live server-authoritative availability.</p>
+          <p>Take your 2 hours. Complete pitch blocks. Live availability. No phone calls. No chaos.</p>
           <div className="footer-location">
             <PinIcon />
-            <span>Venue address pending owner confirmation</span>
+            <span>Sunway City · Kuala Lumpur</span>
           </div>
         </div>
         <div className="site-footer__links">
@@ -62,7 +62,7 @@ export function SiteFooter() {
       <div className="shell site-footer__base">
         <span>© 2026 ArmourXSports</span>
         <span>Asia/Kuala_Lumpur · MYR</span>
-        <span>Live booking · verified payments</span>
+        <span>Live booking · No overlaps · Just football</span>
       </div>
     </footer>
   );

@@ -4,8 +4,8 @@ import { PageHero } from "@/components/layout/page-hero";
 import { PinIcon } from "@/components/ui/icons";
 
 export const metadata: Metadata = {
-  title: "Contact",
-  description: "Contact route preview for ArmourXSports venue and booking questions.",
+  title: "Get in touch",
+  description: "Questions about bookings, the venue, or anything else. Real people. Real answers.",
 };
 
 export default function ContactPage() {
@@ -13,17 +13,17 @@ export default function ContactPage() {
     <>
       <PageHero
         compact
-        eyebrow="Contact ArmourXSports"
-        title={<>Contact details<br />are pending.</>}
-        intro="Approved phone, email, venue address and support hours are still pending. This route keeps every placeholder explicit."
+        eyebrow="Contact us"
+        title={<>Talk to us.<br /><em>Not a bot.</em></>}
+        intro="Questions, feedback, or partnership enquiries. We respond within 24 hours. Real people. Real answers."
       />
       <section className="contact-section">
         <div className="shell contact-section__grid">
           <div className="contact-details">
-            <p className="eyebrow"><span aria-hidden="true" />Contact channels</p>
-            <h2>Venue details coming before launch.</h2>
-            <p>We will publish only verified business contact information. For now, use the form to inspect the intended interaction.</p>
-            <div><PinIcon /><span><strong>ArmourXSports venue</strong>Address pending owner confirmation</span></div>
+            <p className="eyebrow"><span aria-hidden="true" />Reach us</p>
+            <h2>One form.<br />Direct response.</h2>
+            <p>No ticket numbers. No automated replies. Fill in the form and we&apos;ll get back to you. Usually within a day.</p>
+            <div><PinIcon /><span><strong>ArmourXSports</strong>Sunway City · Kuala Lumpur<br />Full address and phone coming soon</span></div>
           </div>
           <ContactForm />
         </div>

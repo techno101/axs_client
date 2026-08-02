@@ -5,8 +5,8 @@ import { MenuIcon } from "@/components/ui/icons";
 
 const navItems = [
   { href: "/fields", label: "Fields" },
-  { href: "/about", label: "Our ground" },
-  { href: "/articles", label: "Field notes" },
+  { href: "/about", label: "About" },
+  { href: "/articles", label: "Notes" },
   { href: "/faq", label: "FAQ" },
   { href: "/contact", label: "Contact" },
 ];

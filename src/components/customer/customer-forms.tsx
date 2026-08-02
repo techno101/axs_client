@@ -14,7 +14,7 @@ function messageFor(error: unknown): Notice {
 }
 
 function AccountShell({ eyebrow, title, children }: { eyebrow: string; title: string; children: React.ReactNode }) {
-  return <section className="customer-page"><div className="shell customer-page__grid"><aside><p className="eyebrow">{eyebrow}</p><h1>{title}</h1><p>Guest booking remains available whether you sign in or not.</p><Link href="/book" className="customer-text-link">Book as guest</Link></aside><div className="customer-card">{children}</div></div></section>;
+  return <section className="customer-page"><div className="shell customer-page__grid"><aside><p className="eyebrow">{eyebrow}</p><h1>{title}</h1><p>Guest booking works without an account. Sign up to track your bookings, download receipts, and never lose a reference again.</p><Link href="/book" className="customer-text-link">Book as guest</Link></aside><div className="customer-card">{children}</div></div></section>;
 }
 
 function NoticeBox({ notice }: { notice: Notice }) { return notice ? <p className={`customer-notice customer-notice--${notice.tone}`} role={notice.tone === "error" ? "alert" : "status"}>{notice.text}</p> : null; }

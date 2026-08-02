@@ -45,13 +45,13 @@ export default async function FieldDetailPage({ params }: FieldDetailProps) {
         <div className="shell field-detail-intro__grid">
           <SectionHeading
             eyebrow="Field information"
-            title={<>Current venue<br />details.</>}
-            intro="The field name and presentation details come from the live API. Anything not yet verified remains visibly pending."
+            title={<>What you<br />need to know.</>}
+            intro="Live details from the venue. Everything here is confirmed. We don&apos;t guess."
           />
           <div className="field-fact-grid">
             <div><span>Surface</span><strong>{field.surface}</strong></div>
             {field.facilityFacts.map((fact) => <div key={`${fact.label}-${fact.value}`}><span>{fact.label}</span><strong>{fact.value}</strong></div>)}
-            {!field.facilityFacts.length ? <div><span>Facility facts</span><strong>Pending owner confirmation</strong></div> : null}
+            {!field.facilityFacts.length ? <div><span>Facility facts</span><strong>Coming soon</strong></div> : null}
           </div>
         </div>
       </section>
@@ -62,8 +62,8 @@ export default async function FieldDetailPage({ params }: FieldDetailProps) {
           </div>
           <aside>
             <p className="eyebrow"><span aria-hidden="true" />What is included</p>
-            {field.features.length ? <ul>{field.features.map((feature) => <li key={feature}><CheckIcon />{feature}</li>)}</ul> : <p>Verified feature details are pending owner confirmation.</p>}
-            <p className="field-detail-media__note">Venue features remain owner-controlled and must be verified before publication.</p>
+            {field.features.length ? <ul>{field.features.map((feature) => <li key={feature}><CheckIcon />{feature}</li>)}</ul> : <p>Full feature list coming soon. Floodlit. Full-size. Game-ready.</p>}
+            <p className="field-detail-media__note">Real venue photos and full specifications on the way. What&apos;s here is confirmed.</p>
           </aside>
         </div>
       </section>

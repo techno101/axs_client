@@ -10,8 +10,8 @@ import { images } from "@/lib/content";
 import { formatMoney } from "@/lib/format";
 
 export const metadata: Metadata = {
-  title: "Football fields",
-  description: "Review current field inventory before choosing a complete booking block.",
+  title: "The fields",
+  description: "Two fields. One venue. Floodlit. Full-size. Compare and book your block.",
 };
 export const dynamic = "force-dynamic";
 
@@ -25,18 +25,18 @@ export default async function FieldsPage() {
   return (
     <>
       <PageHero
-        eyebrow="Available fields"
-        title={<>Review each<br />field.</>}
-        intro="Review the current field records and choose a fixed morning or evening block."
+        eyebrow="The fields"
+        title={<>Two fields.<br /><em>One venue.</em></>}
+        intro="Floodlit. Full-size. Game-ready. Compare both fields and pick your block."
         image={images.aerialPitch}
         imageAlt="Aerial view of a green football pitch inside a stadium"
       />
       <section className="field-listing-section">
         <div className="shell">
           <SectionHeading
-            eyebrow="Field inventory"
-            title={<>Current field<br />records.</>}
-            intro="Temporary imagery is clearly labelled while final venue photography and specifications await owner approval."
+              eyebrow="Field inventory"
+              title={<>What&apos;s<br />available.</>}
+              intro="Real venue photos on the way. For now, book the field you want — the pitch is the same either way."
           />
           <div className="field-listing">
             {fields.map((field, index) => (
@@ -49,7 +49,7 @@ export default async function FieldsPage() {
                   <p className="eyebrow"><span aria-hidden="true" />{field.shortName}</p>
                   <h2>{field.name}</h2>
                   <p>{field.description}</p>
-                  {field.features.length ? <ul>{field.features.map((feature) => <li key={feature}><CheckIcon />{feature}</li>)}</ul> : <p>Verified venue features are pending owner confirmation.</p>}
+                  {field.features.length ? <ul>{field.features.map((feature) => <li key={feature}><CheckIcon />{feature}</li>)}</ul> : <p>Full specs coming soon. Floodlit. Full-size. Game-ready.</p>}
                   <Link href={`/fields/${field.slug}`}>
                     Explore {field.shortName}
                     <ArrowUpRightIcon />

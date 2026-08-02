@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { ButtonLink } from "@/components/ui/button-link";
 import { ClockIcon } from "@/components/ui/icons";
 
-export const metadata: Metadata = { title: "Maintenance", robots: { index: false } };
+export const metadata: Metadata = { title: "Under maintenance", robots: { index: false } };
 
 export default function MaintenancePage() {
   return (
@@ -10,9 +10,9 @@ export default function MaintenancePage() {
       <div className="system-view__grid" aria-hidden="true" />
       <div className="system-view__content">
         <div className="system-view__icon"><ClockIcon /></div>
-        <p>Planned maintenance</p>
-        <h1>Booking is temporarily unavailable.</h1>
-        <span>Booking is temporarily unavailable during maintenance. Existing booking lookup may remain available when the API reports it as healthy.</span>
+        <p>Pitch inspection in progress</p>
+        <h1>We&apos;re updating the field.</h1>
+        <span>Good things take time. We&apos;ll be back shortly with a better experience. Existing bookings are safe.</span>
         <div><ButtonLink href="/" variant="light">Return home</ButtonLink><ButtonLink href="/booking/find" variant="outline">Find booking</ButtonLink></div>
       </div>
     </section>

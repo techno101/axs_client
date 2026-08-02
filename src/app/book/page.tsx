@@ -28,9 +28,9 @@ export default async function BookPage() {
     <>
       <PageHero
         compact
-        eyebrow="Live booking"
-        title={<>Book a<br />field.</>}
-        intro="Choose a date, field and complete block. Availability, price, holds and payment state are confirmed by the ArmourXSports API."
+        eyebrow="Book now"
+        title={<>Claim your<em>block.</em></>}
+        intro="Pick a field. Pick a window. Done. Availability, price, and confirmation are live — no phone calls, no guesswork."
         image={images.nightPlayer}
         imageAlt="Player on a football pitch under floodlights"
       />

@@ -6,46 +6,46 @@ import { SectionHeading } from "@/components/ui/section-heading";
 import { images } from "@/lib/content";
 
 export const metadata: Metadata = {
-  title: "Our ground",
-  description: "Confirmed booking rules and owner-pending venue information for ArmourXSports.",
+  title: "Why we built this",
+  description: "No phone calls. No WhatsApp chaos. No double bookings. Just football.",
 };
 
 export default function AboutPage() {
   return (
     <>
       <PageHero
-        eyebrow="Our ground"
-        title={<>Confirmed facts.<br />No invented details.</>}
-        intro="ArmourXSports currently offers complete field blocks. Final venue history, facilities and local details remain pending owner approval."
+        eyebrow="Why we exist"
+        title={<>No phone calls.<br />No WhatsApp chaos.<br /><em>Just football.</em></>}
+        intro="ArmourXSports started the way most things do. Someone was tired of the old way. The group chat. The double bookings. The 'is the field free?' anxiety. We fixed it."
         image={images.nightPlayer}
         imageAlt="Football player on a field at night"
       />
       <section className="about-story">
         <div className="shell about-story__grid">
           <SectionHeading
-            eyebrow="The idea"
-            title={<>A clear booking<br />model.</>}
-            intro="The current inventory uses two field records and two daily blocks: morning from 09:00 to 15:00, or evening from 15:00 to 21:00."
+            eyebrow="The pitch"
+            title={<>Two fields.<br />Two blocks.<br />That&apos;s it.</>}
+            intro="We didn&apos;t overcomplicate it. Morning block 9 to 3. Evening block 3 to 9. Pick a field. Pick a window. Done."
           />
           <div className="about-story__body">
-            <p>The public interface shows availability, price, hold and payment states from the authoritative API. It does not decide or confirm those states in the browser.</p>
-            <p>Final venue history, ownership story and local details are awaiting approved content. This page does not invent them.</p>
+            <p>Every block is yours for 2 hours. Nobody else touches it. The server confirms it. The WhatsApp group can stop asking &apos;field dah booked ke belum?&apos;</p>
+            <p>Full venue specs, surface details, and facility inventory are on the way. We won&apos;t publish guesses. When it&apos;s here, it&apos;s real.</p>
           </div>
         </div>
       </section>
       <section className="about-visual">
         <div className="shell about-visual__frame">
           <Image src={images.aerialPitch} alt="Aerial view of a football field" fill sizes="100vw" />
-          <div><span>02 fields</span><span>02 blocks</span><span>01 clear experience</span></div>
+          <div><span>02 fields</span><span>02 blocks</span><span>00 excuses</span></div>
         </div>
       </section>
       <section className="values-section">
         <div className="shell">
-          <p className="eyebrow"><span aria-hidden="true" />What guides the experience</p>
+          <p className="eyebrow"><span aria-hidden="true" />The three rules</p>
           <div className="value-grid">
-            <article><span>01</span><h2>Clarity over clutter.</h2><p>Only the states and decisions a customer needs, with no retail, POS or hourly-booking noise.</p></article>
-            <article><span>02</span><h2>Authority stays server-side.</h2><p>Availability, pricing and payment confirmation never depend on browser assumptions.</p></article>
-            <article><span>03</span><h2>Access is part of craft.</h2><p>Keyboard, focus, motion, contrast and touch behavior are design requirements—not cleanup.</p></article>
+            <article><span>01</span><h2>Respect the time.</h2><p>Booking takes seconds. Not phone calls. Not favours. You have 2 hours. Don&apos;t waste them on logistics.</p></article>
+            <article><span>02</span><h2>Respect the game.</h2><p>Availability is real-time. Pricing is fixed. Payment is direct. What you see is what you get. No dark patterns. No bait-and-switch.</p></article>
+            <article><span>03</span><h2>Respect the player.</h2><p>Whether you&apos;re the best on the pitch or the first one subbed off. The field doesn&apos;t judge. Neither do we. Everyone gets their 2 hours.</p></article>
           </div>
           <ButtonLink href="/book" variant="dark">Book a field</ButtonLink>
         </div>

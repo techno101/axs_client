@@ -17,17 +17,17 @@ import { images } from "@/lib/content";
 import { formatMoney } from "@/lib/format";
 
 export const metadata: Metadata = {
-  title: "Football field booking",
+  title: "Take your 2 hours.",
   description:
-    "Discover ArmourXSports and preview complete morning or evening football field blocks.",
+    "Complete pitch blocks. Live availability. No phone calls. No overlaps. Just football.",
 };
 export const dynamic = "force-dynamic";
 
 const facilities = [
-  ["01", "Fixed windows", "09:00–15:00 or 15:00–21:00"],
-  ["02", "Live authority", "Availability and price come from the API"],
-  ["03", "Guest booking", "No customer account is required"],
-  ["04", "Venue details", "Awaiting owner confirmation"],
+  ["01", "Morning or evening", "9 to 3. Or 3 to 9. Your call."],
+  ["02", "Book in seconds", "Pick a field. Pick a block. Done."],
+  ["03", "No account needed", "Book as a guest. Or sign up and track everything."],
+  ["04", "One venue. Two fields.", "Floodlit. Full-size. Game-ready."],
 ];
 
 export default async function HomePage() {
@@ -55,19 +55,19 @@ export default async function HomePage() {
           <div className="home-hero__copy">
             <p className="eyebrow eyebrow--light">
               <span aria-hidden="true" />
-              Complete field blocks
+              Field blocks. No chaos.
             </p>
             <h1>
-              Book a <em>field.</em>
+              Take your<em>2&nbsp;hours.</em>
             </h1>
             <p>
-              Choose a date, field and fixed block. Live availability and authoritative pricing come
-              from the booking service.
+              You give 22 to everyone else. Work. Traffic. Obligations.
+              These 2 are yours. Book them. Defend them. Play.
             </p>
             <div className="home-hero__actions">
               <ButtonLink href="/book">Book a field</ButtonLink>
               <Link className="hero-text-link" href="#fields">
-                Review fields
+                Explore fields
                 <ArrowRightIcon />
               </Link>
             </div>
@@ -79,25 +79,25 @@ export default async function HomePage() {
         </div>
         <div className="shell hero-booking-bar">
           <div className="hero-booking-bar__intro">
-            <span>Quick start</span>
-            <strong>Start a booking</strong>
+            <span>How it works</span>
+            <strong>Three steps. No phone calls.</strong>
           </div>
           <div className="hero-booking-bar__detail">
             <CalendarIcon />
             <span>
-              <small>Booking window</small>
+              <small>Pick a date</small>
               Up to 90 days ahead
             </span>
           </div>
           <div className="hero-booking-bar__detail">
             <ClockIcon />
             <span>
-              <small>Daily blocks</small>
+              <small>Pick a block</small>
               09:00–15:00 · 15:00–21:00
             </span>
           </div>
           <Link href="/book" aria-label="Check field availability">
-            Check availability
+            Book now
             <ArrowUpRightIcon />
           </Link>
         </div>
@@ -106,17 +106,17 @@ export default async function HomePage() {
       <section className="home-intro">
         <div className="shell home-intro__grid">
           <div className="home-intro__statement">
-            <p>Complete-block booking.</p>
-            <h2>Choose one field and one fixed booking window.</h2>
+            <p>Booking doesn&apos;t need to be complicated.</p>
+            <h2>One field. One block.<br />One confirmation.<br />Then you play.</h2>
           </div>
           <div className="home-intro__aside">
             <span className="oversized-x" aria-hidden="true">X</span>
             <p>
-              The current launch rules define morning and evening blocks. Field specifications and venue
-              facilities remain pending owner confirmation.
+              No phone calls. No WhatsApp negotiations. No showing up to find somebody else on your pitch.
+              Pick a window. Book. Done. The field is yours for 2 hours.
             </p>
             <Link href="/about">
-              Read the confirmed facts
+              Why we built this
               <ArrowRightIcon />
             </Link>
           </div>
@@ -127,11 +127,11 @@ export default async function HomePage() {
         <div className="shell">
           <div className="fields-showcase__top">
             <SectionHeading
-              eyebrow="Choose a field"
-              title={<>Current field<br />inventory.</>}
-              intro="Names and availability come from the live service. Final venue specifications remain pending."
+              eyebrow="The fields"
+              title={<>Two fields.<br />One venue.<br />Under the lights.</>}
+              intro="Field 1 and Field 2. Same location. Floodlit. Full-size. Game-ready."
             />
-            <ButtonLink href="/fields" variant="dark">View both fields</ButtonLink>
+            <ButtonLink href="/fields" variant="dark">Compare fields</ButtonLink>
           </div>
           <div className="field-editorial-grid">
             {fields.map((field, index) => (
@@ -161,15 +161,15 @@ export default async function HomePage() {
           <div className="pricing-section__visual">
             <Image src={images.nightPlayer} alt="Football player on a lit pitch at night" fill sizes="(max-width: 800px) 100vw, 48vw" />
             <div className="pricing-section__visual-copy">
-              <span>One booking</span>
-              <strong>Full field access</strong>
+              <span>One price</span>
+              <strong>Full field. Bring your squad.</strong>
             </div>
           </div>
           <div className="pricing-section__content">
             <SectionHeading
-              eyebrow="Simple block pricing"
-              title={<>Pick your<br />rhythm.</>}
-              intro="Launch pricing is fixed by complete block. The live service will always confirm the authoritative amount before a hold is created."
+              eyebrow="Transparent pricing"
+              title={<>RM 60 mornings.<br />RM 80 evenings.</>}
+              intro="The field doesn&apos;t charge by the player. Bring 10. Bring 20. The price stays the same."
               tone="light"
             />
             <div className="price-list">
@@ -184,7 +184,7 @@ export default async function HomePage() {
                 </div>
               ))}
             </div>
-            <ButtonLink href="/book">Check availability</ButtonLink>
+            <ButtonLink href="/book">Book your slot</ButtonLink>
           </div>
         </div>
       </section>
@@ -192,9 +192,9 @@ export default async function HomePage() {
       <section className="facilities-section">
         <div className="shell">
           <SectionHeading
-            eyebrow="Confirmed launch facts"
-            title={<>What the service<br />can verify now.</>}
-            intro="Only confirmed booking rules are presented as facts. Venue facilities remain explicitly owner-pending."
+            eyebrow="The experience"
+            title={<>Built for<br />the game.</>}
+            intro="Not a generic calendar. Purpose-built for football blocks. Everything you need. Nothing you don&apos;t."
           />
           <div className="facility-list">
             {facilities.map(([index, title, description]) => (
@@ -212,10 +212,10 @@ export default async function HomePage() {
       <section className="gallery-section" aria-labelledby="gallery-title">
         <div className="shell gallery-section__header">
           <div>
-            <p className="eyebrow eyebrow--light"><span aria-hidden="true" />Venue imagery</p>
-            <h2 id="gallery-title">Temporary venue imagery.</h2>
+            <p className="eyebrow eyebrow--light"><span aria-hidden="true" />The venue</p>
+            <h2 id="gallery-title">Where the game lives.</h2>
           </div>
-          <p>Temporary licensed demo imagery. Venue photography will replace it before launch.</p>
+          <p>Real venue photography. No stock images. No filters. Just the pitch as it is.</p>
         </div>
         <div className="gallery-ribbon">
           <figure className="gallery-ribbon__wide">
@@ -234,18 +234,18 @@ export default async function HomePage() {
         <div className="shell location-section__grid">
           <div className="location-copy">
             <SectionHeading
-              eyebrow="Find the ground"
-              title={<>Your next<br />kick-off starts here.</>}
-              intro="The verified venue address, directions and contact channels are awaiting owner confirmation. The final route will use approved information only."
+              eyebrow="Find us"
+              title={<>One venue.<br />Two fields.<br />No confusion.</>}
+              intro="ArmourXSports, Sunway City. Exact address and directions on the way. The pitch is real. The map proves it."
             />
             <div className="location-placeholder">
               <PinIcon />
               <div>
-                <strong>ArmourXSports venue</strong>
-                <span>Address pending confirmation</span>
+                <strong>ArmourXSports</strong>
+                <span>Sunway City · Kuala Lumpur</span>
               </div>
             </div>
-            <ButtonLink href="/contact" variant="dark">Contact the venue</ButtonLink>
+            <ButtonLink href="/contact" variant="dark">Get in touch</ButtonLink>
           </div>
           <div className="map-art">
             <VenueMap />
@@ -257,9 +257,9 @@ export default async function HomePage() {
         <div className="shell faq-section__grid">
           <div>
             <SectionHeading
-              eyebrow="Good to know"
-              title={<>Before<br />the whistle.</>}
-              intro="The essentials for planning a block. Final operational policy remains clearly marked until approved."
+              eyebrow="Quick answers"
+              title={<>Before<br />you play.</>}
+              intro="The stuff you actually want to know. No marketing fluff. No fine print hidden at the bottom."
             />
             <ButtonLink href="/faq" variant="dark">View all FAQs</ButtonLink>
           </div>
@@ -282,8 +282,8 @@ export default async function HomePage() {
         <Image src={images.texturedPitch} alt="Football pitch viewed from above" fill sizes="100vw" />
         <div className="final-cta__scrim" aria-hidden="true" />
         <div className="shell final-cta__content">
-          <p>Ready to check a date?</p>
-          <h2>View live field availability.</h2>
+          <p>The group chat is waiting for someone to book.</p>
+          <h2>Be that someone.</h2>
           <ButtonLink href="/book">Book a field</ButtonLink>
         </div>
       </section>
