@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { HomePage } from "@/components/home/home-page";
 
 export const metadata: Metadata = {
-  title: "Football field booking - Iskandar Puteri, Johor",
-  description: "Book a full-size football field at ArmourX Sports, Sunway City. Two fields, six-hour sessions and LED floodlights.",
+  title: "Book your spot - Iskandar Puteri, Johor",
+  description: "Football at ArmourX Sports in Iskandar Puteri. Check current availability and book online.",
   alternates: {
     canonical: "/",
     languages: { en: "/", "ms-MY": "/bm" },

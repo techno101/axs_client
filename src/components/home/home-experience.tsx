@@ -1,11 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
-import { MarketingMotion } from "@/components/motion/marketing-motion";
+import { MatchHeroWordmark } from "@/components/home/match-hero-wordmark";
 import { VenueMap } from "@/components/map/venue-map";
+import { MarketingMotion } from "@/components/motion/marketing-motion";
 import { ArrowRightIcon, ArrowUpRightIcon, PinIcon } from "@/components/ui/icons";
 import type { BookingBlock, FaqItem, Field } from "@/lib/api/types";
-import { images } from "@/lib/content";
-import { formatMoney } from "@/lib/format";
 import { homeCopy, type SiteLocale } from "@/lib/site-copy";
 
 type Props = {
@@ -18,143 +17,154 @@ type Props = {
 
 export function HomeExperience({ locale, fields, blocks, faqs, degraded }: Props) {
   const copy = homeCopy[locale];
-  const displayFaqs = locale === "bm" ? copy.faqFallback : (faqs.length ? faqs.slice(0, 4) : copy.faqFallback);
-  const sessionBlocks = blocks.filter((block, index, all) => all.findIndex((item) => item.id === block.id) === index).slice(0, 2);
+  const bookingDataReady = fields.length > 0 && blocks.length > 0 && faqs.length > 0;
 
   return (
     <MarketingMotion>
-      <div className="dusk-home">
-        <svg className="dusk-pitch-route" viewBox="0 0 100 1000" preserveAspectRatio="none" aria-hidden="true">
-          <path className="dusk-pitch-route__ghost" d="M87 0 C87 110 14 95 14 215 S88 330 88 440 S13 560 13 680 S87 795 87 1000" />
-          <path className="dusk-pitch-route__path" pathLength="1" d="M87 0 C87 110 14 95 14 215 S88 330 88 440 S13 560 13 680 S87 795 87 1000" />
-        </svg>
-
-        <section className="dusk-hero" aria-labelledby="dusk-hero-title">
-          <Image className="dusk-hero__image" src={images.heroAerial} alt="Two ArmourX Sports football fields in Sunway City, Iskandar Puteri" fill priority sizes="100vw" />
-          <div className="dusk-hero__wash" aria-hidden="true" />
-          <div className="dusk-hero__horizon" aria-hidden="true" />
-          <div className="shell dusk-hero__layout">
-            <div className="dusk-hero__copy">
-              <p className="dusk-kicker">{copy.eyebrow}</p>
-              <h1 id="dusk-hero-title">
-                <span className="dusk-hero__mask"><span className="dusk-hero__line">{copy.heroTitle[0]}</span></span>
-                <span className="dusk-hero__mask"><span className="dusk-hero__line dusk-hero__line--lit">{copy.heroTitle[1]}</span></span>
-              </h1>
-              <p className="dusk-hero__intro">{copy.heroIntro}</p>
-              <div className="dusk-hero__actions">
-                <Link className="dusk-action dusk-action--primary" href="/book">
-                  <span>{copy.primaryAction}</span><ArrowRightIcon />
-                </Link>
-                <Link className="dusk-action dusk-action--quiet" href="#fields">
-                  <span>{copy.secondaryAction}</span><ArrowRightIcon />
-                </Link>
-              </div>
+      <div className="match-home">
+        <section className="match-hero" aria-labelledby="match-hero-title">
+          <div className="match-cut-opening" aria-hidden="true" inert>
+            <div className="match-cut-opening__frame match-cut-opening__frame--lead">
+              <Image src="/images/matchcut/opening.png" alt="" fill priority sizes="(max-width: 767px) 92vw, 44vw" />
             </div>
-            <aside className="dusk-hero__sessions" aria-label={copy.availabilityLabel}>
-              <p>{copy.availabilityLabel}</p>
-              {sessionBlocks.map((block) => (
-                <div key={block.id}>
-                  <span>{block.id === "MORNING" ? copy.morning : copy.evening}</span>
-                  <strong>{block.startsAt}–{block.endsAt}</strong>
-                  <b>{formatMoney(block.amountMinor)}</b>
-                </div>
+            <div className="match-cut-opening__frame match-cut-opening__frame--detail-a">
+              <Image src="/images/matchcut/opening.png" alt="" fill sizes="180px" />
+            </div>
+            <div className="match-cut-opening__frame match-cut-opening__frame--detail-b">
+              <Image src="/images/matchcut/opening.png" alt="" fill sizes="180px" />
+            </div>
+            <div className="match-cut-opening__frame match-cut-opening__frame--detail-c">
+              <Image src="/images/matchcut/opening.png" alt="" fill sizes="180px" />
+            </div>
+          </div>
+
+          <div className="match-hero__media match-cut-media">
+            <Image src="/images/matchcut/hero.png" alt="Adult footballer controlling the ball at the ArmourX Sports ground in Iskandar Puteri" fill priority sizes="100vw" />
+          </div>
+          <div className="match-hero__shade" aria-hidden="true" />
+
+          <div className="shell match-hero__layout">
+            <div className="match-hero__copy">
+              <p className="match-label">{copy.eyebrow}</p>
+              <MatchHeroWordmark locale={locale} title={copy.heroTitle} />
+              <p className="match-hero__intro">{copy.heroIntro}</p>
+              <Link className="match-button match-button--bright" href="/book">
+                <span>{copy.primaryAction}</span>
+                <ArrowRightIcon />
+              </Link>
+            </div>
+            <p className="match-hero__availability" role="status">{bookingDataReady ? copy.bookingStatusLive : copy.bookingStatusFallback}</p>
+          </div>
+        </section>
+
+        {degraded ? <div className="shell match-service-note" role="status">{copy.degraded}</div> : null}
+
+        <section className="match-ground match-reveal" id="ground" aria-labelledby="ground-title">
+          <div className="shell match-ground__layout">
+            <p className="match-label match-label--ink">{copy.groundEyebrow}</p>
+            <h2 id="ground-title">{copy.groundTitle}</h2>
+            <p>{copy.groundIntro}</p>
+          </div>
+        </section>
+
+        <section className="match-action" aria-labelledby="action-title">
+          <div className="match-action__media match-cut-media">
+            <Image src="/images/matchcut/action-v2.png" alt="Two adult players contesting the ball at the ArmourX Sports ground" fill sizes="(max-width: 767px) 100vw, 68vw" />
+          </div>
+          <div className="shell match-action__layout">
+            <div className="match-action__copy">
+              <p className="match-label">{copy.actionEyebrow}</p>
+              <h2 id="action-title">{copy.actionTitle}</h2>
+              <p>{copy.actionIntro}</p>
+            </div>
+            <div className="match-action__verbs" aria-hidden="true">
+              {copy.actionWords.map((word) => <span key={word}>{word}</span>)}
+            </div>
+          </div>
+        </section>
+
+        <section className="match-booking match-reveal" aria-labelledby="booking-title">
+          <div className="shell">
+            <div className="match-booking__head">
+              <p className="match-label match-label--ink">{copy.bookingEyebrow}</p>
+              <h2 id="booking-title">{copy.bookingTitle}</h2>
+              <p>{copy.bookingIntro}</p>
+            </div>
+            <ol className="match-booking__steps">
+              {copy.bookingSteps.map((step, index) => (
+                <li key={step.title}>
+                  <span aria-hidden="true">0{index + 1}</span>
+                  <h3>{step.title}</h3>
+                  <p>{step.copy}</p>
+                </li>
               ))}
-              <small>{copy.fullSession}</small>
-            </aside>
+            </ol>
+            <Link className="match-button match-button--ink" href="/book">
+              <span>{copy.primaryAction}</span>
+              <ArrowRightIcon />
+            </Link>
           </div>
         </section>
 
-        {degraded ? <div className="shell dusk-service-note" role="status">{copy.degraded}</div> : null}
-
-        <section className="dusk-journey" aria-labelledby="journey-title">
-          <div className="shell dusk-journey__intro dusk-reveal">
-            <p className="dusk-kicker dusk-kicker--dark">{copy.journeyEyebrow}</p>
-            <h2 id="journey-title">{copy.journeyTitle}</h2>
-            <p>{copy.journeyIntro}</p>
+        <section className="match-team" aria-labelledby="team-title">
+          <div className="match-team__media match-cut-media">
+            <Image src="/images/matchcut/team.png" alt="A group of adult players arriving at the ArmourX Sports ground" fill sizes="(max-width: 767px) 100vw, 58vw" />
           </div>
-          <div className="shell dusk-session-track dusk-reveal">
-            <article className="dusk-session dusk-session--day">
-              <span className="dusk-session__sun" aria-hidden="true" />
-              <div><p>{copy.daylight}</p><h3>{formatMoney(sessionBlocks[0]?.amountMinor ?? 60000)}</h3><span>{copy.daylightCopy}</span></div>
-            </article>
-            <div className="dusk-session-track__line" aria-hidden="true"><i /><i /></div>
-            <article className="dusk-session dusk-session--night">
-              <span className="dusk-session__light" aria-hidden="true" />
-              <div><p>{copy.floodlights}</p><h3>{formatMoney(sessionBlocks[1]?.amountMinor ?? 80000)}</h3><span>{copy.floodlightsCopy}</span></div>
-            </article>
-          </div>
-          <p className="shell dusk-pricing-note dusk-reveal">{copy.pricingNote}</p>
-        </section>
-
-        <section className="dusk-fields" id="fields" aria-labelledby="fields-title">
-          <div className="shell dusk-section-head dusk-reveal">
-            <div><p className="dusk-kicker dusk-kicker--dark">{copy.fieldsEyebrow}</p><h2 id="fields-title">{copy.fieldsTitle}</h2></div>
-            <p>{copy.fieldsIntro}</p>
-          </div>
-          <div className="shell dusk-field-pair">
-            {fields.slice(0, 2).map((field, index) => (
-              <article className="dusk-field-card dusk-reveal" key={field.id}>
-                <Link href={`/fields/${field.slug}`} aria-label={`${copy.viewField}: ${field.name}`}>
-                  <div className="dusk-field-card__media">
-                    <Image src={field.image} alt={field.imageAlt} fill sizes="(max-width: 767px) 100vw, 50vw" />
-                    <span className="dusk-field-card__mark" aria-hidden="true"><i /><i /></span>
-                  </div>
-                  <div className="dusk-field-card__copy">
-                    <div><span>{locale === "bm" ? `Padang ${index + 1}` : field.shortName}</span><h3>{locale === "bm" ? `Padang ${index + 1}` : field.name}</h3></div>
-                    <span className="dusk-field-card__link">{copy.viewField}<ArrowUpRightIcon /></span>
-                  </div>
-                </Link>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section className="dusk-facilities" aria-labelledby="facilities-title">
-          <div className="shell dusk-facilities__layout">
-            <div className="dusk-facilities__portrait dusk-reveal">
-              <Image src={images.nightPlayer} alt="Football player under the ArmourX Sports floodlights" fill sizes="(max-width: 767px) 100vw, 38vw" />
-              <span aria-hidden="true">AXS</span>
-            </div>
+          <div className="shell match-team__layout match-reveal">
             <div>
-              <div className="dusk-reveal"><p className="dusk-kicker">{copy.facilitiesEyebrow}</p><h2 id="facilities-title">{copy.facilitiesTitle}</h2><p className="dusk-facilities__intro">{copy.facilitiesIntro}</p></div>
-              <div className="dusk-facility-list">
-                {copy.facilities.map((item) => <article className="dusk-reveal" key={item.title}><h3>{item.title}</h3><p>{item.copy}</p></article>)}
-              </div>
+              <p className="match-label">{copy.teamEyebrow}</p>
+              <h2 id="team-title">{copy.teamTitle}</h2>
+              <p>{copy.teamIntro}</p>
             </div>
+            <ul aria-label={copy.teamTitle}>
+              {copy.audiences.map((audience) => <li key={audience}>{audience}</li>)}
+            </ul>
           </div>
         </section>
 
-        <section className="dusk-location" id="venue" aria-labelledby="location-title">
-          <div className="shell dusk-location__layout">
-            <div className="dusk-location__copy dusk-reveal">
-              <p className="dusk-kicker dusk-kicker--dark">{copy.locationEyebrow}</p>
+        <section className="match-location match-reveal" id="venue" aria-labelledby="location-title">
+          <div className="shell match-location__layout">
+            <div>
+              <p className="match-label match-label--ink">{copy.locationEyebrow}</p>
               <h2 id="location-title">{copy.locationTitle}</h2>
               <p>{copy.locationIntro}</p>
-              <a className="dusk-action dusk-action--ink" href="https://maps.google.com/?q=1.3940655,103.6340126" target="_blank" rel="noreferrer">
-                <PinIcon /><span>{copy.directions}</span><ArrowUpRightIcon />
+              <a className="match-button match-button--ink" href="https://maps.google.com/?q=1.3940655,103.6340126" target="_blank" rel="noreferrer">
+                <PinIcon />
+                <span>{copy.directions}</span>
+                <ArrowUpRightIcon />
               </a>
             </div>
-            <div className="dusk-location__map dusk-reveal"><VenueMap /></div>
+            <div className="match-location__map"><VenueMap /></div>
           </div>
         </section>
 
-        <section className="dusk-faq" id="faq" aria-labelledby="faq-title">
-          <div className="shell dusk-faq__layout">
-            <div className="dusk-reveal"><p className="dusk-kicker dusk-kicker--dark">{copy.faqEyebrow}</p><h2 id="faq-title">{copy.faqTitle}</h2><p>{copy.faqIntro}</p></div>
-            <div className="dusk-faq__list dusk-reveal">
-              {displayFaqs.map((faq, index) => <details key={faq.question} open={index === 0}><summary>{faq.question}<span aria-hidden="true" /></summary><p>{faq.answer}</p></details>)}
+        <section className="match-faq match-reveal" id="faq" aria-labelledby="faq-title">
+          <div className="shell match-faq__layout">
+            <div>
+              <p className="match-label">{copy.faqEyebrow}</p>
+              <h2 id="faq-title">{copy.faqTitle}</h2>
+              <p>{copy.faqIntro}</p>
+            </div>
+            <div className="match-faq__list">
+              {copy.faqFallback.map((faq, index) => (
+                <details key={faq.question} open={index === 0}>
+                  <summary>{faq.question}<span aria-hidden="true" /></summary>
+                  <p>{faq.answer}</p>
+                </details>
+              ))}
             </div>
           </div>
         </section>
 
-        <section className="dusk-final" aria-labelledby="final-title">
-          <Image src={images.texturedPitch} alt="ArmourX Sports football pitch from above" fill sizes="100vw" />
-          <div className="dusk-final__wash" aria-hidden="true" />
-          <div className="shell dusk-final__content dusk-reveal">
-            <p className="dusk-kicker">{copy.finalEyebrow}</p>
+        <section className="match-final" aria-labelledby="final-title">
+          <div className="shell match-final__layout match-reveal">
+            <p className="match-label">{copy.finalEyebrow}</p>
             <h2 id="final-title">{copy.finalTitle}</h2>
             <p>{copy.finalIntro}</p>
-            <Link className="dusk-action dusk-action--primary" href="/book"><span>{copy.primaryAction}</span><ArrowRightIcon /></Link>
+            <Link className="match-button match-button--bright" href="/book">
+              <span>{copy.primaryAction}</span>
+              <ArrowRightIcon />
+            </Link>
           </div>
         </section>
       </div>

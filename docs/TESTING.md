@@ -1,5 +1,20 @@
 # Client Testing
 
+## v13 Checkpoint 1 Match Cut candidate - 2026-08-02
+
+Run from `axs_client`:
+
+```powershell
+npm run check
+node scripts/accessibility-smoke.mjs
+node scripts/motion-performance-smoke.mjs
+npm audit --omit=dev
+```
+
+`npm run check` passed lint, typecheck, pinned-contract validation, the 76-source-file Client security scan, 33 Vitest tests, production build and browser-bundle scan. Axe passed `/`, `/bm`, booking, finder, contact, customer auth/recovery and 404 routes. Normal motion passed with LCP `1288.0ms`, CLS `0.000` and three long tasks; reduced motion uses native scrolling with visible content. Direct Chrome checks prove keyboard settling preserves the immediate booking link and a deliberately failed title artwork shows the semantic Exo heading. Touch and reduced modes both compute `.match-cut-opening` opacity as `0`.
+
+`visual:capture` captures all home viewports against the current owner dev server but cannot complete `/book` there because the matching isolated Admin fixture cannot start while the shared Next development lock is held. A separate production-fixture attempt is correctly rejected by the Client's production loopback safety boundary. This is `BLOCKED` environmental visual-fixture evidence, not a booking or security regression. No provider clip, Vercel deployment, controlled HitPay callback or live acceptance is claimed.
+
 ## v12 release-candidate evidence - 2026-08-02
 
 Run from `axs_client`:

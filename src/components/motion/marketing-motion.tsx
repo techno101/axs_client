@@ -29,57 +29,83 @@ function MotionStage({ children, enabled }: { children: React.ReactNode; enabled
   const scope = useRef<HTMLDivElement>(null);
 
   useGSAP(() => {
-    if (!enabled) return;
+    if (!enabled || !scope.current) return;
 
-    const hero = gsap.timeline({ defaults: { ease: "power4.out" } });
-    hero
-      .from(".dusk-hero__image", { scale: 1.055, duration: 1.5 })
-      .from(".dusk-hero__line", { yPercent: 110, opacity: 0, duration: 0.85, stagger: 0.11 }, 0.12)
-      .from(".dusk-hero__intro, .dusk-hero__actions, .dusk-hero__sessions", {
-        y: 22,
-        opacity: 0,
-        duration: 0.65,
-        stagger: 0.1,
-      }, 0.42);
+    const root = scope.current;
+    const opening = root.querySelector<HTMLElement>(".match-cut-opening");
+    const openingFrames = gsap.utils.toArray<HTMLElement>(".match-cut-opening__frame", root);
+    const media = root.querySelector<HTMLElement>(".match-hero__media");
+    const actionWords = gsap.utils.toArray<HTMLElement>(".match-action__verbs span", root);
+    let settled = false;
 
-    gsap.utils.toArray<HTMLElement>(".dusk-reveal").forEach((element) => {
+    const settle = () => {
+      if (settled) return;
+      settled = true;
+      intro.pause();
+      gsap.to(opening, { autoAlpha: 0, duration: 0.18, ease: "power1.out", overwrite: true });
+      gsap.set(openingFrames, { clearProps: "transform" });
+      ScrollTrigger.refresh();
+    };
+
+    const intro = gsap.timeline({ defaults: { ease: "power3.out" } });
+    intro
+      .fromTo(openingFrames, { autoAlpha: 0, scale: 0.92 }, { autoAlpha: 1, scale: 1, duration: 0.6, stagger: 0.09 })
+      .to(openingFrames, { scale: (index) => index === 0 ? 1.04 : 0.88, xPercent: (index) => index === 0 ? 2 : index % 2 ? 14 : -14, yPercent: (index) => index === 0 ? -2 : index % 2 ? 8 : -8, duration: 1.2, stagger: 0.04 }, 1.05)
+      .to(opening, { autoAlpha: 0, duration: 0.62, ease: "power2.inOut" }, 2.65);
+
+    const interactionEvents: Array<keyof WindowEventMap> = ["wheel", "touchstart", "pointerdown", "keydown"];
+    interactionEvents.forEach((eventName) => window.addEventListener(eventName, settle, { passive: eventName !== "keydown", once: true }));
+
+    const mediaElements = gsap.utils.toArray<HTMLImageElement>(".match-cut-media img", root);
+    mediaElements.forEach((image) => image.addEventListener("error", settle, { once: true }));
+
+    gsap.utils.toArray<HTMLElement>(".match-reveal", root).forEach((element) => {
       gsap.from(element, {
-        y: 34,
+        y: 28,
         opacity: 0,
-        duration: 0.75,
-        ease: "power3.out",
-        scrollTrigger: { trigger: element, start: "top 86%", once: true },
+        duration: 0.7,
+        ease: "power2.out",
+        scrollTrigger: { trigger: element, start: "top 82%", once: true },
       });
     });
 
-    gsap.fromTo(".dusk-pitch-route__path", {
-      strokeDashoffset: 1,
-    }, {
-      strokeDashoffset: 0,
-      ease: "none",
-      scrollTrigger: {
-        trigger: ".dusk-home",
-        start: "12% top",
-        end: "88% bottom",
-        scrub: 0.35,
-      },
-    });
+    const mediaQueries = gsap.matchMedia();
+    mediaQueries.add("(min-width: 900px)", () => {
+      if (!media || actionWords.length === 0) return;
+      gsap.set(actionWords, { autoAlpha: 0, yPercent: 18 });
+      gsap.set(actionWords[0], { autoAlpha: 1, yPercent: 0 });
 
-    gsap.to(".dusk-hero__image", {
-      yPercent: 8,
-      ease: "none",
-      scrollTrigger: {
-        trigger: ".dusk-hero",
-        start: "top top",
-        end: "bottom top",
-        scrub: 0.35,
-      },
+      const actionTimeline = gsap.timeline({
+        scrollTrigger: {
+          trigger: ".match-action",
+          start: "top top",
+          end: "+=150%",
+          pin: true,
+          scrub: 0.6,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+        },
+      });
+
+      actionWords.slice(1).forEach((word, index) => {
+        actionTimeline
+          .to(actionWords[index], { autoAlpha: 0, yPercent: -18, duration: 0.75, ease: "none" })
+          .to(word, { autoAlpha: 1, yPercent: 0, duration: 0.75, ease: "none" }, "<");
+      });
+
+      actionTimeline.to(media, { scale: 1.035, duration: 0.75, ease: "none" }, 0);
     });
 
     ScrollTrigger.refresh();
+
+    return () => {
+      interactionEvents.forEach((eventName) => window.removeEventListener(eventName, settle));
+      mediaElements.forEach((image) => image.removeEventListener("error", settle));
+      mediaQueries.revert();
+    };
   }, { scope, dependencies: [enabled], revertOnUpdate: true });
 
-  return <div ref={scope}>{children}</div>;
+  return <div ref={scope} className={enabled ? undefined : "motion-stage--static"}>{children}</div>;
 }
 
 export function MarketingMotion({ children }: { children: React.ReactNode }) {
@@ -100,5 +126,10 @@ export function MarketingMotion({ children }: { children: React.ReactNode }) {
 
   if (!enabled) return <MotionStage enabled={false}>{children}</MotionStage>;
 
-  return <ReactLenis root options={{ autoRaf: false, lerp: 0.09, smoothWheel: true, syncTouch: false }}><LenisGsapConnector enabled /><MotionStage enabled>{children}</MotionStage></ReactLenis>;
+  return (
+    <ReactLenis root options={{ autoRaf: false, lerp: 0.09, smoothWheel: true, syncTouch: false }}>
+      <LenisGsapConnector enabled />
+      <MotionStage enabled>{children}</MotionStage>
+    </ReactLenis>
+  );
 }

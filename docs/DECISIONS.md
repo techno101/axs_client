@@ -1,6 +1,16 @@
 # Client Decisions
 
-| v12 foundation decision | Result |
+| v13 Checkpoint 1 pre-production decision | Result |
+| --- | --- |
+| v12 visual status | `REJECTED` by the owner. Retain only its useful bilingual, BFF, test and scrolling foundations; never promote it as the accepted design. |
+| Replacement signature | **The Match Cut**: an editorial contact-sheet opening transforms into the one semantic navigation/hero and continues through eight connected chapters. |
+| Gate | `APPROVED FOR STATIC-POSTER IMPLEMENTATION`. Independent revision 3 and the owner authorize the four-master candidate; provider video, full master batch and final production acceptance remain blocked. |
+| Typography | Supplied Exo 2 is the live semantic family. The supplied Ethnocentric desktop licence forbids web embedding, so Ethnocentric is limited to flattened short display artwork with equivalent Exo 2 semantic text and failure fallbacks. |
+| Media | `M01/M03` v2, `M08` v3 and `M13` v3 are independently `APPROVED`: the Match Cut invariant, venue continuity, anatomy, football physics, blank branding, distinct fictional faces and community-team composition pass. Hero motion remains blocked. |
+| Venue truth | Coordinate/access-road research supports Jalan Medini Selatan 7 as the pin-side road and Persiaran Medini 3 as the broader published address. The existing customer-facing LOT/Persiaran line remains unchanged pending the release gate. |
+| Scope | Homepage code is implemented and locally validated on `v13`; it uses `M01/M03/M08/M13` only and has no claimed video. `main` promotion, deployment, payment gate, POS and Checkpoint 2 are outside this checkpoint. |
+
+| Historical v12 foundation decision, visually superseded | Result |
 | --- | --- |
 | Brand thesis | “The field is yours,” expressed through a Dusk-to-floodlights palette, twin-field geometry and one continuous pitch line rather than a generic dark/neon sports kit. |
 | Bilingual foundation | English remains at root URLs; Bahasa Melayu begins at `/bm`. Locale selection is explicit, persistent in navigation and never inferred through an automatic browser-language redirect. |

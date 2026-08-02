@@ -54,9 +54,7 @@ try {
     await page.goto(`${baseUrl}${capture.route}`, { waitUntil: "domcontentloaded" });
     if (capture.route === "/book") {
       await page.waitForLoadState("networkidle");
-      await page.waitForFunction(() =>
-        Object.keys(document.querySelector(".booking-wizard") ?? {}).some((key) => key.startsWith("__reactProps$")),
-      );
+      await page.locator(".booking-wizard").waitFor();
       await page.getByRole("button", { name: /choose field/i }).click();
       await page.getByRole("button", { name: /choose session/i }).click();
       await page.getByText("Online booking is unavailable right now.").waitFor();

@@ -6,8 +6,8 @@ import { images } from "@/lib/content";
 import { toMalaysiaDateInput } from "@/lib/format";
 
 export const metadata: Metadata = {
-  title: "Book a field",
-  description: "Choose a date, field and complete block using live ArmourXSports availability.",
+  title: "Book your spot",
+  description: "Choose a date and check current ArmourXSports availability before payment.",
 };
 
 export const dynamic = "force-dynamic";
@@ -28,11 +28,11 @@ export default async function BookPage() {
     <>
       <PageHero
         compact
-        eyebrow="Book now"
-        title={<>Pick your<em>game.</em></>}
-        intro="Select a date, choose Field 1 or Field 2, pick morning or evening. Confirmed instantly. RM 600 or RM 800 for six hours."
+        eyebrow="Book your spot"
+        title={<>Choose your<em>availability.</em></>}
+        intro="Choose a date, check the available booking options, and review the details before payment."
         image={images.nightPlayer}
-        imageAlt="Player on a football pitch under floodlights"
+        imageAlt="Football player at ArmourX Sports"
       />
       <BookingWizard fields={fields} blocks={config.slots} availability={availability} onlinePayment={config.onlinePayment} businessDate={businessDate} initialDate={initialDate} />
     </>

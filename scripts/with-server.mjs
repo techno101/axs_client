@@ -4,6 +4,8 @@ import process from "node:process";
 
 const target = process.argv[2];
 if (!target) throw new Error("Pass the verification script path to with-server.mjs");
+const port = Number(process.env.E2E_PORT ?? 4173);
+const baseUrl = process.env.BASE_URL ?? `http://127.0.0.1:${port}`;
 
 const nextBin = path.resolve("node_modules/next/dist/bin/next");
 const fixtureAdmin = process.env.E2E_USE_FIXTURE_ADMIN === "false"
@@ -14,7 +16,7 @@ const fixtureAdmin = process.env.E2E_USE_FIXTURE_ADMIN === "false"
 // a route renders, so use Next's development server unless a caller explicitly
 // requests a production-server smoke.
 const serverMode = process.env.E2E_USE_DEV_SERVER === "false" ? "start" : "dev";
-const server = spawn(process.execPath, [nextBin, serverMode, "-p", "4173"], {
+const server = spawn(process.execPath, [nextBin, serverMode, "-p", String(port)], {
   stdio: "inherit",
   env: process.env,
 });
@@ -34,7 +36,7 @@ async function waitForUrl(url, label) {
 
 async function waitForServer() {
   if (fixtureAdmin) await waitForUrl("http://127.0.0.1:3000/api/ready", "Fixture Admin");
-  await waitForUrl("http://127.0.0.1:4173", "Next server on port 4173");
+  await waitForUrl(baseUrl, `Next server on port ${port}`);
 }
 
 function stopServer() {

@@ -4,30 +4,26 @@ type HomeCopy = {
   localeLabel: string;
   languageName: string;
   eyebrow: string;
-  heroTitle: [string, string];
+  heroTitle: string;
   heroIntro: string;
   primaryAction: string;
-  secondaryAction: string;
-  availabilityLabel: string;
-  morning: string;
-  evening: string;
-  fullSession: string;
-  journeyEyebrow: string;
-  journeyTitle: string;
-  journeyIntro: string;
-  daylight: string;
-  daylightCopy: string;
-  floodlights: string;
-  floodlightsCopy: string;
-  pricingNote: string;
-  fieldsEyebrow: string;
-  fieldsTitle: string;
-  fieldsIntro: string;
-  viewField: string;
-  facilitiesEyebrow: string;
-  facilitiesTitle: string;
-  facilitiesIntro: string;
-  facilities: Array<{ title: string; copy: string }>;
+  groundEyebrow: string;
+  groundTitle: string;
+  groundIntro: string;
+  actionEyebrow: string;
+  actionTitle: string;
+  actionIntro: string;
+  actionWords: [string, string, string, string];
+  bookingEyebrow: string;
+  bookingTitle: string;
+  bookingIntro: string;
+  bookingSteps: Array<{ title: string; copy: string }>;
+  bookingStatusLive: string;
+  bookingStatusFallback: string;
+  teamEyebrow: string;
+  teamTitle: string;
+  teamIntro: string;
+  audiences: [string, string, string, string];
   locationEyebrow: string;
   locationTitle: string;
   locationIntro: string;
@@ -72,112 +68,94 @@ export const homeCopy: Record<SiteLocale, HomeCopy> = {
   en: {
     localeLabel: "English",
     languageName: "Bahasa Melayu",
-    eyebrow: "Sunway City · Iskandar Puteri · Johor",
-    heroTitle: ["The field", "is yours."],
-    heroIntro:
-      "Two full-size football fields. Six uninterrupted hours. Choose daylight or play under the floodlights.",
-    primaryAction: "Find your session",
-    secondaryAction: "Meet the fields",
-    availabilityLabel: "Booking opens up to 90 days ahead",
-    morning: "Morning",
-    evening: "Evening",
-    fullSession: "Full field · six hours",
-    journeyEyebrow: "One day. Two ways to play.",
-    journeyTitle: "From daylight to floodlights.",
-    journeyIntro:
-      "The price changes with the light, not the size of your squad. Every booking gives your group the entire field for the full session.",
-    daylight: "Own the morning",
-    daylightCopy: "09:00–15:00 · clear daylight and a full six-hour run.",
-    floodlights: "Take the evening",
-    floodlightsCopy: "15:00–21:00 · the same full field under LED floodlights.",
-    pricingNote: "No per-player fees. No add-ons at checkout.",
-    fieldsEyebrow: "Twin fields",
-    fieldsTitle: "Pick your side.",
-    fieldsIntro:
-      "Field 1 and Field 2 share the same venue, facilities and pricing. Choose either one—or bring enough players for both.",
-    viewField: "View field",
-    facilitiesEyebrow: "Included with every booking",
-    facilitiesTitle: "Arrive ready. Leave refreshed.",
-    facilitiesIntro: "Everything your group needs sits beside the touchline.",
-    facilities: [
-      { title: "Parking on-site", copy: "Park beside the venue and get the team moving." },
-      { title: "Changing rooms", copy: "Changing rooms, showers and toilets are available on-site." },
-      { title: "LED floodlights", copy: "Evening sessions stay bright from kickoff to full time." },
-      { title: "Seating and drinks", copy: "Benches, water and refreshments are ready for players and supporters." },
+    eyebrow: "Iskandar Puteri, Johor",
+    heroTitle: "BOOK YOUR SPOT.",
+    heroIntro: "Football in Iskandar Puteri. Pick a date, choose an available pitch, and book.",
+    primaryAction: "Book your spot",
+    groundEyebrow: "The ground",
+    groundTitle: "THE GROUND.",
+    groundIntro: "Two adjacent pitches at one Iskandar Puteri venue. Book one, or check both when your group needs more space.",
+    actionEyebrow: "Matchday",
+    actionTitle: "GET THE BALL MOVING.",
+    actionIntro: "No story to sell. Just the game in front of you.",
+    actionWords: ["RUN", "PRESS", "PASS", "SHOOT"],
+    bookingEyebrow: "Booking",
+    bookingTitle: "PICK. BOOK. PLAY.",
+    bookingIntro: "Choose a date, select what is available, and continue to payment.",
+    bookingSteps: [
+      { title: "Pick a date", copy: "Start with the day your group can make." },
+      { title: "Choose availability", copy: "The booking page shows the available pitches and times." },
+      { title: "Continue", copy: "Review the booking details before payment." },
     ],
-    locationEyebrow: "Your next game starts here",
-    locationTitle: "Sunway City, Iskandar Puteri.",
-    locationIntro:
-      "LOT 165132, Persiaran Medini 3, Sunway City, 79250 Iskandar Puteri, Johor Darul Ta'zim.",
+    bookingStatusLive: "Current booking data is connected. Availability and prices are shown in booking.",
+    bookingStatusFallback: "Availability and prices are shown in booking.",
+    teamEyebrow: "Your people",
+    teamTitle: "BRING YOUR TEAM.",
+    teamIntro: "Friends. Clubs. Schools. Work teams.",
+    audiences: ["Friends", "Clubs", "Schools", "Work teams"],
+    locationEyebrow: "Location",
+    locationTitle: "FIND THE GROUND.",
+    locationIntro: "LOT 165132, Persiaran Medini 3, Sunway City, 79250 Iskandar Puteri, Johor.",
     directions: "Get directions",
-    faqEyebrow: "Before kickoff",
-    faqTitle: "The useful answers.",
-    faqIntro: "Clear information before you choose a field and pay.",
+    faqEyebrow: "Before you go",
+    faqTitle: "KNOW BEFORE YOU GO.",
+    faqIntro: "Booking, payment and venue answers in one place.",
     faqFallback: [
-      { question: "Do I book by the hour?", answer: "No. Each booking is one complete six-hour morning or evening session." },
-      { question: "Can I book without an account?", answer: "Yes. Guest booking remains available; an account keeps your history and receipts together." },
-      { question: "When is my field confirmed?", answer: "Your booking is confirmed after payment is verified. The result page always shows the current status." },
-      { question: "Can I book both fields?", answer: "Yes. Add each available field session to your booking before checkout." },
+      { question: "How do I book?", answer: "Choose a date and an available pitch from Book your spot." },
+      { question: "Can I book as a guest?", answer: "Yes. Guest booking remains available." },
+      { question: "When is a booking confirmed?", answer: "The result page shows the current status after payment is verified." },
+      { question: "Where is the ground?", answer: "Use the directions link for the current map pin." },
     ],
-    finalEyebrow: "Two fields. One decision.",
-    finalTitle: "Bring the team.",
-    finalIntro: "Choose the date. Choose the light. The field is yours.",
-    degraded: "Live availability is taking longer than expected. You can still explore the venue and try booking again shortly.",
+    finalEyebrow: "Ready when you are",
+    finalTitle: "BOOK YOUR SPOT.",
+    finalIntro: "Pick the date. Send the link. Get the team together.",
+    degraded: "Live booking data is taking longer than expected. You can still open Book your spot and try again shortly.",
   },
   bm: {
     localeLabel: "Bahasa Melayu",
     languageName: "English",
-    eyebrow: "Sunway City · Iskandar Puteri · Johor",
-    heroTitle: ["Padang ini", "milik anda."],
-    heroIntro:
-      "Dua padang bola sepak bersaiz penuh. Enam jam tanpa gangguan. Pilih waktu siang atau bermain di bawah lampu limpah.",
-    primaryAction: "Cari sesi anda",
-    secondaryAction: "Lihat padang",
-    availabilityLabel: "Tempahan dibuka sehingga 90 hari lebih awal",
-    morning: "Pagi",
-    evening: "Petang",
-    fullSession: "Seluruh padang · enam jam",
-    journeyEyebrow: "Satu hari. Dua cara untuk bermain.",
-    journeyTitle: "Dari siang ke lampu limpah.",
-    journeyIntro:
-      "Harga berubah mengikut waktu, bukan jumlah pemain. Setiap tempahan memberikan seluruh padang kepada kumpulan anda untuk satu sesi penuh.",
-    daylight: "Kuasai waktu pagi",
-    daylightCopy: "09:00–15:00 · cahaya siang dan enam jam penuh untuk bermain.",
-    floodlights: "Ambil sesi petang",
-    floodlightsCopy: "15:00–21:00 · padang penuh yang sama di bawah lampu limpah LED.",
-    pricingNote: "Tiada caj setiap pemain. Tiada tambahan tersembunyi semasa pembayaran.",
-    fieldsEyebrow: "Dua padang",
-    fieldsTitle: "Pilih padang anda.",
-    fieldsIntro:
-      "Padang 1 dan Padang 2 berkongsi lokasi, kemudahan dan harga yang sama. Pilih satu—atau bawa pemain yang cukup untuk kedua-duanya.",
-    viewField: "Lihat padang",
-    facilitiesEyebrow: "Termasuk dalam setiap tempahan",
-    facilitiesTitle: "Datang bersedia. Pulang dengan selesa.",
-    facilitiesIntro: "Semua keperluan kumpulan anda tersedia di tepi padang.",
-    facilities: [
-      { title: "Parkir di lokasi", copy: "Parkir berhampiran venue dan mulakan permainan tanpa berlengah." },
-      { title: "Bilik persalinan", copy: "Bilik persalinan, pancuran mandi dan tandas tersedia di lokasi." },
-      { title: "Lampu limpah LED", copy: "Sesi petang kekal terang dari sepak mula hingga tamat." },
-      { title: "Tempat duduk dan minuman", copy: "Bangku, air dan minuman tersedia untuk pemain serta penyokong." },
+    eyebrow: "Iskandar Puteri, Johor",
+    heroTitle: "TEMPAH SLOT ANDA.",
+    heroIntro: "Bola sepak di Iskandar Puteri. Pilih tarikh, pilih padang yang tersedia, dan tempah.",
+    primaryAction: "Tempah slot anda",
+    groundEyebrow: "Padang",
+    groundTitle: "PADANG.",
+    groundIntro: "Dua padang bersebelahan di satu lokasi di Iskandar Puteri. Tempah satu, atau semak kedua-duanya jika kumpulan anda perlukan lebih ruang.",
+    actionEyebrow: "Hari perlawanan",
+    actionTitle: "MULAKAN PERMAINAN.",
+    actionIntro: "Tiada cerita untuk dijual. Hanya permainan di hadapan anda.",
+    actionWords: ["LARI", "TEKAN", "HANTAR", "REMBAT"],
+    bookingEyebrow: "Tempahan",
+    bookingTitle: "PILIH. TEMPAH. MAIN.",
+    bookingIntro: "Pilih tarikh, pilih slot yang tersedia, dan teruskan ke pembayaran.",
+    bookingSteps: [
+      { title: "Pilih tarikh", copy: "Mulakan dengan hari yang sesuai untuk kumpulan anda." },
+      { title: "Pilih ketersediaan", copy: "Halaman tempahan memaparkan padang dan masa yang tersedia." },
+      { title: "Teruskan", copy: "Semak butiran tempahan sebelum pembayaran." },
     ],
-    locationEyebrow: "Perlawanan seterusnya bermula di sini",
-    locationTitle: "Sunway City, Iskandar Puteri.",
-    locationIntro:
-      "LOT 165132, Persiaran Medini 3, Sunway City, 79250 Iskandar Puteri, Johor Darul Ta'zim.",
+    bookingStatusLive: "Data tempahan semasa disambungkan. Ketersediaan dan harga dipaparkan dalam tempahan.",
+    bookingStatusFallback: "Ketersediaan dan harga dipaparkan dalam tempahan.",
+    teamEyebrow: "Orang anda",
+    teamTitle: "BAWA PASUKAN ANDA.",
+    teamIntro: "Rakan. Kelab. Sekolah. Pasukan kerja.",
+    audiences: ["Rakan", "Kelab", "Sekolah", "Pasukan kerja"],
+    locationEyebrow: "Lokasi",
+    locationTitle: "CARI PADANG.",
+    locationIntro: "LOT 165132, Persiaran Medini 3, Sunway City, 79250 Iskandar Puteri, Johor.",
     directions: "Dapatkan arah",
-    faqEyebrow: "Sebelum sepak mula",
-    faqTitle: "Jawapan yang anda perlukan.",
-    faqIntro: "Maklumat jelas sebelum anda memilih padang dan membuat pembayaran.",
+    faqEyebrow: "Sebelum anda datang",
+    faqTitle: "TAHU SEBELUM ANDA DATANG.",
+    faqIntro: "Jawapan tempahan, pembayaran dan venue di satu tempat.",
     faqFallback: [
-      { question: "Adakah tempahan dibuat mengikut jam?", answer: "Tidak. Setiap tempahan ialah satu sesi pagi atau petang selama enam jam." },
-      { question: "Bolehkah saya menempah tanpa akaun?", answer: "Ya. Tempahan tetamu masih tersedia; akaun menyimpan sejarah dan resit anda di satu tempat." },
-      { question: "Bilakah padang saya disahkan?", answer: "Tempahan disahkan selepas pembayaran disahkan. Halaman keputusan sentiasa memaparkan status semasa." },
-      { question: "Bolehkah saya menempah kedua-dua padang?", answer: "Ya. Tambah setiap sesi padang yang tersedia sebelum pembayaran." },
+      { question: "Bagaimana saya menempah?", answer: "Pilih tarikh dan padang yang tersedia melalui Tempah slot anda." },
+      { question: "Bolehkah saya menempah sebagai tetamu?", answer: "Ya. Tempahan tetamu masih tersedia." },
+      { question: "Bilakah tempahan disahkan?", answer: "Halaman keputusan memaparkan status semasa selepas pembayaran disahkan." },
+      { question: "Di mana lokasi padang?", answer: "Gunakan pautan arah untuk pin peta semasa." },
     ],
-    finalEyebrow: "Dua padang. Satu keputusan.",
-    finalTitle: "Bawa pasukan anda.",
-    finalIntro: "Pilih tarikh. Pilih waktu. Padang ini milik anda.",
-    degraded: "Ketersediaan langsung mengambil masa lebih lama. Anda masih boleh melihat venue dan cuba membuat tempahan sebentar lagi.",
+    finalEyebrow: "Bila-bila anda sedia",
+    finalTitle: "TEMPAH SLOT ANDA.",
+    finalIntro: "Pilih tarikh. Kongsi pautan. Kumpulkan pasukan.",
+    degraded: "Data tempahan langsung mengambil masa lebih lama. Anda masih boleh membuka Tempah slot anda dan cuba lagi sebentar lagi.",
   },
 };
 
@@ -186,16 +164,16 @@ export const shellCopy: Record<SiteLocale, ShellCopy> = {
     navLabel: "Primary navigation",
     menu: "Menu",
     closeMenu: "Close navigation",
-    fields: "Fields",
+    fields: "Ground",
     about: "About",
     notes: "Field notes",
     faq: "FAQ",
     contact: "Contact",
     signIn: "Sign in",
     findBooking: "Find booking",
-    book: "Book a field",
+    book: "Book your spot",
     switchLanguage: "View this site in Bahasa Melayu",
-    footerIntro: "Two full-size football fields in Sunway City, Iskandar Puteri. Your field, for the full session.",
+    footerIntro: "Football at ArmourX Sports in Iskandar Puteri. Check availability and book online.",
     explore: "Explore",
     support: "Support",
     policies: "Policies",
@@ -218,9 +196,9 @@ export const shellCopy: Record<SiteLocale, ShellCopy> = {
     contact: "Hubungi",
     signIn: "Log masuk",
     findBooking: "Cari tempahan",
-    book: "Tempah padang",
+    book: "Tempah slot anda",
     switchLanguage: "View this site in English",
-    footerIntro: "Dua padang bola sepak bersaiz penuh di Sunway City, Iskandar Puteri. Seluruh padang untuk sesi anda.",
+    footerIntro: "Bola sepak di ArmourX Sports, Iskandar Puteri. Semak ketersediaan dan tempah dalam talian.",
     explore: "Terokai",
     support: "Bantuan",
     policies: "Polisi",

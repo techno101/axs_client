@@ -10,7 +10,7 @@ import { formatMoney } from "@/lib/format";
 import { customerApi, type CustomerSessionView } from "@/lib/customer-api";
 
 const copy: Record<PaymentState, { title: string; body: string }> = {
-  pending: { title: "We are verifying your payment.", body: "Keep this page open, or return later with your booking reference. The field is yours once the status changes to confirmed." },
+  pending: { title: "We are verifying your payment.", body: "Keep this page open, or return later with your booking reference. The result updates when the status is confirmed." },
   confirmed: { title: "Your field is confirmed.", body: "Save your booking reference and bring it with you on the day." },
   failed: { title: "Payment was not completed.", body: "The field is not confirmed. The live service may offer a new payment attempt only when the booking remains eligible." },
   expired: { title: "The booking hold expired.", body: "No field is reserved. Return to availability and choose a new session." },

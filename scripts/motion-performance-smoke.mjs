@@ -24,6 +24,7 @@ try {
     new PerformanceObserver((list) => { window.__axsMetrics.longTasks += list.getEntries().length; }).observe({ type: "longtask", buffered: true });
   });
   await page.goto(`${baseUrl}/`, { waitUntil: "networkidle" });
+  if (!(await page.getByRole("link", { name: /book your spot/i }).first().isVisible())) throw new Error("Match Cut hero CTA was not immediately usable.");
   await page.waitForTimeout(1800);
   if (!(await page.locator("html").evaluate((element) => element.classList.contains("lenis")))) throw new Error("Fine-pointer normal-motion mode did not enable Lenis.");
   const before = await page.evaluate(() => window.scrollY);
@@ -31,6 +32,8 @@ try {
   await page.waitForTimeout(1200);
   const after = await page.evaluate(() => window.scrollY);
   if (after <= before + 400) throw new Error(`Smooth scrolling did not progress: ${before} -> ${after}`);
+  const openingOpacity = await page.locator(".match-cut-opening").evaluate((element) => Number.parseFloat(getComputedStyle(element).opacity));
+  if (openingOpacity > 0.05) throw new Error(`Match Cut opening did not settle after scroll: opacity ${openingOpacity}`);
   await page.screenshot({ path: path.join(output, "home-normal-motion.png"), animations: "allow" });
   const metrics = await page.evaluate(() => window.__axsMetrics);
   if (metrics.lcp > 2500) throw new Error(`Local LCP ${metrics.lcp.toFixed(1)}ms exceeds 2500ms target.`);
@@ -46,7 +49,7 @@ try {
   if (await reducedPage.locator("html").evaluate((element) => element.classList.contains("lenis"))) throw new Error("Reduced-motion mode instantiated Lenis.");
   await reducedPage.evaluate(() => window.scrollTo(0, 900));
   if ((await reducedPage.evaluate(() => window.scrollY)) < 800) throw new Error("Reduced-motion mode did not preserve native scrolling.");
-  const hidden = await reducedPage.locator(".dusk-reveal").evaluateAll((elements) => elements.filter((element) => Number.parseFloat(getComputedStyle(element).opacity) < 0.99).length);
+  const hidden = await reducedPage.locator(".match-reveal").evaluateAll((elements) => elements.filter((element) => Number.parseFloat(getComputedStyle(element).opacity) < 0.99).length);
   if (hidden) throw new Error(`Reduced-motion mode left ${hidden} reveal elements hidden.`);
   await reducedPage.screenshot({ path: path.join(output, "home-reduced-motion.png"), animations: "disabled" });
   process.stdout.write("PASS reduced motion uses native scroll and leaves content visible\n");

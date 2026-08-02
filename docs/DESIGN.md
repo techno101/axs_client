@@ -2,7 +2,13 @@
 
 Customer pages use the public-site typography, 50px minimum form controls, visible focus outlines, labelled fields, alert/status messaging, responsive single-column fallback and retained guest-booking links. Account routes are non-indexed and analytics-excluded because their URLs/form states can contain personal or one-time data.
 
-## Phase 1 implementation
+## v13 pre-production override
+
+The owner explicitly rejected the v12 public visual direction. The accepted candidate must instead follow **The Match Cut** pre-production pack under `docs/design/`: one semantic SSR navigation/hero/CTA from time zero, an editorial contact-sheet opening that becomes the hero, eight connected matchday chapters, real/reference-guided Johor venue media, English root plus `/bm`, Exo 2 readable typography, and the `Book your spot` action. The v12 continuous pitch line, generic card/section structure, Clash/General Sans character and 11 quarantined demo/aerial assets are not accepted public marketing direction.
+
+The pre-production decision is `APPROVED FOR STATIC-POSTER IMPLEMENTATION`. Independent revision 3 approved the typography, venue context, wireframes, bilingual story and four still anchors; the owner then explicitly directed development to proceed. The rebuilt homepage uses those four approved roles only. A full high-resolution master batch and provider clip remain blocked; this branch is not yet a production-promotion candidate.
+
+## Historical v12 implementation, visually rejected
 
 The implemented visual language is a premium night-field editorial system rather than a generic SaaS template: deep navy atmospheres, controlled acid-lime actions, accessible green labels, floodlight/glow layers, net and pitch-line geometry, compressed display typography, warm reading surfaces, full-bleed photography, and disciplined circular details. The home, fields, booking, content, policy, maintenance, error, loading, empty, and 404 experiences share one system.
 

@@ -1,5 +1,26 @@
 # Client Changelog
 
+## v13 Checkpoint 1 static-poster implementation - 2026-08-02
+
+- Replaced the rejected v12 homepage with the bilingual **Match Cut** candidate: an editorial contact sheet settles into the real SSR navigation, hero and **Book your spot** action instead of a loading screen.
+- Rewrote public homepage copy and chapter order around the ground, match action, booking, team, location, FAQ and a direct final action. The two adjacent pitches are mentioned once; prices, made-up facility claims and field-number marketing are removed from the homepage.
+- Added self-hosted supplied Exo 2 weights. Flattened supplied Ethnocentric title artwork is used only as image artwork, with an Exo semantic fallback if it fails; the desktop font is never web-embedded.
+- Used the four approved fictional campaign roles once each (`M01/M03` are the documented same-player Match Cut continuity exception; M08 v3 and `M13` are distinct). The manifest now records the default no-repeated-face rule. The independent implemented-home review is `APPROVED` after it verified the M08 correction and static touch/reduced state.
+- Added scoped GSAP opening/reveal/action choreography: scroll, touch, pointer, keyboard, navigation, media failure and reduced motion settle safely; Lenis remains fine-pointer marketing only and native scroll remains on touch/reduced/task routes.
+- Preserved booking/BFF/payment authority, existing owner-local files and all Checkpoint 2 work. The provider clip and full master batch remain blocked/deferred; no `main` promotion, deployment or payment change is claimed.
+- Passed lint, typecheck, contract/security checks, 33 tests, production build, bundle scan, Axe on 11 routes, normal/reduced-motion smoke, keyboard interruption and media-title fallback tests. The direct fixture visual route remains environment-blocked by the active owner dev server and production loopback boundary.
+
+## v13 Checkpoint 1 pre-production pack - 2026-08-02
+
+- Recorded the owner correction that `v12@35453aa` is technically useful but visually `REJECTED`; created local `v13` from `origin/v12` only after proving no existing local/remote `v13`.
+- Added The Match Cut venue/design/motion bibles, desktop/mobile wireframes, bilingual eight-chapter storyboard, reference study, 28-file provenance inventory and 16-still asset-role plan under `docs/design/`.
+- Rebuilt the customer story around the exact key line **Book your spot**, removed every rejected v12 campaign concept, and corrected the BM booking instruction to `pilih slot yang tersedia`.
+- Inspected the supplied font packages. Exo 2 is the live semantic family; the supplied Ethnocentric desktop licence permits flattened static display artwork but forbids embedded webfont delivery. Added a v2 typography/palette proof covering English/BM, mobile wrapping and 200% zoom.
+- Regenerated the four low-resolution anchors through three review rounds. The independent verifier records revision 3 as `APPROVED`: the opening-to-hero invariant, venue continuity, football physics, anatomy, blank branding and natural community-team grouping pass.
+- Captured and inspected desktop/mobile evidence for four reference sites without copying their assets or layouts.
+- Recorded remaining blockers truthfully: final owner approval and an authorized provider motion test. No high-resolution batch was generated.
+- No homepage component code, BFF/API/payment behavior, dependency, Admin/POS state, remote branch, deployment or production route was changed.
+
 ## v12 bilingual brand foundation release candidate - 2026-08-02
 
 - Rebuilt the homepage and shared shell around “The field is yours” and “Dusk to floodlights,” using approved venue photography, twin-field geometry and one continuous pitch-line signature.
