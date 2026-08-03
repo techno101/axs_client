@@ -5,6 +5,7 @@
 - Repinned the Client contract consumer to Admin v1.15.0 and its checked checksum. The Client keeps payment-provider selection, keys, callbacks and confirmation authority entirely server-side in Admin.
 - Added the exact owner-only `POST /api/customer/bookings/{reference}/reschedule` BFF route and account interface. It forwards only the opaque customer cookie and CSRF proof; no browser input can select a customer account.
 - Added safe receipt/payment reference display and explicit customer-facing eligibility/rejection states. This candidate does not assert that an online provider is configured, payment is enabled or a booking has been rescheduled in a live environment.
+- Promoted `v14@f8b7235` to `origin/main` on 2026-08-03; Vercel deployment and live payment/provider acceptance remain unperformed.
 
 ## v13 Checkpoint 1 static-poster implementation - 2026-08-02
 
