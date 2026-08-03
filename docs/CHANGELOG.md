@@ -1,5 +1,12 @@
 # Client Changelog
 
+## Archive-first public visual reset - 2026-08-03
+
+- Replaced every static public marketing fallback on Home, About, Fields, Book and Field notes with owner-supplied ArmourX archive photography. The Home Match Cut retains only its intentional contact-sheet-to-hero continuity; the other roles use distinct images.
+- Removed all public code references to the rejected `night-player`, synthetic stadium/aerial fallbacks and ImageGen campaign masters. The supplied flattened Ethnocentric title artwork remains as non-AI font artwork with its existing semantic fallback.
+- Rebalanced public marketing surfaces around white, ink, soft blue and soft green tonal layers. Brand blue and green now act as controlled accents rather than large flat fields of colour; decorative pitch-grid treatment is removed.
+- The archive derivatives strip source metadata and are WebP only. This change does not modify booking rules, BFF/API contracts, payment authority, provider setup, Admin, deployment or customer data.
+
 ## v14 Checkpoint 2 candidate - 2026-08-03
 
 - Repinned the Client contract consumer to Admin v1.15.0 and its checked checksum. The Client keeps payment-provider selection, keys, callbacks and confirmation authority entirely server-side in Admin.

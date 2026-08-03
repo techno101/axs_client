@@ -25,21 +25,21 @@ export function HomeExperience({ locale, fields, blocks, faqs, degraded }: Props
         <section className="match-hero" aria-labelledby="match-hero-title">
           <div className="match-cut-opening" aria-hidden="true" inert>
             <div className="match-cut-opening__frame match-cut-opening__frame--lead">
-              <Image src="/images/matchcut/opening.png" alt="" fill priority sizes="(max-width: 767px) 92vw, 44vw" />
+              <Image src="/images/venue/home-hero.webp" alt="" fill priority sizes="(max-width: 767px) 92vw, 44vw" />
             </div>
             <div className="match-cut-opening__frame match-cut-opening__frame--detail-a">
-              <Image src="/images/matchcut/opening.png" alt="" fill sizes="180px" />
+              <Image src="/images/venue/home-hero.webp" alt="" fill sizes="180px" />
             </div>
             <div className="match-cut-opening__frame match-cut-opening__frame--detail-b">
-              <Image src="/images/matchcut/opening.png" alt="" fill sizes="180px" />
+              <Image src="/images/venue/home-hero.webp" alt="" fill sizes="180px" />
             </div>
             <div className="match-cut-opening__frame match-cut-opening__frame--detail-c">
-              <Image src="/images/matchcut/opening.png" alt="" fill sizes="180px" />
+              <Image src="/images/venue/home-hero.webp" alt="" fill sizes="180px" />
             </div>
           </div>
 
           <div className="match-hero__media match-cut-media">
-            <Image src="/images/matchcut/hero.png" alt="Adult footballer controlling the ball at the ArmourX Sports ground in Iskandar Puteri" fill priority sizes="100vw" />
+            <Image src="/images/venue/home-hero.webp" alt="Community football at the ArmourX Sports ground in Iskandar Puteri" fill priority sizes="100vw" />
           </div>
           <div className="match-hero__shade" aria-hidden="true" />
 
@@ -69,7 +69,7 @@ export function HomeExperience({ locale, fields, blocks, faqs, degraded }: Props
 
         <section className="match-action" aria-labelledby="action-title">
           <div className="match-action__media match-cut-media">
-            <Image src="/images/matchcut/action-v2.png" alt="Two adult players contesting the ball at the ArmourX Sports ground" fill sizes="(max-width: 767px) 100vw, 68vw" />
+            <Image src="/images/venue/home-action.webp" alt="A player carrying the ball at the ArmourX Sports ground" fill sizes="(max-width: 767px) 100vw, 68vw" />
           </div>
           <div className="shell match-action__layout">
             <div className="match-action__copy">
@@ -108,7 +108,7 @@ export function HomeExperience({ locale, fields, blocks, faqs, degraded }: Props
 
         <section className="match-team" aria-labelledby="team-title">
           <div className="match-team__media match-cut-media">
-            <Image src="/images/matchcut/team.png" alt="A group of adult players arriving at the ArmourX Sports ground" fill sizes="(max-width: 767px) 100vw, 58vw" />
+            <Image src="/images/venue/home-community.webp" alt="A community football match at the ArmourX Sports ground" fill sizes="(max-width: 767px) 100vw, 58vw" />
           </div>
           <div className="shell match-team__layout match-reveal">
             <div>

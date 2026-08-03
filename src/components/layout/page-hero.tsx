@@ -15,8 +15,8 @@ export function PageHero({
   eyebrow,
   title,
   intro,
-  image = images.nightStadium,
-  imageAlt = "Floodlit stadium viewed from above at night",
+  image = images.venueOverview,
+  imageAlt = "The ArmourX Sports ground in Iskandar Puteri",
   compact = false,
 }: PageHeroProps) {
   return (

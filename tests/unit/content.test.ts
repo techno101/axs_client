@@ -11,7 +11,7 @@ describe("local display content", () => {
   });
 
   it("uses approved venue facts without exposing internal content status", () => {
-    expect(fields.every((field) => field.description.includes("full-size"))).toBe(true);
+    expect(fields.every((field) => field.description.includes("bookable football field"))).toBe(true);
     expect(fields.every((field) => !field.description.toLowerCase().includes("pending"))).toBe(true);
   });
 });

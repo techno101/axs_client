@@ -20,8 +20,8 @@ export default async function ArticlesPage() {
         eyebrow="Field notes"
         title={<>Ideas beyond<br />the touchline.</>}
         intro="Booking guides and operational notes published through the structured ArmourXSports CMS."
-        image={images.texturedPitch}
-        imageAlt="Aerial view of a football pitch"
+        image={images.notesHero}
+        imageAlt="Football action at the ArmourX Sports ground"
       />
       <section className="articles-section">
         <div className="shell article-grid">

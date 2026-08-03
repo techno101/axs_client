@@ -28,8 +28,8 @@ export default async function FieldsPage() {
         eyebrow="The fields"
         title={<>Field&nbsp;1 and<br /><em>Field&nbsp;2.</em></>}
         intro="Two full-size pitches. Same venue. Same pricing. Both floodlit. Book the one you prefer — or both."
-        image={images.aerialPitch}
-        imageAlt="Aerial view of ArmourX Sports football fields in Sunway City"
+        image={images.venueOverview}
+        imageAlt="The ArmourX Sports ground in Iskandar Puteri"
       />
       <section className="field-listing-section">
         <div className="shell">

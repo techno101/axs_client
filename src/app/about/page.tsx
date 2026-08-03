@@ -17,8 +17,8 @@ export default function AboutPage() {
         eyebrow="About us"
         title={<>Two fields.<br />One venue.<br /><em>Your game.</em></>}
         intro="ArmourX Sports SDN BHD operates two full-size football fields in Sunway City, Iskandar Puteri. We built this platform so booking a field takes seconds — not phone calls, not WhatsApp groups, not guesswork."
-        image={images.nightPlayer}
-        imageAlt="Football player on a field at night"
+        image={images.aboutHero}
+        imageAlt="Football action at ArmourX Sports in Iskandar Puteri"
       />
       <section className="about-story">
         <div className="shell about-story__grid">
@@ -35,7 +35,7 @@ export default function AboutPage() {
       </section>
       <section className="about-visual">
         <div className="shell about-visual__frame">
-          <Image src={images.aerialPitch} alt="Aerial view of the ArmourX Sports fields in Sunway City" fill sizes="100vw" />
+          <Image src={images.venueOverview} alt="The ArmourX Sports ground in Iskandar Puteri" fill sizes="100vw" />
           <div><span>2 fields</span><span>6-hour sessions</span><span>1 venue</span></div>
         </div>
       </section>

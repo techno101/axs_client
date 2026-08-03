@@ -1,5 +1,12 @@
 # Client Decisions
 
+| Archive-first public visual decision - 2026-08-03 | Result |
+| --- | --- |
+| Public imagery | The owner directly selected the local ArmourX archive as the only photographic source for public marketing routes. New derivatives are metadata-stripped WebP crops/conversions only; no AI image is used. |
+| Rejected media | `night-player`, synthetic stadium/aerial fallback media and the generated Match Cut campaign masters are removed from public source references. Flattened Ethnocentric title artwork remains permitted because it is supplied-font artwork, not generated photography. |
+| Palette | Preserve Armour blue/green as identity accents. Use white, ink, pale blue and pale green tonal surfaces for the bright glossy balance requested by the owner; no generic bright-green-on-blue section fills. |
+| Venue location | The canonical map target is ArmourX Sports SDN. BHD. at `1.3940655,103.6340126`. This confirms the existing pin but does not settle the separate customer legal/postal address wording. |
+
 | v13 Checkpoint 1 pre-production decision | Result |
 | --- | --- |
 | v12 visual status | `REJECTED` by the owner. Retain only its useful bilingual, BFF, test and scrolling foundations; never promote it as the accepted design. |

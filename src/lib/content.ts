@@ -1,11 +1,16 @@
 import type { Article, BookingBlock, FaqItem, Field } from "@/lib/api/types";
 
 export const images = {
-  heroAerial: "/images/hero-aerial.webp",
-  nightStadium: "/images/night-stadium.webp",
-  aerialPitch: "/images/aerial-pitch.webp",
-  nightPlayer: "/images/night-player.webp",
-  texturedPitch: "/images/textured-pitch.webp",
+  venueOverview: "/images/venue/venue-overview.webp",
+  homeHero: "/images/venue/home-hero.webp",
+  aboutHero: "/images/venue/about-hero.webp",
+  bookingHero: "/images/venue/booking-hero.webp",
+  notesHero: "/images/venue/notes-hero.webp",
+  fieldOne: "/images/venue/field-one.webp",
+  fieldTwo: "/images/venue/field-two.webp",
+  articleBooking: "/images/venue/article-booking.webp",
+  articleSessions: "/images/venue/article-sessions.webp",
+  articleChecklist: "/images/venue/article-checklist.webp",
 } as const;
 
 export const fields: Field[] = [
@@ -14,24 +19,24 @@ export const fields: Field[] = [
     slug: "field-one",
     name: "Field 1",
     shortName: "Field 1",
-    description: "A full-size, floodlit football field at ArmourX Sports in Sunway City.",
-    surface: "Full-size football field",
+    description: "A bookable football field at the ArmourX Sports ground in Iskandar Puteri.",
+    surface: "Football field",
     facilityFacts: [],
-    image: images.nightStadium,
-    imageAlt: "Floodlit stadium viewed from above at night",
-    features: ["09:00–15:00 session", "15:00–21:00 session", "LED floodlights"],
+    image: images.fieldOne,
+    imageAlt: "A match in progress at ArmourX Sports, Iskandar Puteri",
+    features: ["Morning session", "Evening session"],
   },
   {
     id: "FIELD_02",
     slug: "field-two",
     name: "Field 2",
     shortName: "Field 2",
-    description: "A full-size, floodlit football field at ArmourX Sports in Sunway City.",
-    surface: "Full-size football field",
+    description: "A bookable football field at the ArmourX Sports ground in Iskandar Puteri.",
+    surface: "Football field",
     facilityFacts: [],
-    image: images.aerialPitch,
-    imageAlt: "Aerial view of a green football pitch inside a stadium",
-    features: ["09:00–15:00 session", "15:00–21:00 session", "LED floodlights"],
+    image: images.fieldTwo,
+    imageAlt: "Players moving the ball at ArmourX Sports, Iskandar Puteri",
+    features: ["Morning session", "Evening session"],
   },
 ];
 
@@ -94,8 +99,8 @@ export const articles: Article[] = [
     excerpt: "What happens between choosing a session and seeing your field confirmed.",
     readTime: "4 min read",
     publishedLabel: "Field notes · 12 July 2026",
-    image: images.nightPlayer,
-    imageAlt: "Football player on a lit pitch at night",
+    image: images.articleBooking,
+    imageAlt: "A player carrying the ball at ArmourX Sports",
     body: [
       {
         heading: "Availability is checked live",
@@ -120,8 +125,8 @@ export const articles: Article[] = [
       "Compare the two fixed booking windows and their current prices.",
     readTime: "3 min read",
     publishedLabel: "Booking guide · 10 July 2026",
-    image: images.aerialPitch,
-    imageAlt: "Aerial view of a green football pitch",
+    image: images.articleSessions,
+    imageAlt: "Two players contesting the ball at ArmourX Sports",
     body: [
       {
         heading: "Morning, 09:00–15:00",
@@ -145,8 +150,8 @@ export const articles: Article[] = [
       "Confirm the date, decision-maker and contact details before the ten-minute hold begins.",
     readTime: "2 min read",
     publishedLabel: "Booking guide · 8 July 2026",
-    image: images.texturedPitch,
-    imageAlt: "Aerial view of a football pitch surrounded by buildings",
+    image: images.articleChecklist,
+    imageAlt: "A player preparing a pass at ArmourX Sports",
     body: [
       {
         heading: "Prepare before checking out",

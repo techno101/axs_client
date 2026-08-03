@@ -31,8 +31,8 @@ export default async function BookPage() {
         eyebrow="Book your spot"
         title={<>Choose your<em>availability.</em></>}
         intro="Choose a date, check the available booking options, and review the details before payment."
-        image={images.nightPlayer}
-        imageAlt="Football player at ArmourX Sports"
+        image={images.bookingHero}
+        imageAlt="A player preparing to strike the ball at ArmourX Sports"
       />
       <BookingWizard fields={fields} blocks={config.slots} availability={availability} onlinePayment={config.onlinePayment} businessDate={businessDate} initialDate={initialDate} />
     </>

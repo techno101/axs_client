@@ -1,5 +1,26 @@
 # ArmourXSports Checkpoint 1 asset manifest
 
+## Owner-authorized archive-first execution update - 2026-08-03
+
+Status: `IMPLEMENTED` for static public fallback media. The owner directly instructed the Client to stop using AI imagery and to use the supplied local `RANDOM FIELD IMAGES FOR ARMOURX SPORTS` archive across every public marketing route. This owner direction supersedes the earlier direct-publication block recorded below. The following derivatives are deterministic, metadata-stripped WebP conversions only; no person, kit, venue detail or scene was generated, retouched or composited.
+
+| Public derivative | Archive source | Role |
+| --- | --- | --- |
+| `venue/home-hero.webp` | `random team 1 live match going.jpg` | Home Match Cut opening and hero; the one deliberate continuity reuse. |
+| `venue/home-action.webp` | `cool moment of player rushing with the ball.jpg` | Home match-action chapter. |
+| `venue/home-community.webp` | `cool momen 3 playes and 3 playes of both teams with the refree as well in the frame twhen the player dribbling and passing all along.jpg` | Home community chapter. |
+| `venue/about-hero.webp` | `about to shot the ball and another player on the moment to stop it.jpg` | About hero. |
+| `venue/venue-overview.webp` | `Players playing a poper match.jpg` | Venue/Fields visual context. |
+| `venue/field-one.webp` | `everyone playing in midfield of field 1.jpg` | Field 1 fallback. |
+| `venue/field-two.webp` | `cool moment of the players passing ball between thenm'.jpg` | Field 2 fallback. |
+| `venue/booking-hero.webp` | `awesme cool shot of the player about to hit the ball with a cool heroic moment.jpg` | Booking hero. |
+| `venue/notes-hero.webp` | `awesome jumping head to the ball around the dbox and cool moment.jpg` | Field notes hero. |
+| `venue/article-booking.webp` | `sprinting with the ball with full force.jpg` | Booking article. |
+| `venue/article-sessions.webp` | `two players striker and defender tackling and dribbling.jpg` | Session article. |
+| `venue/article-checklist.webp` | `player with the ball thinking where to pass also a cool moment.jpg` | Checklist article. |
+
+The former generated Match Cut stills and rejected visual fallbacks are no longer public-source candidates. The owner also explicitly rejected the night-player image. Physical deletion is `BLOCKED` by the controlled filesystem policy after the exact 15 public targets were verified; no owner archive original is deleted.
+
 Status: `PARTIALLY IMPLEMENTED — STATIC-POSTER CANDIDATE`
 Inventory date: 2026-08-02
 Scope: pre-production references, 16 planned still masters, one required hero clip, at most one supporting clip

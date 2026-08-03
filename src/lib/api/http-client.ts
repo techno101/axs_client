@@ -26,7 +26,7 @@ function localImage(value: string | null | undefined, fallback: string) {
 
 function fieldView(field: PublicFieldsResponse["data"][number]): Field {
   const local = localFields.find((item) => item.id === field.id);
-  return local ? { ...local, id: field.id, slug: field.slug, name: field.name, shortName: field.name, description: field.description, surface: field.surface, facilityFacts: field.facilityFacts, image: localImage(field.imageUrl, local.image), imageAlt: field.imageAlt || local.imageAlt, features: field.features } : { id: field.id, slug: field.slug, name: field.name, shortName: field.name, description: field.description, surface: field.surface, facilityFacts: field.facilityFacts, image: localImage(field.imageUrl, images.aerialPitch), imageAlt: field.imageAlt || "ArmourX Sports football field", features: field.features };
+  return local ? { ...local, id: field.id, slug: field.slug, name: field.name, shortName: field.name, description: field.description, surface: field.surface, facilityFacts: field.facilityFacts, image: localImage(field.imageUrl, local.image), imageAlt: field.imageAlt || local.imageAlt, features: field.features } : { id: field.id, slug: field.slug, name: field.name, shortName: field.name, description: field.description, surface: field.surface, facilityFacts: field.facilityFacts, image: localImage(field.imageUrl, images.venueOverview), imageAlt: field.imageAlt || "ArmourX Sports football field", features: field.features };
 }
 
 function blockView(block: PublicConfigResponse["data"]["slots"][number]): BookingBlock { return { fieldId: block.fieldId, id: block.code, label: block.label, startsAt: block.startsAt, endsAt: block.endsAt, amountMinor: block.amountMinor, currency: block.currency, weekdays: block.weekdays }; }
@@ -35,7 +35,7 @@ function articleView(article: ContractArticle): Article {
   const local = localArticles.find((item) => item.slug === article.slug);
   const body: Article["body"] = [];
   for (const block of article.blocks) { if (block.type === "heading") body.push({ heading: block.text, paragraphs: [] }); else { if (!body.length) body.push({ heading: "Article", paragraphs: [] }); body.at(-1)!.paragraphs.push(block.text); } }
-  return { slug: article.slug, category: "Field notes", title: article.title, excerpt: article.excerpt, readTime: `${Math.max(1, Math.ceil(article.blocks.reduce((total, block) => total + block.text.split(/\s+/).length, 0) / 200))} min read`, publishedLabel: new Date(article.publishedAt).toLocaleDateString("en-MY"), image: local?.image ?? images.texturedPitch, imageAlt: local?.imageAlt ?? "Football field", body };
+  return { slug: article.slug, category: "Field notes", title: article.title, excerpt: article.excerpt, readTime: `${Math.max(1, Math.ceil(article.blocks.reduce((total, block) => total + block.text.split(/\s+/).length, 0) / 200))} min read`, publishedLabel: new Date(article.publishedAt).toLocaleDateString("en-MY"), image: local?.image ?? images.articleChecklist, imageAlt: local?.imageAlt ?? "Football field", body };
 }
 
 export function createHttpPublicClient(base = "/api/axs"): PublicClient {
