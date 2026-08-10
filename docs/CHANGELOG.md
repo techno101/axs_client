@@ -1,5 +1,66 @@
 # Client Changelog
 
+## Simpler two-phase booking flow + field photos + hero assets - 2026-08-10
+
+- Rebuilt the booking wizard as a two-phase flow: **Pick sessions** (date strip + field photo cards + session tiles with time/price/availability; tap to add to a persistent sticky basket bar) and **Your details** (contact, add-ons, voucher, itemized totals on one screen). The five-step date→field→session→details→review wizard and the side summary panel were removed; the payment flow is unchanged.
+- Field cards in the wizard now render `field.image` (admin-provided or local fallback), so the booking flow finally shows the venue.
+- Committed the corrected venue webp set: the homepage hero is now the bright 3840px match photo (previously a dark archive frame was committed) and `venue-overview.webp` is the intended aerial (the two were swapped in the earlier commit).
+- Wizard component tests updated to the new flow (session-tile add → Continue → details) and all pass.
+
+## Orders management phase (admin-side, contract fields now live) - 2026-08-10
+
+- The admin-owned order status endpoint now returns `addonLines`, `addonTotalMinor` and `voucher` — fields already present in this repository's v1 contract types from the add-ons/vouchers phase. No client code change was required; typecheck and contract check pass unchanged.
+
+## Add-ons and vouchers in the booking wizard - 2026-08-10
+
+- `GET /v1/public/config` `addons` are now surfaced: the Review step shows per-session add-on quantity pickers with live pricing.
+- Added a voucher code field that validates through the admin-owned `POST /v1/public/vouchers/validate` endpoint (rate-limited) before payment and rejects invalid codes without a round-trip to payment.
+- Review totals are itemized (sessions, add-ons, voucher discount, estimated total) and `createOrder` now sends `addons` and `voucherCode`; the client contract types mirror the admin OpenAPI additions (`AddonSelection`, `OrderAddonLine`, `OrderVoucher`, `VoucherValidation`, config `addons`).
+- Server-side re-validation at order creation remains authoritative; wizard estimates are indicative only.
+
+## Pure white redesign (video removed, day/night images) - 2026-08-09
+
+- Flipped the home page and shared shell to a **pure white minimal matchday system**: warm paper `#f6f7f9`, ink text, one accessible green accent (`#3f7d1c` on white, `#a6e06a` on photo/dark chips). Blue removed from all accents; soft-gray section rhythm so it is not blinding.
+- **Removed all video backgrounds** (hero/sessions/final) — they caused a pulsing "shaking" feel and heavy network weight. Replaced with static bright imagery: hero uses the 3840px match photo; morning session card uses `session-day.webp` (bright day match); evening session card uses `session-night.webp` (dusk-toned team moment); final CTA uses the action shot. Deleted the `public/video/` assets and the `VideoBackground` component.
+- Regenerated all venue WebPs brighter (+5% brightness, +4% contrast) from their original 4K-6K sources.
+- Rebuilt the loader→hero handoff: attribute-driven completion (`data-boot-done` + `boot:done` event), loader fully unmounts before the hero animates, body scroll locked during boot, no overlapping fades, no hydration mismatches.
+- Scoped the header per page (`body:has(.match-home)`): white text over dark inner-page heroes, ink elsewhere — axe-safe without blend modes.
+- Fixed Axe contrast issues introduced by the flip (green labels, count-up chips, cue, final label) — all 11 routes pass.
+- Passed lint, typecheck, contract/security checks, 34 tests, production build, bundle scan, route smoke, Axe, motion smoke (normal + reduced), visual captures and the 27-step real-browser walkthrough with 0 console errors. No BFF, booking, payment, provider, Admin or deployment authority changed.
+
+## Home redesign: the matchday experience - 2026-08-08
+
+- Rebuilt the home page as one continuous cinematic scroll (no labelled sections): build-up boot loader, fixed match clock (0'→90' scroll progress), kick-off hero with live per-character anime.js title reveal over a 3840px hero photo, continuous hero-to-aerial flow, full-screen takeover menu with clip-path wipe and staggered giant links.
+- Added in-image count-up markers over the aerial (2 pitches · 6hr sessions · 90d window), full-bleed day/night session panels (RM600/RM800, hover zoom + arrow), a pinned horizontal matchday gallery with captions, team clip-reveal with staggered audiences, animated green map-pin pulse, anime.js height-animated FAQ accordion, and a final CTA with background media + scale-on-scroll type.
+- Locked the palette to off-black `#0B0E13` + white + one green accent `#53A423`; blue removed from cursor, labels, buttons, gallery and focus states. Cursor upgraded to a white difference-blend ring with green dot.
+- Installed `animejs` 4.5.0 and used it for the loader, title reveal, counters and accordion alongside GSAP ScrollTrigger pinning/scrub and Lenis.
+- Motion is now gated by `prefers-reduced-motion` only (not pointer type), so desktop users always see the choreography.
+- Regenerated full-bleed images at up to 3840px from the owner's 4K–6K sources (hero, action, community, notes); gallery cards and aerials now at max source resolution.
+- Passed lint, typecheck, contract/security checks, 34 tests, production build, bundle scan, route smoke, Axe on 12 routes, motion smoke and visual captures. No BFF, booking, payment, provider, Admin or deployment authority changed.
+
+## Full experience pass: navigation, copy, colour and motion - 2026-08-07
+
+- Navigation now uses real pages: Pitches, About, Field notes, FAQ, Contact and Find booking in the header and footer (desktop + mobile), replacing home-page anchor links.
+- Renamed "The ground" to "Two pitches. One venue." with the owner's both-fields aerial leading a new full-bleed section on Home; "Pitches" is the nav label (BM: "Padang").
+- Added a six-photo matchday gallery strip to Home (flying kick, duel, shield, dribble, evade, close challenge), pinned and horizontally scrubbed on desktop, snap-scrolling on mobile.
+- About gained an aerial visual plus the office photo; Contact gained a venue photo and plain factual copy; field detail pages show real facility facts instead of "Coming soon" placeholders.
+- Rewrote cliché/dev copy in a concrete factual tone (EN + BM): "Real people. Real answers.", "No drama", "No story to sell", "Backend state decides", "Ideas beyond the touchline" and the 24-hour reply promise are gone.
+- Applied the true brand palette sampled from the owner's logo: blue `#2353a6`, green `#53a423` (deep `#2e6b22` for text), red `#8d1c44` accent.
+- Added a fine-pointer-only custom cursor (dot + trailing ring, grows on interactive elements) and magnetic primary CTAs; both are reduced-motion and touch safe.
+- Extended the home motion system: hero parallax, aerial section scrub, pinned horizontal gallery (desktop), staggered hero copy entrance; motion remains marketing-only on fine pointers without reduced motion.
+- Organized the owner's 50+ source images under `assets/images/{aerial,action,team,field,venue,office,portraits,brand}/` with a README inventory; deleted the three rejected night/AI renders from `project/assets/field/`.
+- Passed lint, typecheck, contract/security checks, 34 tests, production build, bundle scan, route smoke, Axe on 12 routes, motion smoke and full visual captures. No BFF, booking, payment, provider, Admin or deployment authority changed.
+
+## Archive-first photography re-derive and design cleanup - 2026-08-06
+
+- Re-derived the complete `public/images/venue/` set from the owner's `RANDOM FIELD IMAGES FOR ARMOURX SPORTS` archive at higher quality; every derivative is metadata-stripped WebP.
+- Replaced the single repeated hero frame in the Match Cut opening with three distinct archive stills (`opening-a/b/c.webp`), upgraded the team chapter to the referee/handshake still, and made the actual `armourx field.jpg` the venue overview. The owner office photo now leads the About visual.
+- Removed the remaining night/AI imagery from the public site: `night-player`, `night-stadium`, `aerial-pitch`, `hero-aerial`, `textured-pitch`, `demo/*` and the AI match-cut masters were physically deleted from `public/images/`; the E2E fixture now serves venue images for Field 1/Field 2.
+- Consolidated `globals.css` from four stacked design systems into the single v15 editorial matchday system: deleted the retired v12 "dusk" layer and the dead v12 home block (5063 → 3689 lines), preserving live `.venue-map` and `.accordion-list` rules.
+- Lightened the heavy navy scrims on the home hero and inner page heroes so real photography leads; softened the contact-sheet overlay and field-listing vignettes.
+- Fixed two real Axe contrast failures: the FAQ intro text (light mist on the light FAQ surface) and the shared `--grass` accent token (now `#2c6e31`, 6.2:1 on white).
+- Passed lint, typecheck, contract/security checks, 34 tests, production build, bundle scan, route smoke, Axe on 12 routes and full visual captures. No BFF, booking, payment, provider, Admin or deployment authority changed.
+
 ## Archive-first public visual reset - 2026-08-03
 
 - Replaced every static public marketing fallback on Home, About, Fields, Book and Field notes with owner-supplied ArmourX archive photography. The Home Match Cut retains only its intentional contact-sheet-to-hero continuity; the other roles use distinct images.

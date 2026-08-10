@@ -1,5 +1,52 @@
 # Client Decisions
 
+| Booking flow simplification - 2026-08-10 | Result |
+| --- | --- |
+| Flow shape | Two phases — "Pick sessions" (date strip + field photo cards with per-field session tiles) and "Your details" (contact + add-ons + voucher + totals). Mirrors Playfinder/Goals-style facility booking: browse everything at once, tap to add, continue. |
+| Session selection | Tapping an available tile adds/removes it from the basket immediately (no per-step "Add to booking" navigation); a sticky bottom bar keeps count, total and Continue always visible. |
+| Field imagery | Field cards render `field.image` (admin-provided via the proxy or local venue fallback), matching the fields pages. |
+| Review merge | The separate Review step is gone — totals update live on the details screen and the server re-validates at order creation. |
+
+| Add-ons and vouchers - 2026-08-10 | Result |
+| --- | --- |
+| Add-on selection payload | The client sends `{ catalogItemId, fieldId, blockCode, bookingDate, quantity }` per selected session, matching the public occurrence contract; the server re-checks availability against the held bookings. |
+| Voucher UX | The voucher is validated with the admin endpoint on the Review step; an invalid code is rejected before payment. The applied voucher and totals shown are estimates — the server recomputes them at order creation. |
+| Totals presentation | Sessions, add-ons, voucher discount and estimated total are itemized so the discount is explicit rather than hidden inside the total. |
+
+| Pure white redesign - 2026-08-09 | Result |
+| --- | --- |
+| Palette | Warm paper `#f6f7f9` base + ink `#0d1117` text + ONE green accent (`#3f7d1c` for small text on white, `#a6e06a` on photo/dark chips). Blue fully removed. Soft-gray section rhythm (gallery/team/FAQ) so the page is not blinding. |
+| Video | Removed after review — the Ken Burns loops caused a pulsing "shaking" feel and network weight. Replaced with static bright imagery: `session-day.webp` (day match) and `session-night.webp` (dusk team moment) for the session cards; hero and final use existing bright stills. `public/video/` and `VideoBackground` deleted. |
+| Loader handoff | Attribute-driven boot completion; loader unmounts before hero copy animates; scroll locked during boot; no hydration mismatch. |
+| Header | Page-scoped (`body:has(.match-home)`): white over dark inner-page heroes, ink elsewhere. No blend-mode (axe-safe). |
+| Contrast | Green accent `#3f7d1c` (5.05:1 on white) for small labels; chips solid dark `#1b1e22` with white/`#a6e06a` text. Axe passes on all 11 routes. |
+
+| Home matchday redesign - 2026-08-08 | Result |
+| --- | --- |
+| Structure | The home page is one continuous scroll experience, not labelled sections. Beats mutate into each other (hero → aerial → sessions → gallery → team → map → FAQ → final) with pinned, horizontal and scrub choreography. |
+| Palette | Off-black `#0B0E13` + white + one green accent `#53A423`. Blue is fully removed. Dark theme locked on the home page; inner pages keep their light surfaces. |
+| Motion stack | anime.js 4.5 for loader, title reveal, counters, accordion; GSAP ScrollTrigger for pins/scrub/parallax; Lenis smooth scroll. Gated by `prefers-reduced-motion` only. |
+| Navigation | Single floating control opens a full-screen takeover menu (clip-path wipe, staggered giant links) on all routes. |
+| Loader | Build-up boot: wordmark char stagger + pitch-line draw + kick-off marker, reduced-motion hidden via CSS. |
+| Match clock | Fixed 0'→90' scroll progress device with green ring, home page only. |
+| Booking page | UI-style update only (dark palette + micro-interactions); structure and flows untouched. |
+
+| Full experience pass - 2026-08-07 | Result |
+| --- | --- |
+| Navigation | Header/footer/mobile navigation uses real routes (Pitches, About, Field notes, FAQ, Contact, Find booking); home-page anchors are removed from the menu. |
+| Language | "The ground" is retired. Public copy uses "pitches"/"venue" (BM: "padang"). All marketing copy is concrete and factual in the tone of leading booking platforms; no slogan or developer wording remains. |
+| Palette | The palette is derived from the actual owner logo colours: blue `#2353a6`, green `#53a423` (text-safe deep `#2e6b22`), red `#8d1c44` accent, ink `#101827`, chalk `#f7f9fc`. |
+| Interactivity | Fine-pointer-only custom cursor (dot + trailing ring) and magnetic primary CTAs; hero parallax, aerial scrub, pinned desktop gallery and staggered copy reveals. All gated by `(pointer: fine)` and `prefers-reduced-motion`. |
+| Imagery | Home leads with the owner's both-fields aerial; a six-photo matchday gallery uses previously unused archive stills; About/Contact gained venue photography. Full source library is catalogued in `assets/images/` with a README. |
+| Rejected media | The three night/AI field renders were physically deleted from `project/assets/field/` on 2026-08-07. |
+
+| Archive-first visual cleanup - 2026-08-06 | Result |
+| --- | --- |
+| Photography source | The owner's local ArmourX archive remains the only photographic source. The venue set was re-derived at higher quality; the opening contact sheet uses three distinct archive stills; the actual field photo leads the venue overview and the office photo leads the About visual. |
+| Rejected media removal | With explicit owner authority, all night/stadium/aerial/match-cut AI files were physically removed from `public/images/` and from the E2E fixture. Only the archive-derived venue set and the flattened Ethnocentric title artwork remain. |
+| Design system | The stacked v12/v13/v14/v15 CSS layers were consolidated into the single v15 editorial matchday system. Heavy navy scrims were lightened so real photography carries the page; brand blue/green remain controlled accents. |
+| Accessibility | The FAQ intro text and the `--grass` accent token were corrected to meet 4.5:1 contrast on light surfaces; Axe passes on all 12 public routes. |
+
 | Archive-first public visual decision - 2026-08-03 | Result |
 | --- | --- |
 | Public imagery | The owner directly selected the local ArmourX archive as the only photographic source for public marketing routes. New derivatives are metadata-stripped WebP crops/conversions only; no AI image is used. |
