@@ -18,7 +18,7 @@ export default async function BookingResultPage({ searchParams }: { searchParams
       <section className="payment-result-section">
         <div className="shell payment-result-section__grid">
           <LivePaymentResult reference={reference} />
-          <aside><p className="eyebrow"><span aria-hidden="true" />Payment integrity</p><h2>Backend state decides.</h2><p>The redirect improves the customer experience only. A verified, amount-matched, idempotent provider callback is required before this page can show confirmation.</p></aside>
+          <aside><p className="eyebrow"><span aria-hidden="true" />How confirmation works</p><h2>Verified before confirmed.</h2><p>Returning from the payment page does not confirm a booking by itself. This page shows your field as confirmed only after the payment has been verified on the server.</p></aside>
         </div>
       </section>
     </>

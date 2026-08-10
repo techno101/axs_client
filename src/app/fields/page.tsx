@@ -7,7 +7,7 @@ import { ArrowUpRightIcon, CheckIcon } from "@/components/ui/icons";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { createServerPublicClient } from "@/lib/api/server-client";
 import { images } from "@/lib/content";
-import { formatMoney } from "@/lib/format";
+import { formatMoney, formatTimePair12 } from "@/lib/format";
 
 export const metadata: Metadata = {
   title: "The fields",
@@ -25,11 +25,11 @@ export default async function FieldsPage() {
   return (
     <>
       <PageHero
-        eyebrow="The fields"
+        eyebrow="The pitches"
         title={<>Field&nbsp;1 and<br /><em>Field&nbsp;2.</em></>}
         intro="Two full-size pitches. Same venue. Same pricing. Both floodlit. Book the one you prefer — or both."
-        image={images.venueOverview}
-        imageAlt="The ArmourX Sports ground in Iskandar Puteri"
+        image={images.fieldsHero}
+        imageAlt="Aerial view of the two ArmourX Sports pitches in Iskandar Puteri"
       />
       <section className="field-listing-section">
         <div className="shell">
@@ -39,11 +39,10 @@ export default async function FieldsPage() {
             intro="Every session is six hours. Morning 9AM–3PM or evening 3PM–9PM. RM 600 or RM 800. The whole field. No sharing. No time-splitting."
           />
           <div className="field-listing">
-            {fields.map((field, index) => (
+            {fields.map((field) => (
               <article className="field-listing__row" key={field.id}>
                 <div className="field-listing__image">
                   <Image src={field.image} alt={field.imageAlt} fill sizes="(max-width: 800px) 100vw, 48vw" />
-                  <span>0{index + 1}</span>
                 </div>
                 <div className="field-listing__copy">
                   <p className="eyebrow"><span aria-hidden="true" />{field.shortName}</p>
@@ -70,7 +69,7 @@ export default async function FieldsPage() {
             {blocks.map((block) => (
               <div key={`${block.fieldId}-${block.id}`}>
                 <span>{block.label}</span>
-                <strong>{block.startsAt}—{block.endsAt}</strong>
+                <strong>{formatTimePair12(block.startsAt, block.endsAt)}</strong>
                 <b>{formatMoney(block.amountMinor)}</b>
               </div>
             ))}

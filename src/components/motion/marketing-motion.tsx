@@ -34,8 +34,19 @@ function MotionStage({ children, enabled }: { children: React.ReactNode; enabled
     const root = scope.current;
     const opening = root.querySelector<HTMLElement>(".match-cut-opening");
     const openingFrames = gsap.utils.toArray<HTMLElement>(".match-cut-opening__frame", root);
-    const media = root.querySelector<HTMLElement>(".match-hero__media");
-    const actionWords = gsap.utils.toArray<HTMLElement>(".match-action__verbs span", root);
+    const heroMedia = root.querySelector<HTMLElement>(".match-hero__media");
+    const heroCopy = root.querySelector<HTMLElement>(".match-hero__copy");
+    const heroAvailability = root.querySelector<HTMLElement>(".match-hero__availability");
+    const action = root.querySelector<HTMLElement>(".match-sessions");
+    const sessionCards = root.querySelectorAll<HTMLElement>(".match-session-card");
+    const actionCopy = root.querySelector<HTMLElement>(".match-sessions__head");
+    const teamMedia = root.querySelector<HTMLElement>(".match-team__media");
+    const finalHeading = root.querySelector<HTMLElement>(".match-final h2");
+    const finalMedia = root.querySelector<HTMLElement>(".match-final__media");
+    const pitchesMedia = root.querySelector<HTMLElement>(".match-pitches__media");
+    const pitchesCopy = root.querySelector<HTMLElement>(".match-pitches__copy");
+    const gallery = root.querySelector<HTMLElement>(".match-gallery");
+    const galleryTrack = root.querySelector<HTMLElement>(".match-gallery__track");
     let settled = false;
 
     const settle = () => {
@@ -49,9 +60,24 @@ function MotionStage({ children, enabled }: { children: React.ReactNode; enabled
 
     const intro = gsap.timeline({ defaults: { ease: "power3.out" } });
     intro
-      .fromTo(openingFrames, { autoAlpha: 0, scale: 0.92 }, { autoAlpha: 1, scale: 1, duration: 0.6, stagger: 0.09 })
-      .to(openingFrames, { scale: (index) => index === 0 ? 1.04 : 0.88, xPercent: (index) => index === 0 ? 2 : index % 2 ? 14 : -14, yPercent: (index) => index === 0 ? -2 : index % 2 ? 8 : -8, duration: 1.2, stagger: 0.04 }, 1.05)
-      .to(opening, { autoAlpha: 0, duration: 0.62, ease: "power2.inOut" }, 2.65);
+      .fromTo(openingFrames, { autoAlpha: 0, scale: 0.96 }, { autoAlpha: 1, scale: 1, duration: 0.48, stagger: 0.07 })
+      .to(openingFrames, { scale: (index) => index === 0 ? 1.02 : 0.9, xPercent: (index) => index === 0 ? 1 : index % 2 ? 10 : -10, yPercent: (index) => index === 0 ? -1 : index % 2 ? 6 : -6, duration: 0.88, stagger: 0.03 }, 0.7)
+      .to(opening, { autoAlpha: 0, duration: 0.44, ease: "power2.inOut" }, 1.75)
+      // Hero copy enters only after the boot loader has fully unmounted.
+      .add(() => {
+        if (document.documentElement.getAttribute("data-boot-done") === "1") return;
+        intro.pause();
+        const waitBoot = () => {
+          if (document.documentElement.getAttribute("data-boot-done") === "1") {
+            document.removeEventListener("boot:done", waitBoot);
+            intro.resume();
+          }
+        };
+        document.addEventListener("boot:done", waitBoot);
+        window.setTimeout(waitBoot, 3000);
+      }, 1.85)
+      .fromTo(heroCopy, { y: 26, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.7 }, "+=0.05")
+      .fromTo(heroAvailability, { y: 14, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.5 }, "+=0.05");
 
     const interactionEvents: Array<keyof WindowEventMap> = ["wheel", "touchstart", "pointerdown", "keydown"];
     interactionEvents.forEach((eventName) => window.addEventListener(eventName, settle, { passive: eventName !== "keydown", once: true }));
@@ -59,48 +85,131 @@ function MotionStage({ children, enabled }: { children: React.ReactNode; enabled
     const mediaElements = gsap.utils.toArray<HTMLImageElement>(".match-cut-media img", root);
     mediaElements.forEach((image) => image.addEventListener("error", settle, { once: true }));
 
-    gsap.utils.toArray<HTMLElement>(".match-reveal", root).forEach((element) => {
+    const reveal = (selector: string) => {
+      const element = root.querySelector<HTMLElement>(selector);
+      if (!element) return;
       gsap.from(element, {
-        y: 28,
+        y: 26,
         opacity: 0,
-        duration: 0.7,
-        ease: "power2.out",
+        duration: 0.62,
+        ease: "power3.out",
         scrollTrigger: { trigger: element, start: "top 82%", once: true },
       });
-    });
+    };
+
+    reveal(".match-pitches");
+    reveal(".match-booking");
+    reveal(".match-team__layout");
+    reveal(".match-location");
+    reveal(".match-faq");
+    reveal(".match-final");
 
     const mediaQueries = gsap.matchMedia();
     mediaQueries.add("(min-width: 900px)", () => {
-      if (!media || actionWords.length === 0) return;
-      gsap.set(actionWords, { autoAlpha: 0, yPercent: 18 });
-      gsap.set(actionWords[0], { autoAlpha: 1, yPercent: 0 });
+      if (heroMedia) {
+        gsap.to(heroMedia, {
+          yPercent: 16,
+          ease: "none",
+          scrollTrigger: { trigger: ".match-hero", start: "top top", end: "bottom top", scrub: 0.6 },
+        });
+      }
 
-      const actionTimeline = gsap.timeline({
-        scrollTrigger: {
-          trigger: ".match-action",
-          start: "top top",
-          end: "+=150%",
-          pin: true,
-          scrub: 0.6,
-          anticipatePin: 1,
-          invalidateOnRefresh: true,
-        },
+      const heroCopyEl = root.querySelector<HTMLElement>(".match-hero__copy");
+      if (heroCopyEl) {
+        gsap.to(heroCopyEl, {
+          yPercent: -34,
+          opacity: 0.2,
+          ease: "none",
+          scrollTrigger: { trigger: ".match-hero", start: "top top", end: "bottom top", scrub: 0.6 },
+        });
+      }
+
+      // Continuous flow: the aerial slides up over the hero as one shot.
+      if (pitchesMedia && pitchesCopy) {
+        gsap.fromTo(pitchesMedia, { yPercent: 14, scale: 1.12 }, {
+          yPercent: 0,
+          scale: 1,
+          ease: "none",
+          scrollTrigger: { trigger: ".match-pitches", start: "top bottom", end: "top top", scrub: 0.9 },
+        });
+        gsap.fromTo(pitchesCopy, { yPercent: 30 }, {
+          yPercent: -8,
+          ease: "none",
+          scrollTrigger: { trigger: ".match-pitches", start: "top bottom", end: "bottom top", scrub: 0.8 },
+        });
+      }
+
+      if (!action || !actionCopy) return;
+
+      gsap.from(sessionCards, {
+        y: 60,
+        clipPath: "inset(12% 6% 12% 6%)",
+        opacity: 0.4,
+        duration: 1.1,
+        ease: "power3.out",
+        stagger: 0.16,
+        scrollTrigger: { trigger: action, start: "top 78%", once: true },
       });
 
-      actionWords.slice(1).forEach((word, index) => {
-        actionTimeline
-          .to(actionWords[index], { autoAlpha: 0, yPercent: -18, duration: 0.75, ease: "none" })
-          .to(word, { autoAlpha: 1, yPercent: 0, duration: 0.75, ease: "none" }, "<");
+      gsap.from(actionCopy, {
+        y: 30,
+        opacity: 0,
+        duration: 0.7,
+        ease: "power3.out",
+        scrollTrigger: { trigger: action, start: "top 82%", once: true },
       });
 
-      actionTimeline.to(media, { scale: 1.035, duration: 0.75, ease: "none" }, 0);
+      if (gallery && galleryTrack) {
+        const galleryTimeline = gsap.timeline({
+          scrollTrigger: {
+            trigger: gallery,
+            start: "top top",
+            end: () => `+=${galleryTrack.scrollWidth - window.innerWidth}`,
+            pin: true,
+            scrub: 1,
+            anticipatePin: 1,
+            invalidateOnRefresh: true,
+            refreshPriority: 1,
+          },
+        });
+        galleryTimeline.to(galleryTrack, { x: () => -(galleryTrack.scrollWidth - window.innerWidth), ease: "none", duration: 1 });
+      }
     });
+
+    if (teamMedia) {
+      gsap.fromTo(teamMedia, { clipPath: "inset(12% 8% 12% 8%)", scale: 1.06 }, {
+        clipPath: "inset(0% 0% 0% 0%)",
+        scale: 1,
+        ease: "none",
+        scrollTrigger: { trigger: teamMedia, start: "top 85%", end: "top 35%", scrub: 0.8 },
+      });
+    }
+
+    if (finalHeading) {
+      gsap.fromTo(finalHeading, { scale: 0.94, opacity: 0.6 }, {
+        scale: 1,
+        opacity: 1,
+        ease: "none",
+        scrollTrigger: { trigger: ".match-final", start: "top 85%", end: "top 30%", scrub: 0.7 },
+      });
+    }
+    if (finalMedia) {
+      gsap.fromTo(finalMedia, { scale: 1.18 }, {
+        scale: 1,
+        ease: "none",
+        scrollTrigger: { trigger: ".match-final", start: "top bottom", end: "bottom top", scrub: 0.8 },
+      });
+    }
+
+    const refresh = () => ScrollTrigger.refresh();
+    window.addEventListener("load", refresh, { once: true });
 
     ScrollTrigger.refresh();
 
     return () => {
       interactionEvents.forEach((eventName) => window.removeEventListener(eventName, settle));
       mediaElements.forEach((image) => image.removeEventListener("error", settle));
+      window.removeEventListener("load", refresh);
       mediaQueries.revert();
     };
   }, { scope, dependencies: [enabled], revertOnUpdate: true });

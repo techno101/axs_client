@@ -6,7 +6,7 @@ import { ButtonLink } from "@/components/ui/button-link";
 import { CheckIcon } from "@/components/ui/icons";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { createServerPublicClient } from "@/lib/api/server-client";
-import { formatMoney } from "@/lib/format";
+import { formatMoney, formatTimePair12 } from "@/lib/format";
 
 type FieldDetailProps = { params: Promise<{ slug: string }> };
 
@@ -51,7 +51,6 @@ export default async function FieldDetailPage({ params }: FieldDetailProps) {
           <div className="field-fact-grid">
             <div><span>Surface</span><strong>{field.surface}</strong></div>
             {field.facilityFacts.map((fact) => <div key={`${fact.label}-${fact.value}`}><span>{fact.label}</span><strong>{fact.value}</strong></div>)}
-            {!field.facilityFacts.length ? <div><span>Facility facts</span><strong>Coming soon</strong></div> : null}
           </div>
         </div>
       </section>
@@ -62,8 +61,8 @@ export default async function FieldDetailPage({ params }: FieldDetailProps) {
           </div>
           <aside>
             <p className="eyebrow"><span aria-hidden="true" />What is included</p>
-            {field.features.length ? <ul>{field.features.map((feature) => <li key={feature}><CheckIcon />{feature}</li>)}</ul> : <p>Full feature list coming soon. Floodlit. Full-size. Game-ready.</p>}
-            <p className="field-detail-media__note">Real venue photos and full specifications on the way. What&apos;s here is confirmed.</p>
+            {field.features.length ? <ul>{field.features.map((feature) => <li key={feature}><CheckIcon />{feature}</li>)}</ul> : <p>Full-size. Floodlit. Game-ready.</p>}
+            <p className="field-detail-media__note">Photography is from the ArmourX Sports venue in Iskandar Puteri.</p>
           </aside>
         </div>
       </section>
@@ -77,7 +76,7 @@ export default async function FieldDetailPage({ params }: FieldDetailProps) {
             {blocks.filter((block) => block.fieldId === field.id).map((block) => (
               <div className="field-block-line" key={`${block.fieldId}-${block.id}`}>
                 <span>{block.label}</span>
-                <strong>{block.startsAt}—{block.endsAt}</strong>
+                <strong>{formatTimePair12(block.startsAt, block.endsAt)}</strong>
                 <b>{formatMoney(block.amountMinor)}</b>
               </div>
             ))}

@@ -17,9 +17,9 @@ const paymentLabels: Record<PaymentState, string> = {
 };
 
 export function AvailabilityPill({ status }: { status: AvailabilityStatus }) {
-  return <span className={`status-pill status-pill--${status}`}>{availabilityLabels[status]}</span>;
+  return <span className={`status-dot status-dot--${status}`}>{availabilityLabels[status]}</span>;
 }
 
 export function PaymentPill({ state }: { state: PaymentState }) {
-  return <span className={`status-pill status-pill--${state}`}>{paymentLabels[state]}</span>;
+  return <span className={`status-dot status-dot--${state}`}>{paymentLabels[state]}</span>;
 }

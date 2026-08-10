@@ -2,8 +2,8 @@
 
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import Image from "next/image";
+import { ArrowRight, Calendar as CalendarIcon, ChevronDown } from "lucide-react";
 import { SlotCard } from "@/components/booking/slot-card";
-import { AlertIcon, ArrowRightIcon, CalendarIcon, CheckIcon, ChevronIcon } from "@/components/ui/icons";
 import type {
   AvailabilitySlot,
   BookingBlock,
@@ -12,10 +12,17 @@ import type {
   PublicConfigView,
 } from "@/lib/api/types";
 import type { VoucherValidation } from "@/lib/api/contract/v1";
-import { formatMoney } from "@/lib/format";
+import { formatMoney, formatTimePair12 } from "@/lib/format";
 import { createHttpPublicClient, PublicApiError } from "@/lib/api/http-client";
 import { reportOperationalEvent } from "@/lib/operational-reporting";
 import { customerApi, type CustomerSessionView } from "@/lib/customer-api";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 type BasketItem = {
   fieldId: string;
@@ -40,6 +47,14 @@ function displayDate(value: string, options: Intl.DateTimeFormatOptions): string
   return new Intl.DateTimeFormat("en-MY", { ...options, timeZone: "UTC" }).format(new Date(`${value}T00:00:00.000Z`));
 }
 
+function dateLabel(value: string): string {
+  return displayDate(value, { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+}
+
+function toDate(value: string): Date {
+  return new Date(`${value}T00:00:00.000Z`);
+}
+
 type CustomerDetails = {
   name: string;
   phone: string;
@@ -61,11 +76,12 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
   const client = useMemo(() => createHttpPublicClient(), []);
   const dateOptions = useMemo(() => Array.from({ length: 5 }, (_, index) => {
     const value = addIsoDays(businessDate, index);
-    return { value, day: displayDate(value, { weekday: "short" }), date: displayDate(value, { day: "2-digit" }), month: displayDate(value, { month: "short" }), label: index === 0 ? "Today" : displayDate(value, { weekday: "long" }), display: displayDate(value, { weekday: "long", day: "numeric", month: "long", year: "numeric" }) };
+    return { value, day: displayDate(value, { weekday: "short" }), date: displayDate(value, { day: "2-digit" }), month: displayDate(value, { month: "short" }), label: index === 0 ? "Today" : displayDate(value, { weekday: "long" }) };
   }), [businessDate]);
   const maxDate = useMemo(() => addIsoDays(businessDate, 90), [businessDate]);
   const [phase, setPhase] = useState<"sessions" | "details">("sessions");
   const [date, setDate] = useState(initialDate);
+  const [calendarOpen, setCalendarOpen] = useState(false);
   const [customer, setCustomer] = useState<CustomerDetails>({ name: "", phone: "", email: "", team: "" });
   const [liveAvailability, setLiveAvailability] = useState(availability);
   const [basket, setBasket] = useState<BasketItem[]>([]);
@@ -81,7 +97,6 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
   const headingRef = useRef<HTMLHeadingElement>(null);
 
   const basketKey = (item: BasketItem) => `${item.fieldId}-${item.blockCode}-${item.bookingDate}`;
-  const selectedDate = dateOptions.find((item) => item.value === date) ?? { value: date, day: displayDate(date, { weekday: "short" }), date: displayDate(date, { day: "2-digit" }), month: displayDate(date, { month: "short" }), label: displayDate(date, { weekday: "long" }), display: displayDate(date, { weekday: "long", day: "numeric", month: "long", year: "numeric" }) };
   const addonTotalMinor = Object.entries(addonSelections).reduce((total, [, byAddon]) => total + Object.entries(byAddon).reduce((subtotal, [addonId, quantity]) => subtotal + (addons.find((addon) => addon.id === addonId)?.amountMinor ?? 0) * quantity, 0), 0);
   const sessionTotalMinor = basket.reduce((sum, item) => sum + item.amountMinor, 0);
   const discountMinor = voucher ? Math.round((sessionTotalMinor + addonTotalMinor) * voucher.percentage / 100) : 0;
@@ -127,7 +142,6 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
   };
   const backToSessions = () => {
     setPhase("sessions");
-    setBasketOpen(true);
     window.requestAnimationFrame(() => headingRef.current?.focus());
   };
 
@@ -194,16 +208,19 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
     }
   }
 
+  const paymentBlocked = !onlinePayment.enabled;
+
   return (
     <div className="booking-wizard booking-wizard--simple">
-      {onlinePayment.enabled && onlinePayment.environment === "sandbox" ? <div className="booking-live-note booking-live-note--calm" role="status"><AlertIcon /><p><strong>Sandbox checkout — no real payment will be taken.</strong> This non-production booking flow is only for authorised testing.</p></div> : null}
-
-      <div className="booking-phase" role="tablist" aria-label="Booking steps">
-        <button className={phase === "sessions" ? "is-current" : "is-complete"} type="button" role="tab" aria-selected={phase === "sessions"} onClick={() => setPhase("sessions")}><span>{phase === "details" ? <CheckIcon /> : "01"}</span><strong>Pick sessions</strong></button>
-        <button className={phase === "details" ? "is-current" : ""} type="button" role="tab" aria-selected={phase === "details"} onClick={() => phase === "details" ? undefined : goToDetails()}><span>02</span><strong>Your details</strong></button>
-      </div>
+      <Tabs value={phase} onValueChange={(value) => { if (value === "details" && !basket.length) return; setPhase(value as "sessions" | "details"); }}>
+        <TabsList aria-label="Booking steps">
+          <TabsTrigger value="sessions">Pick sessions</TabsTrigger>
+          <TabsTrigger value="details" disabled={!basket.length}>Your details</TabsTrigger>
+        </TabsList>
+      </Tabs>
 
       <h2 className="booking-wizard__heading" tabIndex={-1} ref={headingRef}>{phase === "sessions" ? "Pick your sessions" : "Your details"}</h2>
+      {onlinePayment.enabled && onlinePayment.environment === "sandbox" ? <p className="booking-note booking-note--sandbox" role="status"><strong>Sandbox checkout — no real payment will be taken.</strong> This checkout is for testing only.</p> : null}
       {error ? <p className="booking-error" role="alert">{error}</p> : null}
 
       {phase === "sessions" ? (
@@ -222,32 +239,40 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
                 <small>{option.month}</small>
               </button>
             ))}
-            <label className="date-picker-button">
-              <CalendarIcon />
-              <span>Other date</span>
-              <input
-                aria-label="Choose another date"
-                type="date"
-                min={businessDate}
-                max={maxDate}
-                value={date}
-                onChange={(event) => { setDate(event.target.value); }}
-              />
-            </label>
+            <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+              <PopoverTrigger asChild>
+                <button className="date-picker-button" type="button" aria-label="Open the calendar">
+                  <CalendarIcon className="h-4 w-4" />
+                  <span>Calendar</span>
+                </button>
+              </PopoverTrigger>
+              <PopoverContent align="start" className="p-3">
+                <Calendar
+                  selected={toDate(date)}
+                  min={toDate(businessDate)}
+                  max={toDate(maxDate)}
+                  onSelect={(selected) => { setDate(selected.toISOString().slice(0, 10)); setCalendarOpen(false); }}
+                />
+              </PopoverContent>
+            </Popover>
           </div>
-          {!onlinePayment.enabled ? <div className="booking-live-note booking-live-note--calm" role="status"><AlertIcon /><p><strong>Online booking is unavailable right now.</strong> {onlinePayment.publicMessage ?? "You can still review fields, sessions and prices."} No session has been reserved.</p></div> : null}
+
+          {paymentBlocked ? (
+            <p className="booking-note" role="status">{onlinePayment.publicMessage ?? "Online booking will open again soon."}</p>
+          ) : null}
+
           <div className="field-card-list">
             {fields.map((item) => {
               const slots = slotsByField(item.id);
               return (
                 <section className="field-card" key={item.id} aria-labelledby={`field-card-${item.id}`}>
                   <div className="field-card__media">
-                    <Image src={item.image} alt={item.imageAlt} fill sizes="(min-width: 900px) 50vw, 100vw" />
+                    <Image src={item.image} alt={item.imageAlt} fill sizes="(min-width: 900px) 40vw, 100vw" />
                   </div>
                   <div className="field-card__body">
                     <header className="field-card__header">
                       <div><h3 id={`field-card-${item.id}`}>{item.name}</h3><p>{item.surface}</p></div>
-                      <p className="field-card__date">{selectedDate.display}</p>
+                      <p className="field-card__date">{dateLabel(date)}</p>
                     </header>
                     <div className="field-card__slots">
                       {slots.map(({ block, status }) => {
@@ -260,7 +285,6 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
                             status={status}
                             fieldName={item.shortName}
                             selected={selected}
-                            compact
                             onSelect={status === "available" ? () => toggleSession({ fieldId: item.id, blockCode: block.id, bookingDate: date, fieldName: item.name, label: block.label, startsAt: block.startsAt, endsAt: block.endsAt, amountMinor: block.amountMinor }) : undefined}
                           />
                         );
@@ -271,58 +295,58 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
               );
             })}
           </div>
-          <p className="availability-refresh" role="status">Live availability · refreshes every 15 seconds · Malaysia time · book up to 90 days ahead</p>
+          <p className="availability-refresh" role="status">Times shown in Malaysia time · up to 90 days ahead</p>
         </>
       ) : (
         <form className="booking-details-form" id="booking-details-form" onSubmit={submitDetails}>
           <div className="customer-form__grid">
             <div className="field-control">
-              <label htmlFor="customer-name">Full name</label>
-              <input id="customer-name" required autoComplete="name" value={customer.name} onChange={(event) => setCustomer({ ...customer, name: event.target.value })} />
+              <Label htmlFor="customer-name">Full name</Label>
+              <Input id="customer-name" required autoComplete="name" value={customer.name} onChange={(event) => setCustomer({ ...customer, name: event.target.value })} />
             </div>
             <div className="field-control">
-              <label htmlFor="customer-phone">Mobile number</label>
-              <input id="customer-phone" required inputMode="tel" autoComplete="tel" placeholder="e.g. 012 345 6789" value={customer.phone} onChange={(event) => setCustomer({ ...customer, phone: event.target.value })} />
+              <Label htmlFor="customer-phone">Mobile number</Label>
+              <Input id="customer-phone" required inputMode="tel" autoComplete="tel" placeholder="e.g. 012 345 6789" value={customer.phone} onChange={(event) => setCustomer({ ...customer, phone: event.target.value })} />
             </div>
             <div className="field-control">
-              <label htmlFor="customer-email">Email address <span>(optional for guests)</span></label>
-              <input id="customer-email" type="email" autoComplete="email" value={customer.email} onChange={(event) => setCustomer({ ...customer, email: event.target.value })} />
+              <Label htmlFor="customer-email">Email <span className="field-control__optional">(optional for guests)</span></Label>
+              <Input id="customer-email" type="email" autoComplete="email" value={customer.email} onChange={(event) => setCustomer({ ...customer, email: event.target.value })} />
             </div>
             <div className="field-control">
-              <label htmlFor="customer-team">Team name <span>(optional)</span></label>
-              <input id="customer-team" autoComplete="organization" value={customer.team} onChange={(event) => setCustomer({ ...customer, team: event.target.value })} />
+              <Label htmlFor="customer-team">Team name <span className="field-control__optional">(optional)</span></Label>
+              <Input id="customer-team" autoComplete="organization" value={customer.team} onChange={(event) => setCustomer({ ...customer, team: event.target.value })} />
             </div>
           </div>
-          <p className="privacy-inline">We use these details only to create and manage this booking.{accountPrefill ? " Your saved account contact has been filled in for you." : ""}</p>
+          <p className="privacy-inline">We use these details only to manage this booking.{accountPrefill ? " Your saved account details have been filled in." : ""}</p>
 
           <section className="details-section">
             <h3>Your sessions</h3>
             <ul className="details-basket">
               {basket.map((item) => (
                 <li key={basketKey(item)}>
-                  <div><strong>{item.fieldName} · {item.label}</strong><small>{displayDate(item.bookingDate, { weekday: "long", day: "numeric", month: "short" })} · {item.startsAt}–{item.endsAt}</small></div>
+                  <div><strong>{item.fieldName} · {item.label}</strong><small>{displayDate(item.bookingDate, { weekday: "long", day: "numeric", month: "short" })} · {formatTimePair12(item.startsAt, item.endsAt)}</small></div>
                   <span>{formatMoney(item.amountMinor)}</span>
                   <button type="button" className="details-basket__remove" onClick={() => toggleSession(item)} aria-label={`Remove ${item.fieldName} ${item.label} on ${item.bookingDate}`}>×</button>
                 </li>
               ))}
             </ul>
-            <button type="button" className="button button--quiet" onClick={backToSessions}>Add or remove sessions</button>
+            <Button type="button" variant="ghost" size="sm" onClick={backToSessions}>Add or remove sessions</Button>
           </section>
 
           {addons.length ? (
-            <fieldset className="review-step__addons"><legend>Add-ons <small>Optional; choose a quantity for any session</small></legend>{basket.map((item) => { const key = basketKey(item); const byAddon = addonSelections[key] ?? {}; const chosen = addons.filter((addon) => (byAddon[addon.id] ?? 0) > 0); return <div className="review-step__addon-session" key={key}><p>{item.fieldName} · {item.label} · {item.bookingDate}</p>{chosen.length ? <ul>{chosen.map((addon) => <li key={addon.id}>{addon.name} <strong>× {byAddon[addon.id]}</strong> <small>{formatMoney(addon.amountMinor * byAddon[addon.id])}</small></li>)}</ul> : null}<div className="review-step__addon-options">{addons.map((addon) => <label key={addon.id} className="review-step__addon-option"><span><strong>{addon.name}</strong><small>{addon.description || addon.kind} · {formatMoney(addon.amountMinor)}</small></span><select aria-label={`Quantity of ${addon.name} for ${item.label} on ${item.bookingDate}`} value={byAddon[addon.id] ?? 0} onChange={(event) => { const quantity = Number(event.target.value); setAddonSelections((current) => { const next = { ...current, [key]: { ...(current[key] ?? {}), [addon.id]: quantity } }; if (!Object.values(next[key]).some((value) => value > 0)) delete next[key]; return next; }); }}><option value={0}>None</option>{[1, 2, 3, 4, 5].map((quantity) => <option key={quantity} value={quantity}>{quantity}</option>)}</select></label>)}</div></div>; })}</fieldset>
+            <fieldset className="review-step__addons"><legend>Add-ons <small>Optional</small></legend>{basket.map((item) => { const key = basketKey(item); const byAddon = addonSelections[key] ?? {}; return <div className="review-step__addon-session" key={key}><p>{item.fieldName} · {item.label} · {formatTimePair12(item.startsAt, item.endsAt)}</p><div className="review-step__addon-options">{addons.map((addon) => <div className="review-step__addon-option" key={addon.id}><div><strong>{addon.name}</strong><small>{addon.description || addon.kind} · {formatMoney(addon.amountMinor)}</small></div><Select value={String(byAddon[addon.id] ?? 0)} onValueChange={(quantity) => { setAddonSelections((current) => { const next = { ...current, [key]: { ...(current[key] ?? {}), [addon.id]: Number(quantity) } }; if (!Object.values(next[key]).some((value) => value > 0)) delete next[key]; return next; }); }}><SelectTrigger className="w-24" aria-label={`Quantity of ${addon.name}`}><SelectValue /></SelectTrigger><SelectContent><SelectItem value="0">None</SelectItem>{[1, 2, 3, 4, 5].map((quantity) => <SelectItem key={quantity} value={String(quantity)}>{quantity}</SelectItem>)}</SelectContent></Select></div>)}</div></div>; })}</fieldset>
           ) : null}
 
-          <div className="review-step__voucher"><label htmlFor="voucher-code">Voucher code <small>Optional</small><input id="voucher-code" maxLength={32} placeholder="FRIEND10" value={voucherCode} onChange={(event) => { setVoucherCode(event.target.value.toUpperCase()); setVoucher(null); setVoucherStatus("idle"); setVoucherError(null); }} /></label><button className="button button--quiet" type="button" disabled={!voucherCode.trim() || voucherStatus === "checking"} onClick={applyVoucher}>{voucherStatus === "checking" ? "Checking…" : voucherStatus === "applied" ? "Applied" : "Apply"}</button>{voucherError ? <p className="booking-error" role="alert">{voucherError}</p> : voucherStatus === "applied" && voucher ? <p className="review-step__voucher-ok" role="status">{voucher.code} · {voucher.percentage}% off sessions and add-ons</p> : null}</div>
+          <div className="review-step__voucher"><Label htmlFor="voucher-code">Voucher code <span className="field-control__optional">optional</span></Label><div className="review-step__voucher-row"><Input id="voucher-code" maxLength={32} placeholder="e.g. FRIEND10" value={voucherCode} onChange={(event) => { setVoucherCode(event.target.value.toUpperCase()); setVoucher(null); setVoucherStatus("idle"); setVoucherError(null); }} /><Button type="button" variant="outline" disabled={!voucherCode.trim() || voucherStatus === "checking"} onClick={applyVoucher}>{voucherStatus === "checking" ? "Checking…" : voucherStatus === "applied" ? "Applied" : "Apply"}</Button></div>{voucherError ? <p className="booking-error" role="alert">{voucherError}</p> : voucherStatus === "applied" && voucher ? <p className="review-step__voucher-ok" role="status">{voucher.code} · {voucher.percentage}% off</p> : null}</div>
 
           <dl className="review-step__totals">
             <div><dt>Sessions</dt><dd>{formatMoney(sessionTotalMinor)}</dd></div>
             {addonTotalMinor ? <div><dt>Add-ons</dt><dd>{formatMoney(addonTotalMinor)}</dd></div> : null}
             {discountMinor ? <div><dt>Voucher discount</dt><dd>−{formatMoney(discountMinor)}</dd></div> : null}
-            <div className="review-step__total"><dt>Estimated total</dt><dd>{formatMoney(estimatedTotalMinor)}</dd></div>
+            <div className="review-step__total"><dt>Total</dt><dd>{formatMoney(estimatedTotalMinor)}</dd></div>
           </dl>
 
-          {!customer.email ? <div className="booking-live-note booking-live-note--calm" role="alert"><AlertIcon /><p><strong>No email provided.</strong> Copy your booking reference now. Screenshot this page. Save it somewhere safe. Without an email, you cannot recover your booking later.</p></div> : null}
+          {!customer.email ? <p className="booking-note" role="alert">Add an email to get your booking details sent to you. You can also save your booking reference after payment.</p> : null}
         </form>
       )}
 
@@ -331,31 +355,28 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
           <span className="booking-bar__count">{basket.length}</span>
           <span className="booking-bar__label">{basket.length ? `${basket.length} session${basket.length === 1 ? "" : "s"}` : "No sessions"}</span>
           <strong>{formatMoney(estimatedTotalMinor)}</strong>
-          <ChevronIcon />
+          <ChevronDown className="h-4 w-4 text-white/50" />
         </button>
         {basketOpen ? (
           <ul className="booking-bar__list">
             {basket.map((item) => (
-              <li key={basketKey(item)}><span>{item.fieldName} · {item.label} · {item.bookingDate}</span><span>{formatMoney(item.amountMinor)}</span></li>
+              <li key={basketKey(item)}><span>{item.fieldName} · {item.label} · {displayDate(item.bookingDate, { day: "2-digit", month: "short" })}</span><span>{formatMoney(item.amountMinor)}</span></li>
             ))}
             {!basket.length ? <li>Pick a session above to add it here.</li> : null}
           </ul>
         ) : null}
         {phase === "sessions" ? (
-          <button className="button button--primary booking-bar__continue" type="button" disabled={!basket.length || !onlinePayment.enabled} onClick={goToDetails}>{!basket.length ? "Pick a session to continue" : !onlinePayment.enabled ? "Online payment unavailable" : `Continue · ${formatMoney(estimatedTotalMinor)}`} <ArrowRightIcon /></button>
+          <Button className="booking-bar__continue" type="button" disabled={!basket.length || paymentBlocked} onClick={goToDetails}>{!basket.length ? "Pick a session to continue" : `Continue · ${formatMoney(estimatedTotalMinor)}`} <ArrowRight className="h-4 w-4" /></Button>
         ) : (
           <div className="booking-bar__actions">
-            <button className="button button--quiet" type="button" onClick={backToSessions}>Back</button>
-            <button className="button button--primary" type="submit" form="booking-details-form" disabled={!basket.length || requestState !== "idle" || !onlinePayment.enabled}>{requestState === "booking" ? "Creating payment…" : "Proceed to secure payment"} <ArrowRightIcon /></button>
+            <Button type="button" variant="ghost" onClick={backToSessions}>Back</Button>
+            <Button type="submit" form="booking-details-form" disabled={!basket.length || requestState !== "idle" || paymentBlocked}>{requestState === "booking" ? "Creating payment…" : "Proceed to secure payment"} <ArrowRight className="h-4 w-4" /></Button>
           </div>
         )}
       </div>
 
       {phase === "sessions" ? (
-        <div className="booking-live-note booking-live-note--calm">
-          <AlertIcon />
-          <p><strong>We check every selected session before payment.</strong> If availability has changed, nothing is reserved and you can choose again. Your field is confirmed only after payment is verified.</p>
-        </div>
+        <p className="booking-note">Your session is confirmed once payment is verified.</p>
       ) : null}
     </div>
   );

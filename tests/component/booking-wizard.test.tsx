@@ -32,11 +32,11 @@ describe("BookingWizard", () => {
 
     expect(await screen.findByRole("heading", { name: "Your details" })).toBeVisible();
     expect(screen.getByLabelText("Full name")).toBeRequired();
-    expect(screen.getByLabelText(/Email address/)).toHaveAttribute("type", "email");
-    expect(screen.getByLabelText(/Email address/)).not.toBeRequired();
+    expect(screen.getByLabelText(/Email/)).toHaveAttribute("type", "email");
+    expect(screen.getByLabelText(/Email/)).not.toBeRequired();
   });
 
-  it("stops before a public hold when online payment is disabled", async () => {
+  it("shows a simple note and blocks checkout when online payment is unavailable", async () => {
     const fetch = vi.fn(async () => Response.json({ data: [
       { fieldId: "FIELD_01", blockCode: "MORNING", state: "available" },
       { fieldId: "FIELD_01", blockCode: "EVENING", state: "available" },
@@ -47,12 +47,12 @@ describe("BookingWizard", () => {
       { fieldId: "FIELD_01", blockId: "MORNING", status: "available" },
       { fieldId: "FIELD_01", blockId: "EVENING", status: "available" },
     ];
-    render(<BookingWizard fields={fields} blocks={blocks} availability={availability} addons={[]} onlinePayment={{ enabled: false, publicMessage: "Online payment is awaiting merchant verification." }} businessDate="2026-07-16" initialDate="2026-07-18" />);
+    render(<BookingWizard fields={fields} blocks={blocks} availability={availability} addons={[]} onlinePayment={{ enabled: false, publicMessage: "Online booking will open again soon." }} businessDate="2026-07-16" initialDate="2026-07-18" />);
 
     await user.click(screen.getAllByRole("button", { name: /available.*field 1/i })[0]);
 
-    expect(screen.getByText(/online payment is awaiting merchant verification/i)).toBeVisible();
-    expect(screen.getByRole("button", { name: /online payment unavailable/i })).toBeDisabled();
+    expect(screen.getByText(/online booking will open again soon/i)).toBeVisible();
+    expect(screen.getByRole("button", { name: /continue/i })).toBeDisabled();
     const calls = fetch.mock.calls as unknown as Array<[RequestInfo | URL, RequestInit?]>;
     expect(calls.some(([, init]) => init?.method === "POST")).toBe(false);
     expect(screen.queryByRole("heading", { name: "Your details" })).not.toBeInTheDocument();

@@ -1,5 +1,15 @@
 # Client Decisions
 
+| Component system - 2026-08-11 | Result |
+| --- | --- |
+| UI primitives | Adopted Tailwind v4 + Radix primitives + CVA/lucide (`src/components/ui/*`) for the booking experience; existing page CSS stays untouched (no preflight conflicts). |
+| Status treatment | No capsule/pill shapes anywhere in the booking flow — status is a plain dot + word. |
+| Calendar | A custom month calendar (Monday-first, disabled past days, 90-day window, prev/next months) opens beside the date chips in a popover; no external date dependency. |
+| Time format | Every human-facing time in the app displays Malaysia 12-hour AM/PM; stored/API values remain "HH:MM" strings so contract and parsing (POS night detection) are unchanged. |
+| Loader honesty | BootLoader percentage equals real loaded/total of eager images + fonts; no artificial duration, capped at 30s for dead networks. |
+| Hero | No background photo and no multi-frame reveal — four small venue shots on the left with tilt/hover, copy on the right. |
+| Gallery | 16 tilted/elevated frames with hover zoom + caption reveal in a snap-scroll track. |
+
 | Booking flow simplification - 2026-08-10 | Result |
 | --- | --- |
 | Flow shape | Two phases — "Pick sessions" (date strip + field photo cards with per-field session tiles) and "Your details" (contact + add-ons + voucher + totals). Mirrors Playfinder/Goals-style facility booking: browse everything at once, tap to add, continue. |

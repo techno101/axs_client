@@ -1,5 +1,15 @@
 # Client Changelog
 
+## Component-system booking flow, real loader, clean hero + gallery, AM/PM - 2026-08-11
+
+- Added a proper UI kit (Tailwind v4, Radix popover/select/tabs/label/slot, class-variance-authority, clsx, tailwind-merge, lucide-react) with `src/components/ui/*` (button, input, label, popover, custom month calendar, select, tabs).
+- Booking wizard rebuilt: two underline-tab phases; date chips + calendar popover (Monday-first, past disabled, 90-day window); field photo cards with session tiles; sticky basket bar; details screen with add-on selects and voucher; no capsule shapes anywhere (dot+text status).
+- All public times now display Malaysia 12-hour AM/PM ("9 AM – 3 PM"): wizard tiles/basket/details, booking result, booking finder, account bookings, fields pages, home chips and session cards.
+- Copy simplified to customer-plain language; the unavailable-payment case shows one short friendly line and the technical "No session has been reserved" notes are gone.
+- Homepage hero: no background photo, no glitch match-cut reveal — four small venue shots arranged on the left (subtle tilt + hover), text/CTA/chips on the right.
+- Matchday gallery: 6 → 16 frames with tilted, elevated cards, hover zoom and caption reveal.
+- BootLoader is a real loader: percentage is the true loaded/total of eagerly-loaded images + fonts; it waits proportionally to real network speed (30s cap) and hides the instant everything is loaded (no fake 2.4s).
+
 ## Simpler two-phase booking flow + field photos + hero assets - 2026-08-10
 
 - Rebuilt the booking wizard as a two-phase flow: **Pick sessions** (date strip + field photo cards + session tiles with time/price/availability; tap to add to a persistent sticky basket bar) and **Your details** (contact, add-ons, voucher, itemized totals on one screen). The five-step date→field→session→details→review wizard and the side summary panel were removed; the payment flow is unchanged.

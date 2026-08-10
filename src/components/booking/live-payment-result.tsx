@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { PaymentResultPanel } from "@/components/booking/payment-result-panel";
 import { createHttpPublicClient, PublicApiError } from "@/lib/api/http-client";
+import { formatTimePair12 } from "@/lib/format";
 import type { PaymentResult } from "@/lib/api/types";
 import { reportOperationalEvent } from "@/lib/operational-reporting";
 
@@ -29,7 +30,7 @@ export function LivePaymentResult({ reference }: { reference: string }) {
           reference,
           state,
           fieldName: status.occurrences.length === 1 ? first?.fieldName ?? "Selected field" : `${status.occurrences.length} field sessions`,
-          blockLabel: status.occurrences.length === 1 ? `${first?.label ?? "Selected session"} · ${first?.startsAt ?? ""}–${first?.endsAt ?? ""}` : "One payment for the complete order",
+          blockLabel: status.occurrences.length === 1 ? `${first?.label ?? "Selected session"} · ${formatTimePair12(first?.startsAt ?? "", first?.endsAt ?? "")}` : "One payment for the complete order",
           bookingDate: status.occurrences.length === 1 ? first?.bookingDate ?? "Pending" : "Multiple dates",
           amountMinor: status.totalAmountMinor,
           currency: "MYR",

@@ -4,6 +4,7 @@ import { useMemo, useState, type FormEvent } from "react";
 import { SearchIcon } from "@/components/ui/icons";
 import { PaymentPill } from "@/components/ui/status-pill";
 import { createHttpPublicClient } from "@/lib/api/http-client";
+import { formatTimePair12 } from "@/lib/format";
 import type { GuestBookingLookup } from "@/lib/api/types";
 
 export function FindBookingForm() {
@@ -55,7 +56,7 @@ export function FindBookingForm() {
         {state === "error" ? <p className="booking-error" role="alert">{message}</p> : null}
       </form>
       <div className="finder-result" aria-live="polite">
-        {booking ? <><div><span>Private result</span><PaymentPill state={paymentState} /></div><h2>{booking.reference}</h2><dl><div><dt>Field</dt><dd>{booking.fieldName}</dd></div><div><dt>Date</dt><dd>{booking.bookingDate}</dd></div><div><dt>Block</dt><dd>{booking.blockLabel} · {booking.startsAt}–{booking.endsAt}</dd></div><div><dt>Booking name</dt><dd>{booking.customerName}</dd></div><div><dt>Phone</dt><dd>{booking.customerPhone}</dd></div></dl><button className="customer-secondary" type="button" onClick={download}>Download masked PDF</button><p>This privacy-limited result contains no email, internal identifiers, attendance or provider data.</p></> : <div className="finder-empty"><SearchIcon /><strong>Your booking will appear here</strong><span>Enter the booking reference to run a secure lookup.</span></div>}
+        {booking ? <><div><span>Private result</span><PaymentPill state={paymentState} /></div><h2>{booking.reference}</h2><dl><div><dt>Field</dt><dd>{booking.fieldName}</dd></div><div><dt>Date</dt><dd>{booking.bookingDate}</dd></div><div><dt>Block</dt><dd>{booking.blockLabel} · {formatTimePair12(booking.startsAt, booking.endsAt)}</dd></div><div><dt>Booking name</dt><dd>{booking.customerName}</dd></div><div><dt>Phone</dt><dd>{booking.customerPhone}</dd></div></dl><button className="customer-secondary" type="button" onClick={download}>Download masked PDF</button><p>This privacy-limited result contains no email, internal identifiers, attendance or provider data.</p></> : <div className="finder-empty"><SearchIcon /><strong>Your booking will appear here</strong><span>Enter the booking reference to run a secure lookup.</span></div>}
       </div>
     </div>
   );

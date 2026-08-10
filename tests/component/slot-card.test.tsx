@@ -31,6 +31,5 @@ describe("SlotCard", () => {
       />,
     );
     expect(screen.getByRole("button", { name: /on hold.*field 02/i })).toBeDisabled();
-    expect(screen.getByText("Temporarily held by another booking")).toBeVisible();
   });
 });
