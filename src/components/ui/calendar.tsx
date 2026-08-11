@@ -15,6 +15,7 @@ export type CalendarProps = {
   max?: Date;
   availability?: Record<string, AvailabilityDaySummary>;
   businessDate?: string;
+  onMonthChange?: (year: number, month: number) => void;
   className?: string;
 };
 
@@ -44,7 +45,7 @@ function buildGrid(month: Date): Array<{ date: Date | null; inMonth: boolean }> 
   return cells;
 }
 
-export function Calendar({ selected, onSelect, min, max, availability, businessDate, className }: CalendarProps) {
+export function Calendar({ selected, onSelect, min, max, availability, businessDate, onMonthChange, className }: CalendarProps) {
   const today = startOfDay(new Date());
   const [month, setMonth] = React.useState(() => (selected ?? today).getTime() > today.getTime() ? selected ?? today : today);
   const selectedDay = selected ? startOfDay(selected) : null;
@@ -57,6 +58,7 @@ export function Calendar({ selected, onSelect, min, max, availability, businessD
         const maxMonth = new Date(max.getFullYear(), max.getMonth(), 1);
         if (next > maxMonth) return current;
       }
+      onMonthChange?.(next.getFullYear(), next.getMonth() + 1);
       return next;
     });
   };

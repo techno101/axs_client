@@ -156,6 +156,15 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
     return () => { active = false; };
   }, [client, calendarOpen, date]);
 
+  const loadCalendarMonth = (year: number, month: number) => {
+    const first = `${year}-${String(month).padStart(2, "0")}-01`;
+    const lastDay = new Date(Date.UTC(year, month, 0)).getUTCDate();
+    const last = `${year}-${String(month).padStart(2, "0")}-${String(lastDay).padStart(2, "0")}`;
+    void client.getAvailabilitySummary(first, last)
+      .then((days) => setCalendarSummary(Object.fromEntries(days.map((day) => [day.date, day]))))
+      .catch(() => undefined);
+  };
+
   useEffect(() => {
     let active = true;
     void customerApi<CustomerSessionView>("session")
@@ -289,6 +298,7 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
                   max={toDate(maxDate)}
                   availability={calendarSummary}
                   businessDate={businessDate}
+                  onMonthChange={(year, month) => loadCalendarMonth(year, month)}
                   onSelect={(selected) => { setDate(selected.toISOString().slice(0, 10)); setCalendarOpen(false); }}
                 />
               </PopoverContent>
