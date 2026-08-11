@@ -18,10 +18,10 @@ export default async function ArticlesPage() {
     <>
       <PageHero
         eyebrow="Field notes"
-        title={<>Ideas beyond<br />the touchline.</>}
-        intro="Booking guides and operational notes published through the structured ArmourXSports CMS."
+        title={<>Booking guides<br />and field notes.</>}
+        intro="Practical guides on sessions, availability and what to know before you book."
         image={images.notesHero}
-        imageAlt="Football action at the ArmourX Sports ground"
+        imageAlt="Football action at the ArmourX Sports venue"
       />
       <section className="articles-section">
         <div className="shell article-grid">

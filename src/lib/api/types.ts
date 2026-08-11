@@ -1,4 +1,4 @@
-import type { Booking, CreateBookingRequest, CreateHoldGroupRequest, CreateHoldRequest, CreateOrderRequest, CreatePaymentAttemptRequest, CustomerDetails, FacilityFact, Hold, HoldGroup, OnlinePaymentCapability, Order, OrderPaymentAttempt, PaymentAttempt, PublicAvailabilityState, PublicBookingStatus, PublicOrderStatus } from "@/lib/api/contract/v1";
+import type { AddonSelection, Booking, CreateBookingRequest, CreateHoldGroupRequest, CreateHoldRequest, CreateOrderRequest, CreatePaymentAttemptRequest, CustomerDetails, FacilityFact, Hold, HoldGroup, OnlinePaymentCapability, Order, OrderPaymentAttempt, PaymentAttempt, PublicAvailabilityState, PublicBookingStatus, PublicOrderStatus, VoucherValidation, VoucherValidationRequest } from "@/lib/api/contract/v1";
 
 export type AvailabilityStatus = PublicAvailabilityState;
 export type PaymentState = "pending" | "confirmed" | "failed" | "expired";
@@ -27,7 +27,17 @@ export type BookingBlock = {
   weekdays: number[];
 };
 
-export type PublicConfigView = { slots: BookingBlock[]; onlinePayment: OnlinePaymentCapability; };
+export type PublicConfigView = { slots: BookingBlock[]; addons: PublicAddon[]; onlinePayment: OnlinePaymentCapability; };
+
+export type PublicAddon = {
+  id: string;
+  code: string;
+  name: string;
+  description: string;
+  amountMinor: number;
+  currency: "MYR";
+  kind: "service" | "product";
+};
 
 export type AvailabilitySlot = {
   fieldId: string;
@@ -40,6 +50,22 @@ export type AvailabilitySlot = {
   status: AvailabilityStatus;
   publicMessage?: string;
 };
+
+export type AvailabilityDaySummary = {
+  date: string;
+  available: number;
+  total: number;
+};
+
+export type AvailabilityDot = "full" | "partial" | "none" | "past";
+
+/** Green = all slots free, yellow = some free, red = none free, grey = past. */
+export function availabilityDotLevel(date: string, summary: AvailabilityDaySummary | undefined, businessDate: string): AvailabilityDot {
+  if (date < businessDate) return "past";
+  if (!summary || summary.total === 0 || summary.available === 0) return "none";
+  if (summary.available === summary.total) return "full";
+  return "partial";
+}
 
 export type PaymentResult = { reference: string; state: PaymentState; fieldName: string; blockLabel: string; bookingDate: string; amountMinor: number; currency: "MYR"; lastCheckedAt: string; bookingReferences?: string[]; guestEmailOmitted?: boolean; };
 export type GuestBookingLookup = {
@@ -60,6 +86,8 @@ export interface PublicClient {
   getConfig(): Promise<PublicConfigView>;
   getBlocks(): Promise<BookingBlock[]>;
   getAvailability(date: string): Promise<AvailabilitySlot[]>;
+  getAvailabilitySummary(from: string, to: string): Promise<AvailabilityDaySummary[]>;
+  validateVoucher(input: VoucherValidationRequest): Promise<VoucherValidation | null>;
   createHold(input: CreateHoldRequest, idempotencyKey: string): Promise<Hold>;
   createHoldGroup(input: CreateHoldGroupRequest, idempotencyKey: string): Promise<HoldGroup>;
   createBooking(input: CreateBookingRequest, idempotencyKey: string): Promise<Booking>;
@@ -76,4 +104,4 @@ export interface PublicClient {
   getFaqs(): Promise<FaqItem[]>;
 }
 
-export type { CustomerDetails, Hold, HoldGroup, Booking, Order, PaymentAttempt, OrderPaymentAttempt, PublicBookingStatus, PublicOrderStatus };
+export type { CustomerDetails, Hold, HoldGroup, Booking, Order, PaymentAttempt, OrderPaymentAttempt, PublicBookingStatus, PublicOrderStatus, AddonSelection, VoucherValidation, VoucherValidationRequest };

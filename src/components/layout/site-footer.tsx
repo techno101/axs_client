@@ -9,10 +9,9 @@ import { homeHref, localeFromPath, shellCopy } from "@/lib/site-copy";
 export function SiteFooter() {
   const locale = localeFromPath(usePathname());
   const copy = shellCopy[locale];
-  const isBm = locale === "bm";
   const footerGroups = [
-    { title: copy.explore, items: [[copy.fields, isBm ? "/bm#fields" : "/fields"], [copy.book, "/book"], [copy.notes, isBm ? "/bm#faq" : "/articles"], [copy.about, isBm ? "/bm#venue" : "/about"]] },
-    { title: copy.support, items: [[copy.findBooking, "/booking/find"], [copy.faq, isBm ? "/bm#faq" : "/faq"], [copy.contact, isBm ? "/bm#venue" : "/contact"]] },
+    { title: copy.explore, items: [[copy.fields, "/fields"], [copy.book, "/book"], [copy.notes, "/articles"], [copy.about, "/about"]] },
+    { title: copy.support, items: [[copy.findBooking, "/booking/find"], [copy.faq, "/faq"], [copy.contact, "/contact"]] },
     { title: copy.policies, items: [[copy.bookingPolicy, "/policies/booking"], [copy.refundPolicy, "/policies/refund"], [copy.privacy, "/privacy"], [copy.terms, "/terms"]] },
   ];
 

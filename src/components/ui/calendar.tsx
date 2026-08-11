@@ -4,6 +4,7 @@ import * as React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { availabilityDotLevel, type AvailabilityDot, type AvailabilityDaySummary } from "@/lib/api/types";
 
 const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
@@ -12,7 +13,16 @@ export type CalendarProps = {
   onSelect: (date: Date) => void;
   min?: Date;
   max?: Date;
+  availability?: Record<string, AvailabilityDaySummary>;
+  businessDate?: string;
   className?: string;
+};
+
+const dotClass: Record<AvailabilityDot, string> = {
+  full: "bg-[var(--success)]",
+  partial: "bg-[var(--warning)]",
+  none: "bg-[var(--danger)]",
+  past: "bg-[var(--line)]",
 };
 
 function startOfDay(value: Date): Date {
@@ -34,7 +44,7 @@ function buildGrid(month: Date): Array<{ date: Date | null; inMonth: boolean }> 
   return cells;
 }
 
-export function Calendar({ selected, onSelect, min, max, className }: CalendarProps) {
+export function Calendar({ selected, onSelect, min, max, availability, businessDate, className }: CalendarProps) {
   const today = startOfDay(new Date());
   const [month, setMonth] = React.useState(() => (selected ?? today).getTime() > today.getTime() ? selected ?? today : today);
   const selectedDay = selected ? startOfDay(selected) : null;
@@ -72,6 +82,10 @@ export function Calendar({ selected, onSelect, min, max, className }: CalendarPr
           const disabled = isDisabled(day);
           const isToday = day.getTime() === today.getTime();
           const isSelected = selectedDay?.getTime() === day.getTime();
+          const dateKey = day.toISOString().slice(0, 10);
+          const level: AvailabilityDot | null = availability && businessDate
+            ? availabilityDotLevel(dateKey, availability[dateKey], businessDate)
+            : null;
           return (
             <button
               key={day.toISOString()}
@@ -82,7 +96,7 @@ export function Calendar({ selected, onSelect, min, max, className }: CalendarPr
               aria-label={new Intl.DateTimeFormat("en-MY", { day: "2-digit", month: "long", year: "numeric" }).format(day)}
               onClick={() => onSelect(day)}
               className={cn(
-                "h-9 w-9 rounded-md text-xs font-semibold transition-colors",
+                "relative flex h-10 w-9 flex-col items-center justify-center rounded-md text-xs font-semibold transition-colors",
                 disabled && "cursor-not-allowed text-[var(--line)] line-through",
                 !disabled && !isSelected && "text-[var(--ink)] hover:bg-[var(--paper)]",
                 isToday && !isSelected && "text-[var(--grass)]",
@@ -90,6 +104,7 @@ export function Calendar({ selected, onSelect, min, max, className }: CalendarPr
               )}
             >
               {day.getDate()}
+              {level ? <i className={cn("mt-0.5 h-1.5 w-1.5 rounded-full", dotClass[level])} aria-hidden="true" /> : null}
             </button>
           );
         })}

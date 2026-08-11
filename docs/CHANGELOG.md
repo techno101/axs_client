@@ -1,5 +1,13 @@
 # Client Changelog
 
+## Phase A: hero fix, quick-book strip, 30-photo gallery, availability dots (v1.16.0) - 2026-08-12
+
+- Fixed the hero text bug: removed the legacy intro timeline + hero parallax from `marketing-motion.tsx` — hero copy (title, intro, CTA, chips, quick-book) is always visible; section fades kept.
+- Hero quick-book: 5-day strip with availability dots (green = open, yellow = filling, red = full, grey = past) deep-linking to `/book?date=…`; booking page validates and preselects the `date` query param.
+- Gallery rebuilt with ALL 30 owner photos (webp, cropped) in `public/images/matchday/{hero,gallery,sessions,pitches,team}/`; scattered tilted instant-cam frames, 3–5 per view, shadows, hover zoom, section raised.
+- Contract v1.16.0: `GET /v1/public/availability/summary?from=&to=` → `[{date, available, total}]`; dots on the booking calendar popover, date chips and hero strip.
+- Client lint/typecheck/contract:check, 34 tests and production build pass.
+
 ## Component-system booking flow, real loader, clean hero + gallery, AM/PM - 2026-08-11
 
 - Added a proper UI kit (Tailwind v4, Radix popover/select/tabs/label/slot, class-variance-authority, clsx, tailwind-merge, lucide-react) with `src/components/ui/*` (button, input, label, popover, custom month calendar, select, tabs).

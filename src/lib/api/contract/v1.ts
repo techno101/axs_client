@@ -57,7 +57,25 @@ export interface AvailabilityEntry { fieldId: string; fieldName: string; fieldIm
 
 export interface OnlinePaymentCapability { enabled: boolean; publicMessage?: string; environment?: "sandbox" | "production"; }
 
-export interface PublicConfig { timezone: "Asia/Kuala_Lumpur"; bookingWindowDays: 90; cutoffMinutes: 60; onlineHoldMinutes: 10; currency: "MYR"; slots: Array<ScheduledSlot>; onlinePayment: OnlinePaymentCapability; }
+export interface AvailabilityDaySummary { date: string; available: number; total: number; }
+
+export interface PublicAvailabilitySummaryResponse { data: Array<AvailabilityDaySummary>; meta: { requestId: string; serverTime: string; timezone: string; contractVersion: string }; error: null; }
+
+export interface PosAvailabilitySummary { deviceId: string; from: string; to: string; days: Array<AvailabilityDaySummary>; }
+
+export interface PosAvailabilitySummaryResponse { data: PosAvailabilitySummary; meta: { requestId: string; serverTime: string; timezone: string; contractVersion: string }; error: null; }
+
+export interface PublicConfig { timezone: "Asia/Kuala_Lumpur"; bookingWindowDays: 90; cutoffMinutes: 60; onlineHoldMinutes: 10; currency: "MYR"; slots: Array<ScheduledSlot>; addons: Array<CatalogAddon>; onlinePayment: OnlinePaymentCapability; }
+
+export interface CatalogAddon { id: string; code: string; name: string; description: string; amountMinor: number; currency: "MYR"; kind: "service" | "product"; }
+
+export interface AddonSelection { catalogItemId: string; fieldId: string; blockCode: string; bookingDate: string; quantity: number; }
+
+export interface VoucherValidationRequest { code: string; sessionCount?: number; }
+
+export interface VoucherValidation { code: string; percentage: number; minSessionCount: number; }
+
+export interface VoucherValidationResponse { data: VoucherValidation; meta: { requestId: string; serverTime: string; timezone: string; contractVersion: string }; error: null; }
 
 export interface CreateHoldRequest { fieldId: string; blockCode: string; bookingDate: string; }
 
@@ -77,7 +95,7 @@ export interface CustomerDetails { name: string; phone: string; email?: string |
 
 export interface CreateBookingRequest { holdToken: string; customer: CustomerDetails; }
 
-export interface CreateOrderRequest { holdToken: string; customer: CustomerDetails; }
+export interface CreateOrderRequest { holdToken: string; customer: CustomerDetails; addons?: Array<AddonSelection>; voucherCode?: string; }
 
 export type BookingStatus = "payment_pending" | "confirmed" | "cancelled" | "expired" | "payment_failed" | "refund_pending" | "refunded";
 
@@ -91,9 +109,13 @@ export interface PaymentAttempt { id: string; bookingReference: string; state: P
 
 export interface OrderOccurrence { id: string; reference: string; fieldId: string; blockCode: string; bookingDate: string; fieldName: string; label: string; startsAt: string; endsAt: string; amountMinor: number; currency: "MYR"; status: BookingStatus; }
 
-export interface Order { id: string; reference: string; totalAmountMinor: number; currency: "MYR"; status: BookingStatus; paymentStatus: PaymentStatus; occurrences: Array<OrderOccurrence>; accessToken?: string; }
+export interface OrderAddonLine { code: string; name: string; amountMinor: number; quantity: number; }
 
-export interface PublicOrderStatus { reference: string; totalAmountMinor: number; currency: "MYR"; status: BookingStatus; paymentStatus: PaymentStatus; occurrences: Array<OrderOccurrence>; }
+export interface OrderVoucher { code: string; percentage: number; discountMinor: number; }
+
+export interface Order { id: string; reference: string; totalAmountMinor: number; currency: "MYR"; status: BookingStatus; paymentStatus: PaymentStatus; occurrences: Array<OrderOccurrence>; addonLines?: Array<OrderAddonLine>; addonTotalMinor?: number; voucher?: OrderVoucher | null; accessToken?: string; }
+
+export interface PublicOrderStatus { reference: string; totalAmountMinor: number; currency: "MYR"; status: BookingStatus; paymentStatus: PaymentStatus; occurrences: Array<OrderOccurrence>; addonLines?: Array<OrderAddonLine>; addonTotalMinor?: number; voucher?: OrderVoucher | null; }
 
 export interface OrderPaymentAttempt { id: string; bookingReference?: string; orderReference: string; state: PaymentStatus; redirectUrl?: string; }
 

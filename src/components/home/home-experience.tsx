@@ -8,8 +8,9 @@ import { MarketingMotion } from "@/components/motion/marketing-motion";
 import { Magnetic } from "@/components/motion/magnetic";
 import { MatchClock } from "@/components/motion/match-clock";
 import { ArrowRightIcon, ArrowUpRightIcon, PinIcon } from "@/components/ui/icons";
-import type { BookingBlock, FaqItem, Field } from "@/lib/api/types";
+import type { AvailabilityDaySummary, BookingBlock, FaqItem, Field } from "@/lib/api/types";
 import { formatTimePair12 } from "@/lib/format";
+import { availabilityDotLevel } from "@/lib/api/types";
 import { homeCopy, type SiteLocale } from "@/lib/site-copy";
 
 type Props = {
@@ -17,38 +18,56 @@ type Props = {
   fields: Field[];
   blocks: BookingBlock[];
   faqs: FaqItem[];
+  availability: AvailabilityDaySummary[];
+  businessDate: string;
   degraded: boolean;
 };
 
 const heroShots = [
-  { src: "/images/venue/field-one.webp", alt: "Field 1 at ArmourX Sports in Iskandar Puteri", tilt: -1.6 },
-  { src: "/images/venue/session-day.webp", alt: "A bright daytime session on the ArmourX Sports pitch", tilt: 1.2 },
-  { src: "/images/venue/session-night.webp", alt: "An evening session at dusk at ArmourX Sports", tilt: 1.8 },
-  { src: "/images/venue/field-two.webp", alt: "Field 2 at ArmourX Sports in Iskandar Puteri", tilt: -1.2 },
+  { src: "/images/matchday/hero/hero-1.webp", alt: "A player about to strike the ball at ArmourX Sports", tilt: -1.6 },
+  { src: "/images/matchday/hero/hero-2.webp", alt: "A player leaping to head the ball at ArmourX Sports", tilt: 1.2 },
+  { src: "/images/matchday/hero/hero-3.webp", alt: "Shooting the ball at full force at ArmourX Sports", tilt: 1.8 },
+  { src: "/images/matchday/hero/hero-4.webp", alt: "A proper match in progress at ArmourX Sports", tilt: -1.2 },
 ];
 
 const galleryShots = [
-  { src: "/images/venue/gallery-1.webp", alt: "A player striking the ball with a full swing at ArmourX Sports", caption: "Full swing" },
-  { src: "/images/venue/gallery-2.webp", alt: "Two players contesting the ball at ArmourX Sports", caption: "Fifty-fifty" },
-  { src: "/images/venue/gallery-3.webp", alt: "A player shielding the ball from a defender at ArmourX Sports", caption: "First touch" },
-  { src: "/images/venue/gallery-4.webp", alt: "A player dribbling past a defender at ArmourX Sports", caption: "Past the man" },
-  { src: "/images/venue/gallery-5.webp", alt: "A player evading two opponents at ArmourX Sports", caption: "Two beaten" },
-  { src: "/images/venue/gallery-6.webp", alt: "A close challenge between two players at ArmourX Sports", caption: "No give" },
-  { src: "/images/venue/opening-a.webp", alt: "The ArmourX Sports pitch ready for kick-off", caption: "Kick-off" },
-  { src: "/images/venue/opening-b.webp", alt: "Players warming up on the ArmourX Sports pitch", caption: "Warm-up" },
-  { src: "/images/venue/opening-c.webp", alt: "A match in motion at ArmourX Sports", caption: "In motion" },
-  { src: "/images/venue/pitches-aerial.webp", alt: "Aerial view of the two ArmourX Sports pitches", caption: "The venue" },
-  { src: "/images/venue/field-one.webp", alt: "Field 1 with players in the middle third", caption: "Field 1" },
-  { src: "/images/venue/field-two.webp", alt: "Field 2 with a match in progress", caption: "Field 2" },
-  { src: "/images/venue/contact-photo.webp", alt: "A player preparing to strike the ball at ArmourX Sports", caption: "Ready" },
-  { src: "/images/venue/home-community.webp", alt: "Teams and a referee in the middle of a match at the ArmourX Sports venue", caption: "The team" },
-  { src: "/images/venue/session-day.webp", alt: "A bright daytime session on the ArmourX Sports pitch", caption: "Morning" },
-  { src: "/images/venue/session-night.webp", alt: "An evening session at dusk at ArmourX Sports", caption: "Night" },
+  { src: "/images/matchday/gallery/gallery-01.webp", alt: "Two opponents pushing for the ball at ArmourX Sports", caption: "Tussle" },
+  { src: "/images/matchday/gallery/gallery-02.webp", alt: "A flying kick surrounded by players at ArmourX Sports", caption: "Full stretch" },
+  { src: "/images/matchday/gallery/gallery-03.webp", alt: "A shot about to be blocked at ArmourX Sports", caption: "Stopped?" },
+  { src: "/images/matchday/gallery/gallery-04.webp", alt: "A heavy challenge that stays on its feet at ArmourX Sports", caption: "Holding firm" },
+  { src: "/images/matchday/gallery/gallery-05.webp", alt: "Taking on and evading two defenders at ArmourX Sports", caption: "Past the pair" },
+  { src: "/images/matchday/gallery/gallery-06.webp", alt: "Three v three with the referee in frame at ArmourX Sports", caption: "End to end" },
+  { src: "/images/matchday/gallery/gallery-07.webp", alt: "A player rushing forward with the ball at ArmourX Sports", caption: "On the break" },
+  { src: "/images/matchday/gallery/gallery-08.webp", alt: "Players passing the ball between them at ArmourX Sports", caption: "One touch" },
+  { src: "/images/matchday/gallery/gallery-09.webp", alt: "A player tired and tensed after a long spell at ArmourX Sports", caption: "Gassed" },
+  { src: "/images/matchday/gallery/gallery-10.webp", alt: "A player walking between the play with a proper pose at ArmourX Sports", caption: "In charge" },
+  { src: "/images/matchday/gallery/gallery-11.webp", alt: "Extreme pushing and dribbling in a duel at ArmourX Sports", caption: "No quarter" },
+  { src: "/images/matchday/gallery/gallery-12.webp", alt: "Beating the defender's grasp with the ball at ArmourX Sports", caption: "Slipped away" },
+  { src: "/images/matchday/gallery/gallery-13.webp", alt: "A player walking with the referee behind at ArmourX Sports", caption: "Walking it off" },
+  { src: "/images/matchday/gallery/gallery-14.webp", alt: "A player weighing up the pass at ArmourX Sports", caption: "Picking the pass" },
+  { src: "/images/matchday/gallery/gallery-15.webp", alt: "A player in full flow with the ball at ArmourX Sports", caption: "In full flow" },
+  { src: "/images/matchday/gallery/gallery-16.webp", alt: "A live match under way at ArmourX Sports", caption: "Live" },
+  { src: "/images/matchday/gallery/gallery-17.webp", alt: "Dribbling clear of the defenders' grasp at ArmourX Sports", caption: "Clear" },
+  { src: "/images/matchday/gallery/gallery-18.webp", alt: "Winning the match at ArmourX Sports", caption: "Full time" },
+  { src: "/images/matchday/gallery/gallery-19.webp", alt: "Sprinting with the ball at full force at ArmourX Sports", caption: "Full gas" },
+  { src: "/images/matchday/gallery/gallery-20.webp", alt: "The ArmourX Sports office and venue", caption: "The base" },
 ];
 
-export function HomeExperience({ locale, fields, blocks, faqs, degraded }: Props) {
+export function HomeExperience({ locale, fields, blocks, faqs, availability, businessDate, degraded }: Props) {
   const copy = homeCopy[locale];
   const bookingDataReady = fields.length > 0 && blocks.length > 0 && faqs.length > 0;
+  const summaryByDate = Object.fromEntries(availability.map((day) => [day.date, day]));
+  const quickDates = Array.from({ length: 5 }, (_, index) => {
+    const date = new Date(`${businessDate}T00:00:00.000Z`);
+    date.setUTCDate(date.getUTCDate() + index);
+    return date.toISOString().slice(0, 10);
+  });
+  const quickDot: Record<string, string> = {
+    full: "bg-[var(--success)]",
+    partial: "bg-[var(--warning)]",
+    none: "bg-[var(--danger)]",
+    past: "bg-[var(--line)]",
+  };
 
   return (
     <MarketingMotion>
@@ -73,6 +92,22 @@ export function HomeExperience({ locale, fields, blocks, faqs, degraded }: Props
                   <ArrowRightIcon />
                 </Link>
               </Magnetic>
+              <div className="hero-quick" aria-label="Quick booking">
+                <p className="hero-quick__label">Check today and the next few days</p>
+                <div className="hero-quick__strip">
+                  {quickDates.map((date, index) => {
+                    const level = availabilityDotLevel(date, summaryByDate[date], businessDate);
+                    return (
+                      <Link className="hero-quick__day" href={`/book?date=${date}`} key={date}>
+                        <span>{index === 0 ? "Today" : new Intl.DateTimeFormat("en-MY", { weekday: "short", timeZone: "UTC" }).format(new Date(`${date}T00:00:00.000Z`))}</span>
+                        <strong>{new Intl.DateTimeFormat("en-MY", { day: "2-digit", month: "short", timeZone: "UTC" }).format(new Date(`${date}T00:00:00.000Z`))}</strong>
+                        <i className={`hero-quick__dot ${quickDot[level]}`} aria-hidden="true" />
+                      </Link>
+                    );
+                  })}
+                </div>
+                <p className="hero-quick__legend"><span className="hero-quick__dot bg-[var(--success)]" /> Open · <span className="hero-quick__dot bg-[var(--warning)]" /> Filling · <span className="hero-quick__dot bg-[var(--danger)]" /> Full</p>
+              </div>
               <ul className="match-hero__chips" aria-label="Sessions">
                 <li><span>Morning</span><strong>{formatTimePair12("09:00", "15:00")}</strong></li>
                 <li><span>Evening</span><strong>{formatTimePair12("15:00", "21:00")}</strong></li>
@@ -87,7 +122,7 @@ export function HomeExperience({ locale, fields, blocks, faqs, degraded }: Props
 
         <section className="match-pitches match-reveal" id="pitches" aria-labelledby="pitches-title">
           <div className="match-pitches__media match-cut-media">
-            <Image src="/images/venue/pitches-aerial.webp" alt="Aerial view of the two ArmourX Sports pitches in Iskandar Puteri" fill priority sizes="100vw" />
+            <Image src="/images/matchday/pitches/pitch-1.webp" alt="Aerial view of the two ArmourX Sports pitches in Iskandar Puteri" fill priority sizes="100vw" />
           </div>
           <div className="match-pitches__markers" aria-hidden="true">
             <span className="match-pitches__marker match-pitches__marker--one"><CountUp to={2} label="full-size pitches" /></span>
@@ -119,7 +154,7 @@ export function HomeExperience({ locale, fields, blocks, faqs, degraded }: Props
           </div>
           <div className="match-sessions__grid">
             <a className="match-session-card match-session-card--day" href="/book">
-              <Image src="/images/venue/session-day.webp" alt="A bright daytime session on the ArmourX Sports pitch" fill sizes="(max-width: 767px) 100vw, 50vw" />
+              <Image src="/images/matchday/sessions/session-day.webp" alt="A bright daytime session on the ArmourX Sports pitch" fill sizes="(max-width: 767px) 100vw, 50vw" />
               <span className="match-session-card__wash" aria-hidden="true" />
               <span className="match-session-card__body">
                 <small>Morning</small>
@@ -129,7 +164,7 @@ export function HomeExperience({ locale, fields, blocks, faqs, degraded }: Props
               </span>
             </a>
             <a className="match-session-card match-session-card--night" href="/book">
-              <Image src="/images/venue/session-night.webp" alt="An evening session at dusk at ArmourX Sports" fill sizes="(max-width: 767px) 100vw, 50vw" />
+              <Image src="/images/matchday/sessions/session-night.webp" alt="An evening session at dusk at ArmourX Sports" fill sizes="(max-width: 767px) 100vw, 50vw" />
               <span className="match-session-card__wash" aria-hidden="true" />
               <span className="match-session-card__body">
                 <small>Evening</small>
@@ -166,7 +201,7 @@ export function HomeExperience({ locale, fields, blocks, faqs, degraded }: Props
 
         <section className="match-team" aria-labelledby="team-title">
           <div className="match-team__media match-cut-media">
-            <Image src="/images/venue/home-community.webp" alt="Teams and a referee in the middle of a match at the ArmourX Sports venue" fill sizes="(max-width: 767px) 100vw, 44vw" />
+            <Image src="/images/matchday/team/team-1.webp" alt="Teams and a referee in the middle of a match at the ArmourX Sports venue" fill sizes="(max-width: 767px) 100vw, 44vw" />
           </div>
           <div className="match-team__layout match-reveal">
             <div>
@@ -224,7 +259,7 @@ export function HomeExperience({ locale, fields, blocks, faqs, degraded }: Props
 
         <section className="match-final" aria-labelledby="final-title">
           <div className="match-final__media match-cut-media">
-            <Image src="/images/venue/home-action.webp" alt="" fill sizes="100vw" />
+            <Image src="/images/matchday/team/team-3.webp" alt="" fill sizes="100vw" />
           </div>
           <div className="match-final__shade" aria-hidden="true" />
           <div className="shell match-final__layout match-reveal">

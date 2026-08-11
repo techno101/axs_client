@@ -4,6 +4,8 @@ import localFont from "next/font/local";
 import { PrivacySafeAnalytics } from "@/components/analytics/privacy-safe-analytics";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
+import { BootLoader } from "@/components/motion/boot-loader";
+import { CustomCursor } from "@/components/motion/custom-cursor";
 import "./globals.css";
 
 const exo2 = localFont({
@@ -72,6 +74,8 @@ export default async function RootLayout({
         <a className="skip-link" href="#main-content">
           {documentLanguage === "ms-MY" ? "Langkau ke kandungan utama" : "Skip to main content"}
         </a>
+        <BootLoader />
+        <CustomCursor />
         <SiteHeader />
         <main id="main-content" tabIndex={-1}>{children}</main>
         <SiteFooter />

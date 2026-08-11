@@ -1,5 +1,11 @@
 # Client Decisions
 
+| Availability dots - 2026-08-12 | Result |
+| --- | --- |
+| Dot rule | Green = all slots free, yellow = some free, red = none free, grey = past. Fed by the additive `availability/summary` endpoint (v1.16.0); a date with zero configured slots counts as red. |
+| Image organization | Matchday photos live in per-section folders under `public/images/matchday/{hero,gallery,sessions,pitches,team}/`; the same photo may repeat across sections. |
+| Hero text | Never gated behind motion timelines or boot events — always visible by default; fades only apply to below-hero sections. |
+
 | Component system - 2026-08-11 | Result |
 | --- | --- |
 | UI primitives | Adopted Tailwind v4 + Radix primitives + CVA/lucide (`src/components/ui/*`) for the booking experience; existing page CSS stays untouched (no preflight conflicts). |

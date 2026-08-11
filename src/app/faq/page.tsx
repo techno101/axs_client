@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Frequently asked questions",
-  description: "Confirmed booking facts and clearly marked pending policies for ArmourXSports.",
+  description: "Booking, payment and venue answers for ArmourXSports.",
 };
 
 export default async function FaqPage() {

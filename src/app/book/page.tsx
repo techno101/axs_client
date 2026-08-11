@@ -12,11 +12,16 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-dynamic";
 
-export default async function BookPage() {
+function validBookingDate(value: string, businessDate: string): boolean {
+  return /^\d{4}-\d{2}-\d{2}$/.test(value) && value >= businessDate && value <= new Date(new Date(`${businessDate}T00:00:00.000Z`).getTime() + 90 * 86_400_000).toISOString().slice(0, 10);
+}
+
+export default async function BookPage({ searchParams }: { searchParams: Promise<{ date?: string }> }) {
+  const { date: requestedDate } = await searchParams;
   const businessDate = toMalaysiaDateInput(new Date());
   const initial = new Date(`${businessDate}T00:00:00.000Z`);
   initial.setUTCDate(initial.getUTCDate() + 2);
-  const initialDate = initial.toISOString().slice(0, 10);
+  const initialDate = requestedDate && validBookingDate(requestedDate, businessDate) ? requestedDate : initial.toISOString().slice(0, 10);
   const publicClient = createServerPublicClient();
   const [fields, config, availability] = await Promise.all([
     publicClient.getFields(),
@@ -34,7 +39,7 @@ export default async function BookPage() {
         image={images.bookingHero}
         imageAlt="A player preparing to strike the ball at ArmourX Sports"
       />
-      <BookingWizard fields={fields} blocks={config.slots} availability={availability} onlinePayment={config.onlinePayment} businessDate={businessDate} initialDate={initialDate} />
+      <BookingWizard fields={fields} blocks={config.slots} availability={availability} addons={config.addons} onlinePayment={config.onlinePayment} businessDate={businessDate} initialDate={initialDate} />
     </>
   );
 }

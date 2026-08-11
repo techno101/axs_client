@@ -16,7 +16,7 @@ export function PageHero({
   title,
   intro,
   image = images.venueOverview,
-  imageAlt = "The ArmourX Sports ground in Iskandar Puteri",
+  imageAlt = "The ArmourX Sports venue in Iskandar Puteri",
   compact = false,
 }: PageHeroProps) {
   return (

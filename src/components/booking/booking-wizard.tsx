@@ -5,6 +5,7 @@ import Image from "next/image";
 import { ArrowRight, Calendar as CalendarIcon, ChevronDown } from "lucide-react";
 import { SlotCard } from "@/components/booking/slot-card";
 import type {
+  AvailabilityDaySummary,
   AvailabilitySlot,
   BookingBlock,
   Field,
@@ -13,6 +14,7 @@ import type {
 } from "@/lib/api/types";
 import type { VoucherValidation } from "@/lib/api/contract/v1";
 import { formatMoney, formatTimePair12 } from "@/lib/format";
+import { availabilityDotLevel } from "@/lib/api/types";
 import { createHttpPublicClient, PublicApiError } from "@/lib/api/http-client";
 import { reportOperationalEvent } from "@/lib/operational-reporting";
 import { customerApi, type CustomerSessionView } from "@/lib/customer-api";
@@ -94,6 +96,8 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
   const [voucherStatus, setVoucherStatus] = useState<"idle" | "checking" | "applied" | "rejected">("idle");
   const [voucherError, setVoucherError] = useState<string | null>(null);
   const [basketOpen, setBasketOpen] = useState(false);
+  const [chipsSummary, setChipsSummary] = useState<Record<string, AvailabilityDaySummary>>({});
+  const [calendarSummary, setCalendarSummary] = useState<Record<string, AvailabilityDaySummary>>({});
   const headingRef = useRef<HTMLHeadingElement>(null);
 
   const basketKey = (item: BasketItem) => `${item.fieldId}-${item.blockCode}-${item.bookingDate}`;
@@ -123,6 +127,34 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
     const interval = window.setInterval(refresh, 15_000);
     return () => { active = false; window.clearInterval(interval); };
   }, [client, date]);
+
+  const dotClass: Record<string, string> = {
+    full: "bg-[var(--success)]",
+    partial: "bg-[var(--warning)]",
+    none: "bg-[var(--danger)]",
+    past: "bg-[var(--line)]",
+  };
+
+  useEffect(() => {
+    let active = true;
+    void client.getAvailabilitySummary(businessDate, dateOptions[dateOptions.length - 1].value)
+      .then((days) => { if (active) setChipsSummary(Object.fromEntries(days.map((day) => [day.date, day]))); })
+      .catch(() => undefined);
+    return () => { active = false; };
+  }, [client, businessDate, dateOptions]);
+
+  useEffect(() => {
+    if (!calendarOpen) return;
+    let active = true;
+    const [year, month] = date.split("-").map(Number);
+    const first = `${year}-${String(month).padStart(2, "0")}-01`;
+    const lastDay = new Date(Date.UTC(year, month, 0)).getUTCDate();
+    const last = `${year}-${String(month).padStart(2, "0")}-${String(lastDay).padStart(2, "0")}`;
+    void client.getAvailabilitySummary(first, last)
+      .then((days) => { if (active) setCalendarSummary(Object.fromEntries(days.map((day) => [day.date, day]))); })
+      .catch(() => undefined);
+    return () => { active = false; };
+  }, [client, calendarOpen, date]);
 
   useEffect(() => {
     let active = true;
@@ -226,19 +258,23 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
       {phase === "sessions" ? (
         <>
           <div className="date-strip" role="group" aria-label="Choose a booking date">
-            {dateOptions.map((option) => (
-              <button
-                className={date === option.value ? "is-selected" : ""}
-                type="button"
-                key={option.value}
-                aria-pressed={date === option.value}
-                onClick={() => { setDate(option.value); }}
-              >
-                <span>{option.day}</span>
-                <strong>{option.date}</strong>
-                <small>{option.month}</small>
-              </button>
-            ))}
+            {dateOptions.map((option) => {
+              const level = availabilityDotLevel(option.value, chipsSummary[option.value], businessDate);
+              return (
+                <button
+                  className={date === option.value ? "is-selected" : ""}
+                  type="button"
+                  key={option.value}
+                  aria-pressed={date === option.value}
+                  onClick={() => { setDate(option.value); }}
+                >
+                  <span>{option.day}</span>
+                  <strong>{option.date}</strong>
+                  <small>{option.month}</small>
+                  <i className={`date-chip-dot ${dotClass[level]}`} aria-hidden="true" />
+                </button>
+              );
+            })}
             <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
               <PopoverTrigger asChild>
                 <button className="date-picker-button" type="button" aria-label="Open the calendar">
@@ -251,6 +287,8 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
                   selected={toDate(date)}
                   min={toDate(businessDate)}
                   max={toDate(maxDate)}
+                  availability={calendarSummary}
+                  businessDate={businessDate}
                   onSelect={(selected) => { setDate(selected.toISOString().slice(0, 10)); setCalendarOpen(false); }}
                 />
               </PopoverContent>

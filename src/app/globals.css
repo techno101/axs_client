@@ -4879,8 +4879,8 @@ html.menu-locked { overflow: hidden; }
 
 .match-gallery__figure {
   position: relative;
-  flex: 0 0 min(300px, 64vw);
-  min-height: 400px;
+  flex: 0 0 min(380px, 70vw);
+  min-height: 470px;
   margin: 0;
   overflow: hidden;
   border-radius: 14px;
@@ -5020,4 +5020,92 @@ html.menu-locked { overflow: hidden; }
 }
 .booking-note--sandbox strong {
   color: var(--ink);
+}
+
+.date-chip-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-top: 5px;
+  border-radius: 50%;
+}
+
+/* Hero quick-book strip */
+.hero-quick {
+  max-width: 560px;
+  margin-top: 26px;
+}
+
+.hero-quick__label {
+  margin: 0 0 10px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.hero-quick__strip {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.hero-quick__day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 76px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--white);
+  color: var(--ink);
+  text-decoration: none;
+  transition: border 150ms ease, transform 150ms ease;
+}
+
+.hero-quick__day:hover {
+  border-color: var(--grass);
+  transform: translateY(-2px);
+}
+
+.hero-quick__day span {
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.hero-quick__day strong {
+  font-size: 12px;
+}
+
+.hero-quick__dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-top: 3px;
+  border-radius: 50%;
+}
+
+.hero-quick__legend {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.hero-quick__legend .hero-quick__dot {
+  margin: 0;
+}
+
+/* Matchday gallery: raised section, breathing room above and below. */
+.match-gallery {
+  padding-top: 96px;
+  padding-bottom: 48px;
 }
