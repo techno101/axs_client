@@ -55,11 +55,9 @@ try {
     if (capture.route === "/book") {
       await page.waitForLoadState("networkidle");
       await page.locator(".booking-wizard").waitFor();
-      await page.getByRole("button", { name: /choose field/i }).click();
-      await page.getByRole("button", { name: /choose session/i }).click();
-      await page.getByText("Online booking is unavailable right now.").waitFor();
-      const availableBlock = page.locator(".slot-card--available").first();
-      if (await availableBlock.isEnabled()) await availableBlock.click();
+      await page.getByRole("button", { name: /available/i }).first().click();
+      await page.getByText("1 session").waitFor();
+      await page.getByText(/online booking will open again soon/i).waitFor();
     }
     await page.evaluate(async () => {
       for (let y = 0; y < document.documentElement.scrollHeight; y += 600) {
@@ -71,7 +69,17 @@ try {
     });
     // Next Image lazily loads after intersection. Visit each image explicitly so a full-page
     // capture verifies real assets instead of timing out on below-the-fold placeholders.
+    // Horizontal tracks (matchday gallery) need their own scroll before images intersect.
+    await page.evaluate(async () => {
+      for (const element of document.querySelectorAll("body *")) {
+        if (element.scrollWidth > element.clientWidth + 1) element.scrollLeft = element.scrollWidth;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 400));
+    });
     for (const image of await page.locator("img").all()) await image.scrollIntoViewIfNeeded();
+    // Lazy-loaded images in horizontal tracks can miss the headless IntersectionObserver;
+    // the capture verifies real assets, so flip the remaining lazy images to eager first.
+    await page.evaluate(() => { for (const image of document.images) image.loading = "eager"; });
     const imagesReady = await page
       .waitForFunction(() => [...document.images].every((image) => image.complete && image.naturalWidth > 0), undefined, { timeout: 8_000 })
       .then(() => true)

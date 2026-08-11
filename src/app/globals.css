@@ -667,8 +667,7 @@ img {
 }
 
 @media (max-width: 1120px) {
-  .site-header__nav,
-  .site-header__actions {
+  .site-header__nav {
     display: none;
   }
 
@@ -676,9 +675,14 @@ img {
     grid-template-columns: 1fr auto;
   }
 
-  .mobile-menu {
-    display: block;
+  .site-header__actions .header-language {
+    display: none;
   }
+
+  .site-header__actions {
+    display: flex;
+  }
+
 
   .mobile-menu summary {
     display: flex;
@@ -4410,13 +4414,14 @@ html.axs-cursor-on input, html.axs-cursor-on textarea, html.axs-cursor-on select
 /* Team audience stagger + clip reveal. */
 .match-team__media { clip-path: inset(0 0 0 0); }
 .match-team ul li {
-  opacity: 0;
+  color: var(--chalk-050);
+  opacity: 1;
   transform: translateY(18px);
   animation: audience-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   animation-delay: calc(0.15s + var(--audience-i) * 0.12s);
 }
 @keyframes audience-in {
-  to { opacity: 1; transform: translateY(0); }
+  to { transform: translateY(0); }
 }
 .match-reveal.match-team { opacity: 1; }
 
@@ -4466,8 +4471,7 @@ html.axs-cursor-on input, html.axs-cursor-on textarea, html.axs-cursor-on select
 }
 .kickoff-char {
   display: inline-block;
-  opacity: 0;
-  will-change: transform, opacity;
+  will-change: transform;
 }
 .kickoff-char--accent { color: #3f7d1c; }
 .kickoff-title--static .kickoff-char { opacity: 1 !important; transform: none !important; }
@@ -5174,4 +5178,37 @@ html.menu-locked { overflow: hidden; }
     flex-direction: column;
     align-items: stretch;
   }
+}
+
+/* Booking phase tabs: flat underline switcher (aria-pressed buttons). */
+.booking-phase-tabs {
+  display: inline-flex;
+  align-items: center;
+  gap: 26px;
+  border-bottom: 1px solid var(--line);
+  width: fit-content;
+}
+
+.booking-phase-tabs button {
+  position: relative;
+  padding: 0 0 12px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.booking-phase-tabs button.is-active {
+  border-bottom-color: var(--ink);
+  color: var(--ink);
+}
+
+.booking-phase-tabs button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
 }

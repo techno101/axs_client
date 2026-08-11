@@ -24,7 +24,6 @@ import { Label } from "@/components/ui/label";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 type BasketItem = {
   fieldId: string;
@@ -253,12 +252,10 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
 
   return (
     <div className="booking-wizard booking-wizard--simple">
-      <Tabs value={phase} onValueChange={(value) => { if (value === "details" && !basket.length) return; setPhase(value as "sessions" | "details"); }}>
-        <TabsList aria-label="Booking steps">
-          <TabsTrigger value="sessions">Pick sessions</TabsTrigger>
-          <TabsTrigger value="details" disabled={!basket.length}>Your details</TabsTrigger>
-        </TabsList>
-      </Tabs>
+      <div className="booking-phase-tabs" role="group" aria-label="Booking steps">
+        <button className={phase === "sessions" ? "is-active" : ""} type="button" aria-pressed={phase === "sessions"} onClick={() => setPhase("sessions")}>Pick sessions</button>
+        <button className={phase === "details" ? "is-active" : ""} type="button" aria-pressed={phase === "details"} disabled={!basket.length} onClick={() => setPhase("details")}>Your details</button>
+      </div>
 
       <h2 className="booking-wizard__heading" tabIndex={-1} ref={headingRef}>{phase === "sessions" ? "Pick your sessions" : "Your details"}</h2>
       {onlinePayment.enabled && onlinePayment.environment === "sandbox" ? <p className="booking-note booking-note--sandbox" role="status"><strong>Sandbox checkout — no real payment will be taken.</strong> This checkout is for testing only.</p> : null}

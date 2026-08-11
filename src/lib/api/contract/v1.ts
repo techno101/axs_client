@@ -1,3 +1,4 @@
+// PINNED CONTRACT ARTIFACT — public v1 copy of the admin-generated contract.
 /*
  * GENERATED FILE — do not edit manually.
  * Source: openapi/openapi.v1.json

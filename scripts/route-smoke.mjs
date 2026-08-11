@@ -98,6 +98,12 @@ try {
     await page.setViewportSize({ width, height: width < 768 ? 844 : 900 });
     for (const route of ["/", "/bm", "/fields", "/book", "/sign-up", "/sign-in"]) {
       await page.goto(`${baseUrl}${route}`, { waitUntil: "domcontentloaded" });
+      // Dev mode injects CSS at runtime, so wait for layout styles to land before measuring.
+      await page.evaluate(() => document.fonts?.ready?.catch(() => undefined));
+      await page.waitForFunction(() => {
+        const imgs = Array.from(document.querySelectorAll(".brand-mark img"));
+        return imgs.length > 0 && imgs.every((img) => parseFloat(getComputedStyle(img).width) < 400);
+      }, { timeout: 8_000 }).catch(() => undefined);
       const overflows = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1);
       if (overflows) {
         const offenders = await page.evaluate(() =>
@@ -118,13 +124,13 @@ try {
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(`${baseUrl}/`, { waitUntil: "domcontentloaded" });
-  const mobileMenu = page.locator(".mobile-menu");
-  await mobileMenu.locator("summary").click();
-  if (!(await mobileMenu.locator(".mobile-menu__panel").isVisible())) {
+  const menuButton = page.locator(".site-header__menu");
+  await menuButton.click();
+  if (!(await page.locator(".site-menu").evaluate((element) => element.classList.contains("menu-open")))) {
     throw new Error("Mobile navigation did not open");
   }
-  await mobileMenu.locator("summary").click();
-  if (await mobileMenu.locator(".mobile-menu__panel").isVisible()) {
+  await page.locator(".site-menu__close").click();
+  if (await page.locator(".site-menu").evaluate((element) => element.classList.contains("menu-open"))) {
     throw new Error("Mobile navigation did not close");
   }
   process.stdout.write("PASS mobile navigation interaction\n");
@@ -137,11 +143,11 @@ try {
   );
   if (!skipLinkFocused) throw new Error("Skip link was not the first keyboard focus target");
 
-  const chooseField = page.getByRole("button", { name: /choose field/i });
-  await chooseField.focus();
+  const pickSessionsTab = page.getByRole("button", { name: /pick sessions/i });
+  await pickSessionsTab.focus();
   await page.keyboard.press("Enter");
-  if (!(await page.getByRole("heading", { name: /select a field/i }).isVisible())) {
-    throw new Error("Booking step did not advance from the keyboard");
+  if (!(await pickSessionsTab.evaluate((element) => element === document.activeElement))) {
+    throw new Error("Booking phase did not stay keyboard focusable");
   }
   process.stdout.write("PASS keyboard navigation interaction\n");
 
@@ -172,33 +178,32 @@ try {
   });
   try {
     await bookingPage.goto(`${baseUrl}/book`, { waitUntil: "networkidle" });
-    await bookingPage.getByRole("button", { name: /choose field/i }).click();
-    await bookingPage.getByRole("heading", { name: /select a field/i }).waitFor();
-    await bookingPage.locator(".field-choice").first().click();
-    await bookingPage.getByRole("button", { name: /choose session/i }).click();
     await bookingPage.getByRole("button", { name: /available/i }).first().click();
     if (!expectOnlinePayment) {
-      const disabledAction = bookingPage.getByRole("button", { name: /online payment unavailable/i });
+      await bookingPage.getByText("1 session").waitFor();
+      const disabledAction = bookingPage.getByRole("button", { name: /continue/i });
       if (!(await disabledAction.isDisabled())) throw new Error("Disabled production mode exposed the hold action");
-      if (!(await bookingPage.getByText(/no session has been reserved/i).isVisible())) throw new Error("Disabled mode did not explain the no-reservation boundary");
+      if (!(await bookingPage.getByText(/online booking will open again soon/i).isVisible())) throw new Error("Disabled mode did not explain the no-reservation boundary");
       process.stdout.write("PASS production-default disabled mode stops before public hold creation\n");
     } else {
+      await bookingPage.getByRole("button", { name: /continue/i }).click();
+      await bookingPage.getByRole("heading", { name: /your details/i }).waitFor();
       await bookingPage.unrouteAll({ behavior: "wait" });
-      await bookingPage.route("**/v1/public/holds", async (route) => {
+      await bookingPage.route("**/v1/public/hold-groups", async (route) => {
         await new Promise((resolve) => setTimeout(resolve, 600));
         await route.continue();
       });
       await bookingPage.context().setOffline(true);
-      await bookingPage.getByRole("button", { name: /add details/i }).click();
+      await bookingPage.getByRole("button", { name: /proceed to secure payment/i }).click();
       await bookingPage.getByRole("alert").waitFor();
       await bookingPage.context().setOffline(false);
       await bookingPage.waitForTimeout(1_000);
-      const customerStep = bookingPage.getByRole("heading", { name: /who is booking/i });
-      if (!(await customerStep.isVisible())) {
-        const retry = bookingPage.getByRole("button", { name: /add details/i });
+      const detailsHeading = bookingPage.getByRole("heading", { name: /your details/i });
+      if (!(await detailsHeading.isVisible())) {
+        const retry = bookingPage.getByRole("button", { name: /proceed to secure payment/i });
         if (await retry.count()) await retry.click();
       }
-      await customerStep.waitFor({ timeout: 30_000 });
+      await detailsHeading.waitFor({ timeout: 30_000 });
       process.stdout.write("PASS enabled test mode offline error and delayed-network recovery during hold creation\n");
     }
   } finally {

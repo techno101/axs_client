@@ -24,7 +24,7 @@ try {
     new PerformanceObserver((list) => { window.__axsMetrics.longTasks += list.getEntries().length; }).observe({ type: "longtask", buffered: true });
   });
   await page.goto(`${baseUrl}/`, { waitUntil: "networkidle" });
-  if (!(await page.getByRole("link", { name: /book your spot/i }).first().isVisible())) throw new Error("Match Cut hero CTA was not immediately usable.");
+  if (!(await page.getByRole("link", { name: /book your spot/i }).first().isVisible())) throw new Error("Hero CTA was not immediately usable.");
   await page.waitForTimeout(1800);
   if (!(await page.locator("html").evaluate((element) => element.classList.contains("lenis")))) throw new Error("Fine-pointer normal-motion mode did not enable Lenis.");
   const before = await page.evaluate(() => window.scrollY);
@@ -32,8 +32,8 @@ try {
   await page.waitForTimeout(1200);
   const after = await page.evaluate(() => window.scrollY);
   if (after <= before + 400) throw new Error(`Smooth scrolling did not progress: ${before} -> ${after}`);
-  const openingOpacity = await page.locator(".match-cut-opening").evaluate((element) => Number.parseFloat(getComputedStyle(element).opacity));
-  if (openingOpacity > 0.05) throw new Error(`Match Cut opening did not settle after scroll: opacity ${openingOpacity}`);
+  const heroCopyOpacity = await page.locator(".match-hero__copy").evaluate((element) => Number.parseFloat(getComputedStyle(element).opacity));
+  if (heroCopyOpacity < 0.95) throw new Error(`Hero copy did not stay visible after scroll: opacity ${heroCopyOpacity}`);
   await page.screenshot({ path: path.join(output, "home-normal-motion.png"), animations: "allow" });
   const metrics = await page.evaluate(() => window.__axsMetrics);
   if (metrics.lcp > 2500) throw new Error(`Local LCP ${metrics.lcp.toFixed(1)}ms exceeds 2500ms target.`);

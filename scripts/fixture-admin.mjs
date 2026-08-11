@@ -4,8 +4,8 @@ const port = Number(process.env.E2E_FIXTURE_ADMIN_PORT ?? 3000);
 const meta = { requestId: "client-ui-fixture", serverTime: "2026-08-02T08:00:00.000Z", timezone: "Asia/Kuala_Lumpur" };
 
 const fields = [
-  { id: "FIELD_01", slug: "field-one", name: "Field 1", description: "A full-size, floodlit football field at ArmourX Sports in Sunway City.", surface: "Full-size football field", facilityFacts: [], imageUrl: "/images/night-stadium.webp", imageAlt: "ArmourX Sports field under floodlights", features: ["LED floodlights", "Parking on-site", "Changing rooms"] },
-  { id: "FIELD_02", slug: "field-two", name: "Field 2", description: "A full-size, floodlit football field at ArmourX Sports in Sunway City.", surface: "Full-size football field", facilityFacts: [], imageUrl: "/images/aerial-pitch.webp", imageAlt: "Aerial view of an ArmourX Sports football field", features: ["LED floodlights", "Parking on-site", "Changing rooms"] },
+  { id: "FIELD_01", slug: "field-one", name: "Field 1", description: "A full-size football pitch at the ArmourX Sports venue in Sunway City.", surface: "Football pitch", facilityFacts: [{ label: "Size", value: "Full-size" }, { label: "Lighting", value: "Floodlit" }, { label: "Sessions", value: "Morning & evening" }], imageUrl: "/images/venue/field-one.webp", imageAlt: "A match in full flow on Field 1 at ArmourX Sports", features: ["Full-size pitch", "Floodlit", "Morning session", "Evening session"] },
+  { id: "FIELD_02", slug: "field-two", name: "Field 2", description: "A full-size football pitch at the ArmourX Sports venue in Sunway City.", surface: "Football pitch", facilityFacts: [{ label: "Size", value: "Full-size" }, { label: "Lighting", value: "Floodlit" }, { label: "Sessions", value: "Morning & evening" }], imageUrl: "/images/venue/field-two.webp", imageAlt: "Players passing the ball on Field 2 at ArmourX Sports", features: ["Full-size pitch", "Floodlit", "Morning session", "Evening session"] },
 ];
 
 const slots = fields.flatMap((field) => [
@@ -40,8 +40,23 @@ function route(method, url) {
     const slug = decodeURIComponent(path.slice("/v1/public/fields/".length));
     return fields.find((field) => field.slug === slug) ? envelope(fields.find((field) => field.slug === slug)) : error("NOT_FOUND", "Field not found.", 404);
   }
-  if (method === "GET" && path === "/v1/public/config") return envelope({ timezone: "Asia/Kuala_Lumpur", bookingWindowDays: 90, cutoffMinutes: 60, onlineHoldMinutes: 10, currency: "MYR", slots, onlinePayment: { enabled: false, publicMessage: "Online booking is not available yet." } });
+  if (method === "GET" && path === "/v1/public/config") return envelope({ timezone: "Asia/Kuala_Lumpur", bookingWindowDays: 90, cutoffMinutes: 60, onlineHoldMinutes: 10, currency: "MYR", slots, onlinePayment: { enabled: false, publicMessage: "Online booking will open again soon." } });
   if (method === "GET" && path === "/v1/public/availability") return envelope(slots.map((slot) => ({ fieldId: slot.fieldId, blockCode: slot.code, label: slot.label, startsAt: slot.startsAt, endsAt: slot.endsAt, amountMinor: slot.amountMinor, currency: slot.currency, state: "available" })));
+  if (method === "GET" && path === "/v1/public/availability/summary") {
+    const params = url.searchParams;
+    const from = params.get("from") ?? "2030-01-01";
+    const to = params.get("to") ?? "2030-01-31";
+    const days = [];
+    const cursor = new Date(`${from}T00:00:00.000Z`);
+    const end = new Date(`${to}T00:00:00.000Z`);
+    while (cursor <= end) {
+      const date = cursor.toISOString().slice(0, 10);
+      days.push({ date, available: slots.length, total: slots.length });
+      cursor.setUTCDate(cursor.getUTCDate() + 1);
+    }
+    return envelope(days);
+  }
+  if (method === "GET" && path === "/v1/public/site-config") return envelope({ app: "client", sections: [] });
   if (method === "GET" && path === "/v1/public/faqs") return envelope(faqs);
   if (method === "GET" && path === "/v1/public/articles") return envelope(articles.map((article) => ({ slug: article.slug, title: article.title, excerpt: article.excerpt, publishedAt: article.publishedAt })));
   if (method === "GET" && path.startsWith("/v1/public/articles/")) {

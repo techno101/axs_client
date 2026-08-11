@@ -25,11 +25,18 @@ type RouteRule = {
 function ruleFor(segments: string[]): RouteRule | null {
   if (segments[0] !== "v1" || segments[1] !== "public") return null;
   const rest = segments.slice(2);
-  if (rest.length === 1 && ["config", "fields", "availability", "articles", "faqs"].includes(rest[0])) return { methods: ["GET"] };
+  if (rest.length === 1 && ["config", "fields", "availability", "articles", "faqs", "site-config"].includes(rest[0])) return { methods: ["GET"] };
+  if (rest.length === 2 && rest[0] === "availability" && rest[1] === "summary") return { methods: ["GET"] };
   if (rest.length === 2 && rest[0] === "fields" && SLUG.test(rest[1])) return { methods: ["GET"] };
   if (rest.length === 2 && rest[0] === "articles" && SLUG.test(rest[1])) return { methods: ["GET"] };
   if (rest.length === 2 && rest[0] === "pages" && SLUG.test(rest[1])) return { methods: ["GET"] };
   if (rest.length === 2 && rest[0] === "media" && MEDIA_ID.test(rest[1])) return { methods: ["GET"] };
+  if (rest.length === 1 && ["holds", "hold-groups", "bookings", "orders", "visitors"].includes(rest[0])) {
+    return { methods: ["POST"], privateResponse: true, idempotency: rest[0] !== "visitors", jsonBody: true };
+  }
+  if (rest.length === 2 && rest[0] === "visitors" && rest[1] === "heartbeat") {
+    return { methods: ["POST"], privateResponse: true, jsonBody: true };
+  }
   if (rest.length === 1 && ["holds", "hold-groups", "bookings", "orders"].includes(rest[0])) {
     return { methods: ["POST"], privateResponse: true, idempotency: true, jsonBody: true, customerSession: ["bookings", "orders"].includes(rest[0]) };
   }
@@ -88,9 +95,17 @@ function invalidRawPath(request: Request): boolean {
 
 function safeQuery(segments: string[], search: string): boolean {
   if (!search) return true;
-  if (segments.join("/") !== "v1/public/availability") return false;
+  const path = segments.join("/");
   const params = new URLSearchParams(search);
-  return [...params.keys()].every((key) => key === "date") && /^\d{4}-\d{2}-\d{2}$/.test(params.get("date") ?? "");
+  if (path === "v1/public/availability") {
+    return [...params.keys()].every((key) => key === "date") && /^\d{4}-\d{2}-\d{2}$/.test(params.get("date") ?? "");
+  }
+  if (path === "v1/public/availability/summary") {
+    return [...params.keys()].every((key) => key === "from" || key === "to")
+      && /^\d{4}-\d{2}-\d{2}$/.test(params.get("from") ?? "")
+      && /^\d{4}-\d{2}-\d{2}$/.test(params.get("to") ?? "");
+  }
+  return false;
 }
 
 function customerSessionCookie(request: Request): string | null {

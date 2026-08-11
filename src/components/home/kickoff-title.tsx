@@ -29,7 +29,6 @@ export function KickoffTitle({ title, accent }: KickoffTitleProps) {
       try {
         const scope = createScope({ root }).add(() => {
           animate(root.querySelectorAll<HTMLElement>(".kickoff-char") as TargetsParam, {
-            opacity: [0, 1],
             translateY: ["120%", "0%"],
             rotateX: [-90, 0],
             duration: 900,
