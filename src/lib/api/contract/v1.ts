@@ -57,6 +57,14 @@ export interface AvailabilityEntry { fieldId: string; fieldName: string; fieldIm
 
 export interface OnlinePaymentCapability { enabled: boolean; publicMessage?: string; environment?: "sandbox" | "production"; }
 
+export interface SiteConfigAsset { id: string; imageUrl: string; caption: string; mask: Record<string, unknown>; position: number; }
+
+export interface SiteConfigSection { id: string; section: string; title: string; enabled: boolean; position: number; config: Record<string, unknown>; assets: Array<SiteConfigAsset>; }
+
+export interface SiteConfig { app: string; sections: Array<SiteConfigSection>; }
+
+export interface SiteConfigResponse { data: SiteConfig; meta: { requestId: string; serverTime: string; timezone: string; contractVersion: string }; error: null; }
+
 export interface AvailabilityDaySummary { date: string; available: number; total: number; }
 
 export interface PublicAvailabilitySummaryResponse { data: Array<AvailabilityDaySummary>; meta: { requestId: string; serverTime: string; timezone: string; contractVersion: string }; error: null; }

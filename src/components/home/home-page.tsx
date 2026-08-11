@@ -13,11 +13,12 @@ function addIsoDays(value: string, days: number): string {
 export async function HomePage({ locale }: { locale: SiteLocale }) {
   const client = createServerPublicClient();
   const businessDate = toMalaysiaDateInput(new Date());
-  const [fieldResult, blockResult, faqResult, summaryResult] = await Promise.allSettled([
+  const [fieldResult, blockResult, faqResult, summaryResult, configResult] = await Promise.allSettled([
     client.getFields(),
     client.getBlocks(),
     client.getFaqs(),
     client.getAvailabilitySummary(businessDate, addIsoDays(businessDate, 4)),
+    client.getSiteConfig("client"),
   ]);
 
   const degraded = [fieldResult, blockResult, faqResult].some((result) => result.status === "rejected");
@@ -29,6 +30,7 @@ export async function HomePage({ locale }: { locale: SiteLocale }) {
       blocks={blockResult.status === "fulfilled" && blockResult.value.length ? blockResult.value : fallbackBlocks}
       faqs={faqResult.status === "fulfilled" && faqResult.value.length ? faqResult.value : fallbackFaqs}
       availability={summaryResult.status === "fulfilled" ? summaryResult.value : []}
+      siteConfig={configResult.status === "fulfilled" ? configResult.value : null}
       businessDate={businessDate}
       degraded={degraded}
     />

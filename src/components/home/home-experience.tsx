@@ -8,7 +8,7 @@ import { MarketingMotion } from "@/components/motion/marketing-motion";
 import { Magnetic } from "@/components/motion/magnetic";
 import { MatchClock } from "@/components/motion/match-clock";
 import { ArrowRightIcon, ArrowUpRightIcon, PinIcon } from "@/components/ui/icons";
-import type { AvailabilityDaySummary, BookingBlock, FaqItem, Field } from "@/lib/api/types";
+import type { AvailabilityDaySummary, BookingBlock, FaqItem, Field, SiteConfigView } from "@/lib/api/types";
 import { formatTimePair12 } from "@/lib/format";
 import { availabilityDotLevel } from "@/lib/api/types";
 import { homeCopy, type SiteLocale } from "@/lib/site-copy";
@@ -19,6 +19,7 @@ type Props = {
   blocks: BookingBlock[];
   faqs: FaqItem[];
   availability: AvailabilityDaySummary[];
+  siteConfig: SiteConfigView | null;
   businessDate: string;
   degraded: boolean;
 };
@@ -53,7 +54,7 @@ const galleryShots = [
   { src: "/images/matchday/gallery/gallery-20.webp", alt: "The ArmourX Sports office and venue", caption: "The base" },
 ];
 
-export function HomeExperience({ locale, fields, blocks, faqs, availability, businessDate, degraded }: Props) {
+export function HomeExperience({ locale, fields, blocks, faqs, availability, siteConfig, businessDate, degraded }: Props) {
   const copy = homeCopy[locale];
   const bookingDataReady = fields.length > 0 && blocks.length > 0 && faqs.length > 0;
   const summaryByDate = Object.fromEntries(availability.map((day) => [day.date, day]));
@@ -69,6 +70,20 @@ export function HomeExperience({ locale, fields, blocks, faqs, availability, bus
     past: "bg-[var(--line)]",
   };
 
+  // Builder overrides: configured sections replace the committed defaults.
+  const heroSection = siteConfig?.sections.find((section) => section.section === "hero" && section.enabled);
+  const heroAssetShots = heroSection?.assets.length
+    ? heroSection.assets.map((asset) => ({ src: asset.imageUrl, alt: asset.caption || "ArmourX Sports", tilt: 0 }))
+    : heroShots;
+  const heroVideoUrl = typeof heroSection?.config.videoUrl === "string" && heroSection.config.videoUrl ? heroSection.config.videoUrl : null;
+  const heroIntro = typeof heroSection?.config.heroIntro === "string" && heroSection.config.heroIntro ? heroSection.config.heroIntro : copy.heroIntro;
+  const primaryAction = typeof heroSection?.config.primaryAction === "string" && heroSection.config.primaryAction ? heroSection.config.primaryAction : copy.primaryAction;
+  const gallerySection = siteConfig?.sections.find((section) => section.section === "gallery" && section.enabled);
+  const galleryFrames = gallerySection?.assets.length
+    ? gallerySection.assets.map((asset) => ({ src: asset.imageUrl, alt: asset.caption || "ArmourX Sports", caption: asset.caption }))
+    : galleryShots;
+  const galleryEnabled = gallerySection ? gallerySection.enabled : true;
+
   return (
     <MarketingMotion>
       <div className="match-home">
@@ -76,19 +91,23 @@ export function HomeExperience({ locale, fields, blocks, faqs, availability, bus
         <section className="match-hero match-hero--clean" aria-labelledby="match-hero-title">
           <div className="shell match-hero__layout">
             <div className="match-hero__shots" aria-hidden="true">
-              {heroShots.map((shot, index) => (
-                <figure className="match-hero__shot" style={{ "--shot-tilt": `${shot.tilt}deg` } as React.CSSProperties} key={shot.src}>
-                  <Image src={shot.src} alt={shot.alt} fill sizes="(min-width: 900px) 12vw, 44vw" priority={index < 2} />
-                </figure>
-              ))}
+              {heroVideoUrl ? (
+                <video className="match-hero__video" src={heroVideoUrl} autoPlay muted loop playsInline preload="metadata" />
+              ) : (
+                heroAssetShots.map((shot, index) => (
+                  <figure className="match-hero__shot" style={{ "--shot-tilt": `${shot.tilt}deg` } as React.CSSProperties} key={shot.src}>
+                    <Image src={shot.src} alt={shot.alt} fill sizes="(min-width: 900px) 12vw, 44vw" priority={index < 2} />
+                  </figure>
+                ))
+              )}
             </div>
             <div className="match-hero__copy">
               <p className="match-label">{copy.eyebrow}</p>
               <KickoffTitle title={copy.heroTitle} />
-              <p className="match-hero__intro">{copy.heroIntro}</p>
+              <p className="match-hero__intro">{heroIntro}</p>
               <Magnetic>
                 <Link className="match-button match-button--bright" href="/book">
-                  <span>{copy.primaryAction}</span>
+                  <span>{primaryAction}</span>
                   <ArrowRightIcon />
                 </Link>
               </Magnetic>
@@ -214,7 +233,7 @@ export function HomeExperience({ locale, fields, blocks, faqs, availability, bus
           </div>
         </section>
 
-        <section className="match-gallery match-reveal" aria-labelledby="gallery-title">
+        {galleryEnabled ? <section className="match-gallery match-reveal" aria-labelledby="gallery-title">
           <div className="shell match-gallery__head">
             <div>
               <p className="match-label match-label--ink">Matchday</p>
@@ -223,14 +242,14 @@ export function HomeExperience({ locale, fields, blocks, faqs, availability, bus
             <p>Real sessions at the venue — tackles, headers, sprints and team moments captured on the pitch.</p>
           </div>
           <div className="match-gallery__track" tabIndex={0} role="region" aria-label="Matchday gallery — scrollable">
-            {galleryShots.map((image, index) => (
-              <figure className="match-gallery__figure" style={{ "--gallery-i": index % 5 } as React.CSSProperties} key={image.src}>
+            {galleryFrames.map((image, index) => (
+              <figure className="match-gallery__figure" style={{ "--gallery-i": index % 5 } as React.CSSProperties} key={`${image.src}-${index}`}>
                 <Image src={image.src} alt={image.alt} fill sizes="(max-width: 767px) 62vw, 300px" />
                 <figcaption><span>{image.caption}</span></figcaption>
               </figure>
             ))}
           </div>
-        </section>
+        </section> : null}
 
         <section className="match-location match-reveal" id="venue" aria-labelledby="location-title">
           <div className="shell match-location__layout">

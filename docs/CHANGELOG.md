@@ -1,5 +1,10 @@
 # Client Changelog
 
+## Builder config consumption (contract v1.17.0) - 2026-08-12
+
+- Homepage reads `GET /v1/public/site-config?app=client`: hero assets (photo grid or looping video), hero copy overrides, gallery assets + visibility — with committed defaults as fallback when unconfigured or unreachable.
+- Client contract types added (`SiteConfig`, `SiteConfigSection`, `SiteConfigAsset`); contract:check passes.
+
 ## Phase A: hero fix, quick-book strip, 30-photo gallery, availability dots (v1.16.0) - 2026-08-12
 
 - Fixed the hero text bug: removed the legacy intro timeline + hero parallax from `marketing-motion.tsx` — hero copy (title, intro, CTA, chips, quick-book) is always visible; section fades kept.

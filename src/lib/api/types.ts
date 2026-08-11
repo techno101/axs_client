@@ -59,6 +59,10 @@ export type AvailabilityDaySummary = {
 
 export type AvailabilityDot = "full" | "partial" | "none" | "past";
 
+export type SiteConfigAsset = { id: string; imageUrl: string; caption: string; mask: Record<string, unknown>; position: number };
+export type SiteConfigSection = { id: string; section: string; title: string; enabled: boolean; position: number; config: Record<string, unknown>; assets: SiteConfigAsset[] };
+export type SiteConfigView = { app: string; sections: SiteConfigSection[] };
+
 /** Green = all slots free, yellow = some free, red = none free, grey = past. */
 export function availabilityDotLevel(date: string, summary: AvailabilityDaySummary | undefined, businessDate: string): AvailabilityDot {
   if (date < businessDate) return "past";
@@ -87,6 +91,7 @@ export interface PublicClient {
   getBlocks(): Promise<BookingBlock[]>;
   getAvailability(date: string): Promise<AvailabilitySlot[]>;
   getAvailabilitySummary(from: string, to: string): Promise<AvailabilityDaySummary[]>;
+  getSiteConfig(app?: string): Promise<SiteConfigView>;
   validateVoucher(input: VoucherValidationRequest): Promise<VoucherValidation | null>;
   createHold(input: CreateHoldRequest, idempotencyKey: string): Promise<Hold>;
   createHoldGroup(input: CreateHoldGroupRequest, idempotencyKey: string): Promise<HoldGroup>;
