@@ -1,16 +1,11 @@
 /*
- * PINNED CONTRACT ARTIFACT — copied from the Admin-owned OpenAPI generator.
- * This is a static customer/public consumer representation, never an import.
- */
-
-/*
  * GENERATED FILE — do not edit manually.
  * Source: openapi/openapi.v1.json
  * Run: npm run contract:generate
  */
 
-export const API_CONTRACT_VERSION = "1.15.0" as const;
-export const API_CONTRACT_SHA256 = "fb56a46557d58a0709761d5dbe5ddb7059d6f907a34b77c605fdf2d690bc6341" as const;
+export const API_CONTRACT_VERSION = "1.18.0" as const;
+export const API_CONTRACT_SHA256 = "22102e26c956948532334fdf8a06fa0fe1f14809cdc3f802ce0beb97856c9a37" as const;
 export const API_TIMEZONE = "Asia/Kuala_Lumpur" as const;
 
 export interface ApiMeta { requestId: string; serverTime: string; timezone: "Asia/Kuala_Lumpur"; contractVersion: "1.15.0"; nextPage?: number | null; pageSize?: number; total?: number; }
@@ -57,33 +52,7 @@ export interface AvailabilityEntry { fieldId: string; fieldName: string; fieldIm
 
 export interface OnlinePaymentCapability { enabled: boolean; publicMessage?: string; environment?: "sandbox" | "production"; }
 
-export interface SiteConfigAsset { id: string; imageUrl: string; caption: string; mask: Record<string, unknown>; position: number; }
-
-export interface SiteConfigSection { id: string; section: string; title: string; enabled: boolean; position: number; config: Record<string, unknown>; assets: Array<SiteConfigAsset>; }
-
-export interface SiteConfig { app: string; sections: Array<SiteConfigSection>; }
-
-export interface SiteConfigResponse { data: SiteConfig; meta: { requestId: string; serverTime: string; timezone: string; contractVersion: string }; error: null; }
-
-export interface AvailabilityDaySummary { date: string; available: number; total: number; }
-
-export interface PublicAvailabilitySummaryResponse { data: Array<AvailabilityDaySummary>; meta: { requestId: string; serverTime: string; timezone: string; contractVersion: string }; error: null; }
-
-export interface PosAvailabilitySummary { deviceId: string; from: string; to: string; days: Array<AvailabilityDaySummary>; }
-
-export interface PosAvailabilitySummaryResponse { data: PosAvailabilitySummary; meta: { requestId: string; serverTime: string; timezone: string; contractVersion: string }; error: null; }
-
-export interface PublicConfig { timezone: "Asia/Kuala_Lumpur"; bookingWindowDays: 90; cutoffMinutes: 60; onlineHoldMinutes: 10; currency: "MYR"; slots: Array<ScheduledSlot>; addons: Array<CatalogAddon>; onlinePayment: OnlinePaymentCapability; }
-
-export interface CatalogAddon { id: string; code: string; name: string; description: string; amountMinor: number; currency: "MYR"; kind: "service" | "product"; }
-
-export interface AddonSelection { catalogItemId: string; fieldId: string; blockCode: string; bookingDate: string; quantity: number; }
-
-export interface VoucherValidationRequest { code: string; sessionCount?: number; }
-
-export interface VoucherValidation { code: string; percentage: number; minSessionCount: number; }
-
-export interface VoucherValidationResponse { data: VoucherValidation; meta: { requestId: string; serverTime: string; timezone: string; contractVersion: string }; error: null; }
+export interface PublicConfig { timezone: "Asia/Kuala_Lumpur"; bookingWindowDays: 90; cutoffMinutes: 60; onlineHoldMinutes: 10; currency: "MYR"; slots: Array<ScheduledSlot>; onlinePayment: OnlinePaymentCapability; addons?: Array<CatalogAddon>; }
 
 export interface CreateHoldRequest { fieldId: string; blockCode: string; bookingDate: string; }
 
@@ -117,13 +86,9 @@ export interface PaymentAttempt { id: string; bookingReference: string; state: P
 
 export interface OrderOccurrence { id: string; reference: string; fieldId: string; blockCode: string; bookingDate: string; fieldName: string; label: string; startsAt: string; endsAt: string; amountMinor: number; currency: "MYR"; status: BookingStatus; }
 
-export interface OrderAddonLine { code: string; name: string; amountMinor: number; quantity: number; }
+export interface Order { id: string; reference: string; totalAmountMinor: number; currency: "MYR"; status: BookingStatus; paymentStatus: PaymentStatus; occurrences: Array<OrderOccurrence>; accessToken?: string; addonLines?: Array<OrderAddonLine>; addonTotalMinor?: number; voucher?: OrderVoucher; }
 
-export interface OrderVoucher { code: string; percentage: number; discountMinor: number; }
-
-export interface Order { id: string; reference: string; totalAmountMinor: number; currency: "MYR"; status: BookingStatus; paymentStatus: PaymentStatus; occurrences: Array<OrderOccurrence>; addonLines?: Array<OrderAddonLine>; addonTotalMinor?: number; voucher?: OrderVoucher | null; accessToken?: string; }
-
-export interface PublicOrderStatus { reference: string; totalAmountMinor: number; currency: "MYR"; status: BookingStatus; paymentStatus: PaymentStatus; occurrences: Array<OrderOccurrence>; addonLines?: Array<OrderAddonLine>; addonTotalMinor?: number; voucher?: OrderVoucher | null; }
+export interface PublicOrderStatus { reference: string; totalAmountMinor: number; currency: "MYR"; status: BookingStatus; paymentStatus: PaymentStatus; occurrences: Array<OrderOccurrence>; }
 
 export interface OrderPaymentAttempt { id: string; bookingReference?: string; orderReference: string; state: PaymentStatus; redirectUrl?: string; }
 
@@ -168,8 +133,6 @@ export interface AdminSession { actor: AdminProfile; expiresAt: string; }
 export interface CsrfToken { token: string; }
 
 export interface CounterCustomerDetails { name: string; phone: string; email?: string; teamName?: string; }
-
-export interface RescheduleBookingRequest { fieldId: string; blockCode: string; bookingDate: string; reason: string; }
 
 export interface ProofMetadata { objectKey: string; contentType: string; sha256: string; }
 
@@ -490,3 +453,39 @@ export interface PosUpdatePolicyAdmin { latestVersion: string; minimumSupportedV
 export interface PosUpdatePolicySaveRequest { latestVersion: string; minimumSupportedVersion: string; mode: "optional" | "recommended" | "mandatory"; enforcedAt?: string | null; releaseNotes: string; enabled: boolean; version: number; }
 
 export interface PosUpdatePolicyAdminResponse { data: PosUpdatePolicyAdmin; meta: ApiMeta; error: null; }
+
+export interface AddonSelection { catalogItemId: string; fieldId: string; blockCode: string; bookingDate: string; quantity: number; }
+
+export interface OrderAddonLine { code: string; name: string; amountMinor: number; quantity: number; }
+
+export interface OrderVoucher { code: string; percentage: number; discountMinor: number; }
+
+export interface CatalogAddon { id: string; code: string; name: string; description: string; amountMinor: number; kind: "service" | "product"; }
+
+export interface VoucherValidationRequest { code: string; sessionCount?: number; }
+
+export interface VoucherValidation { code: string; percentage: number; minSessionCount: number; }
+
+export interface AvailabilityDaySummary { date: string; available: number; total: number; }
+
+export interface PublicAvailabilitySummaryResponse { data: Array<AvailabilityDaySummary>; meta?: ApiMeta; error?: null; }
+
+export interface PosAvailabilitySummary { deviceId: string; from: string; to: string; days: Array<AvailabilityDaySummary>; }
+
+export interface PosAvailabilitySummaryResponse { data: PosAvailabilitySummary; meta?: ApiMeta; error?: null; }
+
+export interface SiteConfigAsset { id: string; imageUrl: string; caption: string; mask: { [key: string]: unknown; }; position: number; }
+
+export interface SiteConfigSection { id: string; section: string; title: string; enabled: boolean; position: number; config: { [key: string]: unknown; }; assets: Array<SiteConfigAsset>; }
+
+export interface SiteConfig { app: "client" | "pos"; sections: Array<SiteConfigSection>; }
+
+export interface SiteConfigResponse { data: SiteConfig; meta?: ApiMeta; error?: null; }
+
+export interface VisitorSessionRequest { consent: boolean; pagePath?: string; }
+
+export interface VisitorSession { token: string; consent: boolean; }
+
+export interface VisitorSessionResponse { data: VisitorSession; meta?: ApiMeta; error?: null; }
+
+export interface VisitorHeartbeatRequest { token: string; pagePath?: string; }

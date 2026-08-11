@@ -1,5 +1,11 @@
 # Client Changelog
 
+## Consent-aware visitor tracking + image-failure reporting (contract v1.18.0) - 2026-08-12
+
+- Cookie notice in the layout; visitor sessions start only after Accept (hashed on the server, 30-day cookie, heartbeat every 60s).
+- Global image-failure reporter sends broken-image events (page, URL, browser) to the existing operational-events pipeline.
+- Contract repinned to v1.18.0; contract test updated (version + checksum).
+
 ## Builder config consumption (contract v1.17.0) - 2026-08-12
 
 - Homepage reads `GET /v1/public/site-config?app=client`: hero assets (photo grid or looping video), hero copy overrides, gallery assets + visibility — with committed defaults as fallback when unconfigured or unreachable.

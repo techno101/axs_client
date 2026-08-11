@@ -9,7 +9,7 @@ afterEach(() => { vi.unstubAllGlobals(); sessionStorage.clear(); });
 describe("live public contract adapter", () => {
   it("maps the explicit online-payment capability and data-driven slots from public config", async () => {
     vi.stubGlobal("fetch", vi.fn(async () => response({ timezone: "Asia/Kuala_Lumpur", bookingWindowDays: 90, cutoffMinutes: 60, onlineHoldMinutes: 10, currency: "MYR", slots: [{ fieldId: "FIELD_01", code: "MORNING", label: "Morning", startsAt: "09:00", endsAt: "15:00", amountMinor: 60000, currency: "MYR", weekdays: [0, 1, 2, 3, 4, 5, 6] }], onlinePayment: { enabled: false, publicMessage: "Online payment is awaiting verification." } })));
-    await expect(createHttpPublicClient("http://localhost:4000").getConfig()).resolves.toEqual({ slots: [{ fieldId: "FIELD_01", id: "MORNING", label: "Morning", startsAt: "09:00", endsAt: "15:00", amountMinor: 60000, currency: "MYR", weekdays: [0, 1, 2, 3, 4, 5, 6] }], onlinePayment: { enabled: false, publicMessage: "Online payment is awaiting verification." } });
+    await expect(createHttpPublicClient("http://localhost:4000").getConfig()).resolves.toEqual({ slots: [{ fieldId: "FIELD_01", id: "MORNING", label: "Morning", startsAt: "09:00", endsAt: "15:00", amountMinor: 60000, currency: "MYR", weekdays: [0, 1, 2, 3, 4, 5, 6] }], addons: [], onlinePayment: { enabled: false, publicMessage: "Online payment is awaiting verification." } });
   });
 
   it("sends hold mutations with the pinned v1 payload and idempotency key", async () => {

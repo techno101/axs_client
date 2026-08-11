@@ -5,6 +5,7 @@ import { PrivacySafeAnalytics } from "@/components/analytics/privacy-safe-analyt
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { BootLoader } from "@/components/motion/boot-loader";
+import { VisitorTracker } from "@/components/analytics/visitor-tracker";
 import { CustomCursor } from "@/components/motion/custom-cursor";
 import "./globals.css";
 
@@ -80,7 +81,7 @@ export default async function RootLayout({
         <main id="main-content" tabIndex={-1}>{children}</main>
         <SiteFooter />
         {process.env.VERCEL === "1" ? <PrivacySafeAnalytics /> : null}
-      </body>
+      <VisitorTracker /></body>
     </html>
   );
 }
