@@ -5,7 +5,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
-axs_client\.playwright-cli
+.playwright-cli/
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
@@ -149,3 +149,11 @@ vite.config.ts.timestamp-*
 output/
 test-results/
 playwright-report/
+
+# Owner source asset library (working copies; live site uses public/images/venue WebP derivatives)
+assets/
+
+# Agent tooling
+.agents/
+.claude/
+skills-lock.json
