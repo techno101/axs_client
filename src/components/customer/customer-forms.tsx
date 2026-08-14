@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { FormEvent, useCallback, useEffect, useState } from "react";
 import { CustomerApiError, customerApi, postCustomer, type CustomerAccount, type CustomerSessionView } from "@/lib/customer-api";
+import { createHttpPublicClient } from "@/lib/api/http-client";
 import { formatTimePair12 } from "@/lib/format";
 import type { CustomerBooking } from "@/lib/api/types";
 
@@ -22,7 +23,7 @@ function NoticeBox({ notice }: { notice: Notice }) { return notice ? <p classNam
 
 function profilePayload(form: HTMLFormElement) {
   const values = new FormData(form);
-  return { displayName: String(values.get("displayName") ?? ""), phone: String(values.get("phone") ?? ""), age: String(values.get("age") ?? "") };
+  return { displayName: String(values.get("displayName") ?? ""), phone: String(values.get("phone") ?? ""), age: Number(values.get("age")) };
 }
 
 export function SignUpForm() {
@@ -94,6 +95,22 @@ function RescheduleBooking({ booking, onSaved }: { booking: CustomerBooking; onS
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState<Notice>(null);
+  const [options, setOptions] = useState<{ fieldId: string; fieldName: string; blockCode: string; label: string }[]>([]);
+  useEffect(() => {
+    if (!open) return;
+    let active = true;
+    void (async () => {
+      try {
+        const client = createHttpPublicClient();
+        const [fields, config] = await Promise.all([client.getFields(), client.getConfig()]);
+        const fieldNames = new Map(fields.map((field) => [field.id, field.name]));
+        if (active) {
+          setOptions(config.slots.map((slot) => ({ fieldId: slot.fieldId, fieldName: fieldNames.get(slot.fieldId) ?? slot.fieldId, blockCode: slot.id, label: slot.label })));
+        }
+      } catch { /* keep the fallback options */ }
+    })();
+    return () => { active = false; };
+  }, [open]);
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setBusy(true); setNotice(null);
@@ -109,7 +126,7 @@ function RescheduleBooking({ booking, onSaved }: { booking: CustomerBooking; onS
     } catch (error) { setNotice(rescheduleMessage(error)); } finally { setBusy(false); }
   }
   if (!booking.reschedule.eligible) return <p className="customer-booking__policy">This booking cannot be moved. {booking.reschedule.reasonCode === "deadline_passed" ? "The 24-hour window has passed." : booking.reschedule.reasonCode === "payment_not_paid" ? "Payment is still pending." : "It must be confirmed before it can be changed."}</p>;
-  return <div className="customer-reschedule"><p><strong>Need a different slot?</strong><span>Availability and price are confirmed before any change is saved.</span></p>{notice ? <NoticeBox notice={notice}/> : null}{open ? <form className="customer-form customer-reschedule__form" onSubmit={submit}><label>Field<select name="fieldId" defaultValue="FIELD_01"><option value="FIELD_01">Field 1</option><option value="FIELD_02">Field 2</option></select></label><label>Session<select name="blockCode" defaultValue="MORNING"><option value="MORNING">Morning session</option><option value="EVENING">Evening session</option></select></label><label className="customer-form__wide">New date<input name="bookingDate" type="date" required /></label><label className="customer-form__wide">Reason<textarea name="reason" minLength={3} maxLength={500} required rows={3} placeholder="Tell us why this booking needs to move." /></label><div className="customer-reschedule__actions customer-form__wide"><button className="customer-submit" disabled={busy}>{busy ? "Saving change" : "Confirm new slot"}</button><button className="customer-secondary" type="button" disabled={busy} onClick={() => setOpen(false)}>Cancel</button></div></form> : <button className="customer-secondary" type="button" onClick={() => setOpen(true)}>Reschedule booking</button>}</div>;
+  return <div className="customer-reschedule"><p><strong>Need a different slot?</strong><span>Availability and price are confirmed before any change is saved.</span></p>{notice ? <NoticeBox notice={notice}/> : null}{open ? <form className="customer-form customer-reschedule__form" onSubmit={submit}><label>Field<select name="fieldId" defaultValue={options.length ? options[0].fieldId : "FIELD_01"}>{(options.length ? Array.from(new Map(options.map((option) => [option.fieldId, option])).values()) : [{ fieldId: "FIELD_01", fieldName: "Field 1" }, { fieldId: "FIELD_02", fieldName: "Field 2" }]).map((field) => <option value={field.fieldId} key={field.fieldId}>{field.fieldName}</option>)}</select></label><label>Session<select name="blockCode" defaultValue={options.length ? options[0].blockCode : "MORNING"}>{(options.length ? options : [{ fieldId: "FIELD_01", fieldName: "Field 1", blockCode: "MORNING", label: "Morning session" }, { fieldId: "FIELD_01", fieldName: "Field 1", blockCode: "EVENING", label: "Evening session" }, { fieldId: "FIELD_02", fieldName: "Field 2", blockCode: "MORNING", label: "Morning session" }, { fieldId: "FIELD_02", fieldName: "Field 2", blockCode: "EVENING", label: "Evening session" }]).map((block) => <option value={block.blockCode} key={`${block.fieldId}-${block.blockCode}`}>{block.label}</option>)}</select></label><label className="customer-form__wide">New date<input name="bookingDate" type="date" required /></label><label className="customer-form__wide">Reason<textarea name="reason" minLength={3} maxLength={500} required rows={3} placeholder="Tell us why this booking needs to move." /></label><div className="customer-reschedule__actions customer-form__wide"><button className="customer-submit" disabled={busy}>{busy ? "Saving change" : "Confirm new slot"}</button><button className="customer-secondary" type="button" disabled={busy} onClick={() => setOpen(false)}>Cancel</button></div></form> : <button className="customer-secondary" type="button" onClick={() => setOpen(true)}>Reschedule booking</button>}</div>;
 }
 
 export function AccountBookings() {

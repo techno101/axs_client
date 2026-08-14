@@ -103,7 +103,6 @@ export interface PublicClient {
   getOrderStatus(reference: string, accessToken: string): Promise<PublicOrderStatus>;
   findBooking(reference: string): Promise<GuestBookingLookup>;
   downloadGuestBooking(reference: string, lookupGrant: string): Promise<Blob>;
-  getPaymentResult(reference: string): Promise<PaymentResult>;
   getArticles(): Promise<Article[]>;
   getArticle(slug: string): Promise<Article | null>;
   getFaqs(): Promise<FaqItem[]>;

@@ -272,7 +272,7 @@ export function HomeExperience({ locale, fields, blocks, faqs, availability, sit
               <h2 id="faq-title">{copy.faqTitle}</h2>
               <p>{copy.faqIntro}</p>
             </div>
-            <MatchAccordion items={copy.faqFallback} />
+            <MatchAccordion items={faqs.length ? faqs : copy.faqFallback} />
           </div>
         </section>
 

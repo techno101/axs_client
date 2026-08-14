@@ -1,5 +1,5 @@
 import type { ApiError, Article as ContractArticle, ArticleResponse, ArticleListResponse, AvailabilityDaySummary, Booking, BookingResponse, CreateBookingRequest, CreateHoldGroupRequest, CreateHoldRequest, CreateOrderRequest, CreatePaymentAttemptRequest, FaqListResponse, Hold, HoldGroup, HoldGroupResponse, HoldResponse, Order, OrderPaymentAttempt, OrderPaymentAttemptResponse, OrderResponse, PaymentAttempt, PaymentAttemptResponse, PublicAvailabilityResponse, PublicAvailabilitySummaryResponse, PublicBookingStatus, PublicBookingStatusResponse, PublicConfigResponse, PublicFieldsResponse, PublicOrderStatus, PublicOrderStatusResponse, SiteConfigResponse, VoucherValidation, VoucherValidationRequest } from "@/lib/api/contract/v1";
-import type { Article, AvailabilitySlot, BookingBlock, FaqItem, Field, GuestBookingLookup, PaymentResult, PublicClient, PublicConfigView, SiteConfigView } from "@/lib/api/types";
+import type { Article, AvailabilitySlot, BookingBlock, FaqItem, Field, GuestBookingLookup, PublicClient, PublicConfigView, SiteConfigView } from "@/lib/api/types";
 import { articles as localArticles, fields as localFields, images } from "@/lib/content";
 
 type ErrorEnvelope = { data: null; error: ApiError };
@@ -61,14 +61,6 @@ export function createHttpPublicClient(base = "/api/axs"): PublicClient {
       const response = await request(base, `/v1/public/bookings/${encodeURIComponent(reference)}/download`, { headers: { "X-Booking-Lookup-Grant": lookupGrant } });
       if (!response.ok) await responseData<never>(response);
       return response.blob();
-    },
-    async getPaymentResult(reference) {
-      if (typeof window === "undefined") throw new Error("Payment status requires the browser-held access token.");
-      const token = window.sessionStorage.getItem(`axs:booking:${reference}`);
-      if (!token) throw new PublicApiError(404, "NOT_FOUND", "This browser no longer has access to the booking status.");
-      const status = await this.getBookingStatus(reference, token);
-      const state: PaymentResult["state"] = status.bookingStatus === "confirmed" && status.paymentStatus === "paid" ? "confirmed" : status.bookingStatus === "expired" || status.paymentStatus === "expired" ? "expired" : status.bookingStatus === "payment_failed" || status.paymentStatus === "failed" ? "failed" : "pending";
-      return { reference, state, fieldName: status.fieldId, blockLabel: status.blockCode, bookingDate: status.bookingDate, amountMinor: status.amountMinor, currency: "MYR", lastCheckedAt: new Date().toLocaleTimeString("en-MY") };
     },
     async getArticles() { const summaries = await responseData<ArticleListResponse["data"]>(await request(base, "/v1/public/articles")); const articles = await Promise.all(summaries.map(async (summary) => this.getArticle(summary.slug))); return articles.filter((article): article is Article => article !== null); },
     async getArticle(slug) { const response = await request(base, `/v1/public/articles/${encodeURIComponent(slug)}`); return response.status === 404 ? null : articleView(await responseData<ArticleResponse["data"]>(response)); },

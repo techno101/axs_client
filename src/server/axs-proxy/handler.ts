@@ -34,6 +34,9 @@ function ruleFor(segments: string[]): RouteRule | null {
   if (rest.length === 1 && ["holds", "hold-groups", "bookings", "orders", "visitors"].includes(rest[0])) {
     return { methods: ["POST"], privateResponse: true, idempotency: rest[0] !== "visitors", jsonBody: true };
   }
+  if (rest.length === 2 && rest[0] === "vouchers" && rest[1] === "validate") {
+    return { methods: ["POST"], privateResponse: true, jsonBody: true };
+  }
   if (rest.length === 2 && rest[0] === "visitors" && rest[1] === "heartbeat") {
     return { methods: ["POST"], privateResponse: true, jsonBody: true };
   }
@@ -104,6 +107,9 @@ function safeQuery(segments: string[], search: string): boolean {
     return [...params.keys()].every((key) => key === "from" || key === "to")
       && /^\d{4}-\d{2}-\d{2}$/.test(params.get("from") ?? "")
       && /^\d{4}-\d{2}-\d{2}$/.test(params.get("to") ?? "");
+  }
+  if (path === "v1/public/site-config") {
+    return [...params.keys()].every((key) => key === "app") && ["client", "admin", "pos"].includes(params.get("app") ?? "");
   }
   return false;
 }

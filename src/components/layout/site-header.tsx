@@ -51,10 +51,37 @@ export function SiteHeader() {
       document.documentElement.classList.add("menu-locked");
       document.body.style.overflow = "hidden";
       lineAnimationRef.current?.restart();
+      menuRef.current?.querySelector<HTMLElement>(".site-menu__close")?.focus();
     } else {
       document.documentElement.classList.remove("menu-locked");
       document.body.style.overflow = "";
     }
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    const menu = menuRef.current;
+    if (!menu) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setOpen(false);
+        return;
+      }
+      if (event.key !== "Tab") return;
+      const focusables = Array.from(menu.querySelectorAll<HTMLElement>('a[href], button:not([disabled])')).filter((element) => element.offsetParent !== null);
+      if (!focusables.length) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
   }, [open]);
 
   const close = () => setOpen(false);

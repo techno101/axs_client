@@ -28,13 +28,12 @@ describe("live public contract adapter", () => {
     expect(fetch).toHaveBeenCalledWith("http://127.0.0.1:4000/v1/public/orders", expect.objectContaining({ method: "POST", headers: expect.objectContaining({ "Idempotency-Key": "order-idempotency-0001" }) }));
   });
 
-  it("derives the result page only from the access-token protected backend status", async () => {
+  it("reads booking status only through the access-token protected backend route", async () => {
     const fetch = vi.fn(async () => response({ reference: "AXS-REAL1234", fieldId: "FIELD_02", blockCode: "EVENING", bookingDate: "2026-07-18", amountMinor: 80000, currency: "MYR", bookingStatus: "confirmed", paymentStatus: "paid" }));
     vi.stubGlobal("fetch", fetch);
-    sessionStorage.setItem("axs:booking:AXS-REAL1234", "browser-held-access-token");
-    const result = await createHttpPublicClient("http://localhost:4000").getPaymentResult("AXS-REAL1234");
-    expect(result).toMatchObject({ state: "confirmed", fieldName: "FIELD_02", blockLabel: "EVENING" });
-    expect(fetch).toHaveBeenCalledWith(expect.not.stringContaining("accessToken="), expect.objectContaining({ headers: expect.objectContaining({ "X-Booking-Access-Token": "browser-held-access-token" }) }));
+    const result = await createHttpPublicClient("http://localhost:4000").getBookingStatus("AXS-REAL1234", "browser-held-access-token");
+    expect(result).toMatchObject({ reference: "AXS-REAL1234", bookingStatus: "confirmed", paymentStatus: "paid" });
+    expect(fetch).toHaveBeenCalledWith("http://localhost:4000/v1/public/bookings/AXS-REAL1234/status", expect.objectContaining({ headers: expect.objectContaining({ "X-Booking-Access-Token": "browser-held-access-token" }) }));
   });
 
   it("preserves safe server errors", async () => {

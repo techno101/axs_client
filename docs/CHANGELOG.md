@@ -1,5 +1,17 @@
 # Client Changelog
 
+## Functional-repair pass - 2026-08-14
+
+- Voucher apply fixed: the proxy now allowlists `POST /v1/public/vouchers/validate` (previously returned 404, so "Apply" always failed on `/book`).
+- Builder site-config overrides fixed: `safeQuery` now accepts the `app` query parameter for `GET /v1/public/site-config` (previously 422, so the homepage never loaded Builder content).
+- Homepage FAQ section now renders the fetched FAQs (fallback only when the API is unreachable).
+- Takeover menu: closes on Escape and traps focus while open (`aria-modal` now behaves correctly).
+- `/book` degrades to local field/session defaults when the booking API is down instead of throwing the error page.
+- Customer reschedule form now loads real fields/blocks from the public API with fallback options.
+- `age` is sent as a number per contract (was a string).
+- Removed the unused `getPaymentResult` client method (replaced test coverage with the equivalent `getBookingStatus` access-token assertion).
+- Validation: lint/typecheck/contract, 34 tests, route smoke (all PASS, incl. `site-config?app=client` 200), axe a11y, motion smoke, build + browser-bundle scan all pass.
+
 ## Booking rework: top nav, 91-day date rail, per-field sessions, cursor - 2026-08-14
 
 - Centered desktop navigation in a frosted-glass header (legible over any surface); mobile keeps the takeover menu.
