@@ -4777,6 +4777,7 @@ html.boot-locked { overflow: hidden; }
   inset: 0;
   display: flex;
   justify-content: flex-end;
+  overflow: hidden;
   background: rgba(9, 26, 32, 0);
   color: #0b0e13;
   visibility: hidden;
@@ -5287,6 +5288,7 @@ html.menu-locked { overflow: hidden; }
 .match-gallery {
   padding-top: 96px;
   padding-bottom: 48px;
+  overflow: hidden;
 }
 
 .match-hero__video {
