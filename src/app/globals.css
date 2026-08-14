@@ -4140,8 +4140,15 @@ body::selection { color: var(--ink-deep); background: #dfffb7; }
 .match-location__layout { grid-template-columns: minmax(270px, 0.64fr) minmax(0, 1fr); gap: clamp(54px, 9vw, 142px); }
 .match-location h2 { margin: 0; }
 .match-location .match-button { margin-top: 34px; }
-.match-location__map { min-height: 530px; border-color: var(--line); box-shadow: none; }
+.match-location__map {
+  min-height: 530px;
+  border: 1px solid rgba(11, 14, 19, 0.1);
+  border-radius: 22px;
+  overflow: hidden;
+  box-shadow: 0 34px 70px rgba(9, 26, 32, 0.16);
+}
 .match-location__map .venue-map { min-height: 530px; }
+.match-location__map .leaflet-tile-pane { filter: saturate(0.72) contrast(0.98) brightness(1.02); }
 
 .match-faq { padding: clamp(110px, 14vw, 170px) 0; color: var(--ink); }
 .match-faq__layout { grid-template-columns: minmax(0, 0.72fr) minmax(0, 1fr); gap: clamp(52px, 10vw, 152px); }

@@ -254,7 +254,7 @@ export function HomeExperience({ locale, fields, blocks, faqs, availability, sit
             <div>
               <h2 id="location-title">{copy.locationTitle}</h2>
               <p>{copy.locationIntro}</p>
-              <a className="match-button match-button--ink" href="https://maps.google.com/?q=1.3940655,103.6340126" target="_blank" rel="noreferrer">
+              <a className="match-button match-button--ink" href="https://maps.app.goo.gl/NAeYpPYdnV4r9wK77" target="_blank" rel="noreferrer">
                 <PinIcon />
                 <span>{copy.directions}</span>
                 <ArrowUpRightIcon />
