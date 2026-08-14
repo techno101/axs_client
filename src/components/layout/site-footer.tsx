@@ -35,6 +35,7 @@ export function SiteFooter() {
       </div>
       <div className="shell site-footer__base">
         <span>© 2026 ArmourX Sports SDN BHD</span><span>{copy.currency}</span><span>{copy.location}</span>
+        <a className="site-footer__credit" href="https://github.com/AlMahmud22" target="_blank" rel="noreferrer">Web developer / IT</a>
       </div>
     </footer>
   );
