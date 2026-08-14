@@ -1,5 +1,18 @@
 # Client Changelog
 
+## Booking rework: top nav, 91-day date rail, per-field sessions, cursor - 2026-08-14
+
+- Centered desktop navigation in a frosted-glass header (legible over any surface); mobile keeps the takeover menu.
+- Booking page: compact intro replaces the large hero; hero copy no longer repeats "Two full-size pitches in Iskandar Puteri".
+- Scrollable 91-day date rail with arrows and availability dots; calendar month navigation stays in sync; UTC-safe date handling fixes the Malaysia timezone day-shift.
+- Field 1 and Field 2 render side-by-side, each with its own session tiles at the same times; fallback content includes both fields.
+- Custom cursor replaced with a glassy grey ring + grass dot, gated to fine-pointer desktop, never hiding the native cursor and never blocking clicks (pointer-events: none, below menu/consent layers).
+- Full gate passes: lint/typecheck/contract, 34 tests, route smoke (rail + fields assertions), axe a11y, motion smoke, visual captures, build.
+
+## Environment file consolidation - 2026-08-12
+
+- Renamed the local env file `.env.local` → `.env` (Next.js loads `.env` automatically in dev); `.env.example` is the tracked template. Production values remain in the Vercel dashboard.
+
 ## Consent-aware visitor tracking + image-failure reporting (contract v1.18.0) - 2026-08-12
 
 - Cookie notice in the layout; visitor sessions start only after Accept (hashed on the server, 30-day cookie, heartbeat every 60s).

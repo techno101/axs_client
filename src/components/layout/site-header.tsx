@@ -63,6 +63,11 @@ export function SiteHeader() {
     <header className="site-header">
       <div className="site-header__inner shell">
         <BrandMark href={homeHref(locale)} />
+        <nav className="site-header__nav" aria-label={copy.navLabel}>
+          {navItems.map((item) => (
+            <Link href={item.href} key={`${item.href}-${item.label}`}>{item.label}</Link>
+          ))}
+        </nav>
         <div className="site-header__actions">
           <Link className="header-language" href={isBm ? "/" : "/bm"} hrefLang={isBm ? "en" : "ms"} aria-label={copy.switchLanguage}>{isBm ? "EN" : "BM"}</Link>
           <button className="site-header__menu" type="button" onClick={() => setOpen(true)} aria-expanded={open} aria-controls="site-menu">

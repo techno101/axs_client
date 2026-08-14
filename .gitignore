@@ -157,3 +157,4 @@ assets/
 .agents/
 .claude/
 skills-lock.json
+.playwright-cli/

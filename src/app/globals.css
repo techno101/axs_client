@@ -144,7 +144,11 @@ img {
   position: absolute;
   z-index: 100;
   inset: 0 0 auto;
-  color: var(--white);
+  background: rgba(255, 255, 255, 0.86);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  backdrop-filter: blur(14px) saturate(160%);
+  border-bottom: 1px solid var(--line);
+  color: var(--ink);
 }
 
 .site-header__inner {
@@ -160,7 +164,7 @@ img {
   align-items: center;
   min-height: 48px;
   gap: 10px;
-  color: var(--white);
+  color: var(--ink);
 }
 
 
@@ -192,7 +196,7 @@ img {
   height: 2px;
   transform: scaleX(0);
   transform-origin: right;
-  background: var(--lime);
+  background: var(--grass);
   transition: transform 180ms ease;
 }
 
@@ -3925,15 +3929,12 @@ body::selection { color: var(--ink-deep); background: #dfffb7; }
   color: var(--ink);
 }
 
-/* Header auto-adapts to the surface beneath it (blit-style difference blend). */
-body:has(.match-home) .site-header { color: #0b0e13; mix-blend-mode: normal; }
-body:not(:has(.match-home)) .site-header { color: #ffffff; mix-blend-mode: normal; }
-.site-header__nav a, .header-find, .site-header__menu { text-shadow: 0 1px 0 rgba(255,255,255,0.9), 0 0 12px rgba(255,255,255,0.9); }
-.site-header__inner { min-height: 72px; border-bottom-color: rgba(255, 255, 255, 0.55); }
+/* Light header across all surfaces; the nav sits centered on desktop. */
+.site-header__inner { min-height: 72px; border-bottom-color: var(--line); }
 .site-header__nav a,
 .header-find { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; }
 .site-header__nav a::after,
-.header-find::after { background: #ffffff; }
+.header-find::after { background: var(--grass); }
 .site-header__book {
   min-height: 40px;
   padding-inline: 15px;
@@ -4644,9 +4645,9 @@ html.boot-locked { overflow: hidden; }
   gap: 10px;
   min-height: 44px;
   padding: 0 16px;
-  border: 1px solid rgba(255, 255, 255, 0.9);
+  border: 1px solid var(--line);
   background: transparent;
-  color: #ffffff;
+  color: var(--ink);
   cursor: pointer;
   font-size: 11px;
   font-weight: 800;
@@ -4657,7 +4658,7 @@ html.boot-locked { overflow: hidden; }
   display: block;
   width: 18px;
   height: 1px;
-  background: #ffffff;
+  background: var(--ink);
 }
 .site-header__menu i + i { margin-top: 4px; }
 
@@ -5212,3 +5213,168 @@ html.menu-locked { overflow: hidden; }
   cursor: not-allowed;
   opacity: 0.45;
 }
+
+/* Booking: compact page intro (replaces the large hero). */
+.booking-intro {
+  padding: 150px 24px 10px;
+  text-align: center;
+}
+
+.booking-intro__eyebrow {
+  margin: 0 0 10px;
+  color: var(--grass);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.booking-intro h1 {
+  margin: 0 auto 12px;
+  max-width: 760px;
+  font-family: var(--font-display), "Arial Narrow", sans-serif;
+  font-size: clamp(30px, 4.5vw, 54px);
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+}
+
+.booking-intro p:last-child {
+  margin: 0 auto;
+  max-width: 620px;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+/* Booking: scrollable 91-day date rail with arrows. */
+.date-rail {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 100%;
+}
+
+.date-rail__arrow {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--white);
+  color: var(--ink);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.date-rail__arrow:hover {
+  border-color: var(--grass);
+}
+
+.date-rail__track {
+  display: flex;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
+  overflow-x: auto;
+  padding: 4px 2px;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+}
+
+.date-rail__track::-webkit-scrollbar { display: none; }
+
+.date-rail__track > button {
+  flex: 0 0 78px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-height: 76px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--white);
+  color: var(--ink);
+  cursor: pointer;
+  scroll-snap-align: center;
+  transition: border 150ms ease, background 150ms ease, transform 150ms ease;
+}
+
+.date-rail__track > button:hover {
+  transform: translateY(-2px);
+  border-color: var(--grass);
+}
+
+.date-rail__track > button.is-selected {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--white);
+}
+
+.date-rail__track > button span {
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.date-rail__track > button.is-selected span { color: rgba(255,255,255,0.65); }
+
+.date-rail__track > button strong { font-size: 14px; }
+
+.date-rail__track > button small { font-size: 9px; color: var(--muted); }
+.date-rail__track > button.is-selected small { color: rgba(255,255,255,0.65); }
+
+.date-rail .date-picker-button {
+  flex-shrink: 0;
+  min-height: 42px;
+  padding: 0 14px;
+}
+
+@media (max-width: 640px) {
+  .date-rail__arrow { display: none; }
+}
+
+/* Booking: fields side-by-side with vertical cards; same time appears per field. */
+.field-card-list {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+}
+
+.field-card {
+  grid-template-columns: 1fr;
+}
+
+.field-card__media {
+  min-height: 190px;
+}
+
+.field-card__slots {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.field-card__slots .slot-card {
+  min-height: 190px;
+  padding: 18px;
+}
+
+.field-card__slots .slot-card__time {
+  font-size: clamp(26px, 2.4vw, 38px);
+}
+
+@media (max-width: 900px) {
+  .field-card-list {
+    grid-template-columns: 1fr;
+  }
+
+  .field-card__slots {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.booking-wizard--simple > * { min-width: 0; }
+.date-rail { min-width: 0; }

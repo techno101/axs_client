@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { BookingWizard } from "@/components/booking/booking-wizard";
-import { PageHero } from "@/components/layout/page-hero";
 import { createServerPublicClient } from "@/lib/api/server-client";
-import { images } from "@/lib/content";
 import { toMalaysiaDateInput } from "@/lib/format";
 
 export const metadata: Metadata = {
@@ -31,14 +29,11 @@ export default async function BookPage({ searchParams }: { searchParams: Promise
 
   return (
     <>
-      <PageHero
-        compact
-        eyebrow="Book your spot"
-        title={<>Choose your<em>availability.</em></>}
-        intro="Choose a date, check the available booking options, and review the details before payment."
-        image={images.bookingHero}
-        imageAlt="A player preparing to strike the ball at ArmourX Sports"
-      />
+      <section className="booking-intro">
+        <p className="booking-intro__eyebrow">Book your spot</p>
+        <h1>Two pitches. Pick a date, pick a time.</h1>
+        <p>Field 1 and Field 2 run the same sessions — choose either, or both when your group needs the space. Availability is checked live before payment.</p>
+      </section>
       <BookingWizard fields={fields} blocks={config.slots} availability={availability} addons={config.addons} onlinePayment={config.onlinePayment} businessDate={businessDate} initialDate={initialDate} />
     </>
   );

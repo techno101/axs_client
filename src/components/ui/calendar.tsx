@@ -26,44 +26,52 @@ const dotClass: Record<AvailabilityDot, string> = {
   past: "bg-[var(--line)]",
 };
 
-function startOfDay(value: Date): Date {
-  return new Date(value.getFullYear(), value.getMonth(), value.getDate());
+function startOfUtcDay(value: Date): Date {
+  return new Date(Date.UTC(value.getUTCFullYear(), value.getUTCMonth(), value.getUTCDate()));
 }
 
 function monthLabel(date: Date): string {
-  return new Intl.DateTimeFormat("en-MY", { month: "long", year: "numeric" }).format(date);
+  return new Intl.DateTimeFormat("en-MY", { month: "long", year: "numeric", timeZone: "UTC" }).format(date);
 }
 
-function buildGrid(month: Date): Array<{ date: Date | null; inMonth: boolean }> {
-  const first = new Date(month.getFullYear(), month.getMonth(), 1);
-  const offset = (first.getDay() + 6) % 7; // Monday-first
-  const daysInMonth = new Date(month.getFullYear(), month.getMonth() + 1, 0).getDate();
-  const cells: Array<{ date: Date | null; inMonth: boolean }> = [];
-  for (let i = 0; i < offset; i += 1) cells.push({ date: null, inMonth: false });
-  for (let day = 1; day <= daysInMonth; day += 1) cells.push({ date: new Date(month.getFullYear(), month.getMonth(), day), inMonth: true });
-  while (cells.length % 7 !== 0) cells.push({ date: null, inMonth: false });
+function buildGrid(month: Date): Array<{ date: Date | null; dateKey: string }> {
+  const year = month.getUTCFullYear();
+  const monthIndex = month.getUTCMonth();
+  const first = new Date(Date.UTC(year, monthIndex, 1));
+  const offset = (first.getUTCDay() + 6) % 7; // Monday-first
+  const daysInMonth = new Date(Date.UTC(year, monthIndex + 1, 0)).getUTCDate();
+  const cells: Array<{ date: Date | null; dateKey: string }> = [];
+  for (let i = 0; i < offset; i += 1) cells.push({ date: null, dateKey: "" });
+  for (let day = 1; day <= daysInMonth; day += 1) {
+    const date = new Date(Date.UTC(year, monthIndex, day));
+    cells.push({ date, dateKey: `${year}-${String(monthIndex + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}` });
+  }
+  while (cells.length % 7 !== 0) cells.push({ date: null, dateKey: "" });
   return cells;
 }
 
 export function Calendar({ selected, onSelect, min, max, availability, businessDate, onMonthChange, className }: CalendarProps) {
-  const today = startOfDay(new Date());
-  const [month, setMonth] = React.useState(() => (selected ?? today).getTime() > today.getTime() ? selected ?? today : today);
-  const selectedDay = selected ? startOfDay(selected) : null;
+  const today = startOfUtcDay(new Date());
+  const selectedDay = selected ? startOfUtcDay(selected) : null;
+  const [month, setMonth] = React.useState(() => {
+    const start = startOfUtcDay(selected ?? today);
+    return start.getTime() > today.getTime() ? start : today;
+  });
 
   const moveMonth = (delta: number) => {
     setMonth((current) => {
-      const next = new Date(current.getFullYear(), current.getMonth() + delta, 1);
-      if (min && next < new Date(min.getFullYear(), min.getMonth(), 1)) return current;
+      const next = new Date(Date.UTC(current.getUTCFullYear(), current.getUTCMonth() + delta, 1));
+      if (min && next < new Date(Date.UTC(min.getFullYear(), min.getMonth(), 1))) return current;
       if (max) {
-        const maxMonth = new Date(max.getFullYear(), max.getMonth(), 1);
+        const maxMonth = new Date(Date.UTC(max.getFullYear(), max.getMonth(), 1));
         if (next > maxMonth) return current;
       }
-      onMonthChange?.(next.getFullYear(), next.getMonth() + 1);
+      onMonthChange?.(next.getUTCFullYear(), next.getUTCMonth() + 1);
       return next;
     });
   };
 
-  const isDisabled = (date: Date) => (min && date < startOfDay(min)) || (max && date > startOfDay(max));
+  const isDisabled = (date: Date) => (min && date < startOfUtcDay(min)) || (max && date > startOfUtcDay(max));
 
   return (
     <div className={cn("w-[280px] select-none", className)} role="grid" aria-label="Choose a date">
@@ -84,9 +92,8 @@ export function Calendar({ selected, onSelect, min, max, availability, businessD
           const disabled = isDisabled(day);
           const isToday = day.getTime() === today.getTime();
           const isSelected = selectedDay?.getTime() === day.getTime();
-          const dateKey = day.toISOString().slice(0, 10);
           const level: AvailabilityDot | null = availability && businessDate
-            ? availabilityDotLevel(dateKey, availability[dateKey], businessDate)
+            ? availabilityDotLevel(cell.dateKey, availability[cell.dateKey], businessDate)
             : null;
           return (
             <button
@@ -95,7 +102,7 @@ export function Calendar({ selected, onSelect, min, max, availability, businessD
               role="gridcell"
               disabled={disabled}
               aria-selected={isSelected}
-              aria-label={new Intl.DateTimeFormat("en-MY", { day: "2-digit", month: "long", year: "numeric" }).format(day)}
+              aria-label={new Intl.DateTimeFormat("en-MY", { day: "2-digit", month: "long", year: "numeric", timeZone: "UTC" }).format(day)}
               onClick={() => onSelect(day)}
               className={cn(
                 "relative flex h-10 w-9 flex-col items-center justify-center rounded-md text-xs font-semibold transition-colors",
@@ -105,7 +112,7 @@ export function Calendar({ selected, onSelect, min, max, availability, businessD
                 isSelected && "bg-[var(--ink)] text-white",
               )}
             >
-              {day.getDate()}
+              {day.getUTCDate()}
               {level ? <i className={cn("mt-0.5 h-1.5 w-1.5 rounded-full", dotClass[level])} aria-hidden="true" /> : null}
             </button>
           );

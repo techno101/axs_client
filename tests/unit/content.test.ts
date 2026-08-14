@@ -7,7 +7,7 @@ describe("local display content", () => {
       { id: "FIELD_01", name: "Field 1" },
       { id: "FIELD_02", name: "Field 2" },
     ]);
-    expect(blocks.map((block) => block.amountMinor)).toEqual([60000, 80000]);
+    expect(blocks.map((block) => block.amountMinor)).toEqual([60000, 80000, 60000, 80000]);
   });
 
   it("uses approved venue facts without exposing internal content status", () => {

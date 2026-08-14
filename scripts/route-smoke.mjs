@@ -178,6 +178,10 @@ try {
   });
   try {
     await bookingPage.goto(`${baseUrl}/book`, { waitUntil: "networkidle" });
+    const railChips = await bookingPage.locator(".date-rail__track > button").count();
+    if (railChips < 90) throw new Error(`Date rail should cover the 90-day window, found ${railChips}`);
+    const fieldCards = await bookingPage.locator(".field-card").count();
+    if (fieldCards < 2) throw new Error(`Expected both fields on the booking page, found ${fieldCards}`);
     await bookingPage.getByRole("button", { name: /available/i }).first().click();
     if (!expectOnlinePayment) {
       await bookingPage.getByText("1 session").waitFor();

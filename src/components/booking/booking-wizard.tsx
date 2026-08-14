@@ -75,7 +75,7 @@ type BookingWizardProps = {
 
 export function BookingWizard({ fields, blocks, availability, addons, onlinePayment, businessDate, initialDate }: BookingWizardProps) {
   const client = useMemo(() => createHttpPublicClient(), []);
-  const dateOptions = useMemo(() => Array.from({ length: 5 }, (_, index) => {
+  const railDays = useMemo(() => Array.from({ length: 91 }, (_, index) => {
     const value = addIsoDays(businessDate, index);
     return { value, day: displayDate(value, { weekday: "short" }), date: displayDate(value, { day: "2-digit" }), month: displayDate(value, { month: "short" }), label: index === 0 ? "Today" : displayDate(value, { weekday: "long" }) };
   }), [businessDate]);
@@ -97,7 +97,22 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
   const [basketOpen, setBasketOpen] = useState(false);
   const [chipsSummary, setChipsSummary] = useState<Record<string, AvailabilityDaySummary>>({});
   const [calendarSummary, setCalendarSummary] = useState<Record<string, AvailabilityDaySummary>>({});
+  const railRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
+
+  /** UTC-safe date key for a calendar-selected Date. */
+  function utcDateKey(value: Date): string {
+    return `${value.getUTCFullYear()}-${String(value.getUTCMonth() + 1).padStart(2, "0")}-${String(value.getUTCDate()).padStart(2, "0")}`;
+  }
+
+  useEffect(() => {
+    const chip = railRef.current?.querySelector(`[data-date="${date}"]`);
+    if (chip && typeof chip.scrollIntoView === "function") chip.scrollIntoView({ block: "nearest", inline: "center", behavior: "smooth" });
+  }, [date]);
+
+  const scrollRail = (delta: number) => {
+    railRef.current?.scrollBy({ left: delta * 96, behavior: "smooth" });
+  };
 
   const basketKey = (item: BasketItem) => `${item.fieldId}-${item.blockCode}-${item.bookingDate}`;
   const addonTotalMinor = Object.entries(addonSelections).reduce((total, [, byAddon]) => total + Object.entries(byAddon).reduce((subtotal, [addonId, quantity]) => subtotal + (addons.find((addon) => addon.id === addonId)?.amountMinor ?? 0) * quantity, 0), 0);
@@ -136,11 +151,11 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
 
   useEffect(() => {
     let active = true;
-    void client.getAvailabilitySummary(businessDate, dateOptions[dateOptions.length - 1].value)
+    void client.getAvailabilitySummary(businessDate, addIsoDays(businessDate, 90))
       .then((days) => { if (active) setChipsSummary(Object.fromEntries(days.map((day) => [day.date, day]))); })
       .catch(() => undefined);
     return () => { active = false; };
-  }, [client, businessDate, dateOptions]);
+  }, [client, businessDate]);
 
   useEffect(() => {
     if (!calendarOpen) return;
@@ -263,24 +278,29 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
 
       {phase === "sessions" ? (
         <>
-          <div className="date-strip" role="group" aria-label="Choose a booking date">
-            {dateOptions.map((option) => {
-              const level = availabilityDotLevel(option.value, chipsSummary[option.value], businessDate);
-              return (
-                <button
-                  className={date === option.value ? "is-selected" : ""}
-                  type="button"
-                  key={option.value}
-                  aria-pressed={date === option.value}
-                  onClick={() => { setDate(option.value); }}
-                >
-                  <span>{option.day}</span>
-                  <strong>{option.date}</strong>
-                  <small>{option.month}</small>
-                  <i className={`date-chip-dot ${dotClass[level]}`} aria-hidden="true" />
-                </button>
-              );
-            })}
+          <div className="date-rail" role="group" aria-label="Choose a booking date">
+            <button type="button" className="date-rail__arrow" aria-label="Earlier dates" onClick={() => scrollRail(-6)}>‹</button>
+            <div className="date-rail__track" ref={railRef}>
+              {railDays.map((option) => {
+                const level = availabilityDotLevel(option.value, chipsSummary[option.value], businessDate);
+                return (
+                  <button
+                    className={date === option.value ? "is-selected" : ""}
+                    type="button"
+                    key={option.value}
+                    data-date={option.value}
+                    aria-pressed={date === option.value}
+                    onClick={() => { setDate(option.value); }}
+                  >
+                    <span>{option.day}</span>
+                    <strong>{option.date}</strong>
+                    <small>{option.month}</small>
+                    <i className={`date-chip-dot ${dotClass[level]}`} aria-hidden="true" />
+                  </button>
+                );
+              })}
+            </div>
+            <button type="button" className="date-rail__arrow" aria-label="Later dates" onClick={() => scrollRail(6)}>›</button>
             <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
               <PopoverTrigger asChild>
                 <button className="date-picker-button" type="button" aria-label="Open the calendar">
@@ -296,7 +316,7 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
                   availability={calendarSummary}
                   businessDate={businessDate}
                   onMonthChange={(year, month) => loadCalendarMonth(year, month)}
-                  onSelect={(selected) => { setDate(selected.toISOString().slice(0, 10)); setCalendarOpen(false); }}
+                  onSelect={(selected) => { setDate(utcDateKey(selected)); setCalendarOpen(false); }}
                 />
               </PopoverContent>
             </Popover>

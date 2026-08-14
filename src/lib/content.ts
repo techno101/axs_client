@@ -73,6 +73,26 @@ export const blocks: BookingBlock[] = [
     currency: "MYR",
     weekdays: [0, 1, 2, 3, 4, 5, 6],
   },
+  {
+    fieldId: "FIELD_02",
+    id: "MORNING",
+    label: "Morning session",
+    startsAt: "09:00",
+    endsAt: "15:00",
+    amountMinor: 60000,
+    currency: "MYR",
+    weekdays: [0, 1, 2, 3, 4, 5, 6],
+  },
+  {
+    fieldId: "FIELD_02",
+    id: "EVENING",
+    label: "Evening session",
+    startsAt: "15:00",
+    endsAt: "21:00",
+    amountMinor: 80000,
+    currency: "MYR",
+    weekdays: [0, 1, 2, 3, 4, 5, 6],
+  },
 ];
 
 export const faqs: FaqItem[] = [
