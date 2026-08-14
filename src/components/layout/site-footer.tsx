@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BrandMark } from "@/components/ui/brand-mark";
+import { FootballIcon } from "@/components/ui/football-icon";
 import { ArrowUpRightIcon, PinIcon } from "@/components/ui/icons";
 import { homeHref, localeFromPath, shellCopy } from "@/lib/site-copy";
 
@@ -18,6 +19,7 @@ export function SiteFooter() {
   return (
     <footer className="site-footer">
       <div className="site-footer__glow" aria-hidden="true" />
+      <FootballIcon className="site-footer__ball" />
       <div className="shell site-footer__inner">
         <div className="site-footer__brand">
           <BrandMark footer href={homeHref(locale)} />
