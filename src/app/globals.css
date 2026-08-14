@@ -5007,6 +5007,31 @@ html.menu-locked { overflow: hidden; }
   transition: transform 560ms ease;
 }
 
+/* Tiny rotating football beside the hero shots. */
+.match-hero__ball {
+  position: absolute;
+  right: -14px;
+  bottom: -18px;
+  width: clamp(52px, 6vw, 84px);
+  height: clamp(52px, 6vw, 84px);
+  filter: drop-shadow(0 14px 26px rgba(9, 26, 32, 0.28));
+  animation: hero-ball-spin 14s linear infinite, hero-ball-bob 3.4s ease-in-out infinite;
+}
+
+@keyframes hero-ball-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes hero-ball-bob {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -8px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .match-hero__ball { animation: none; }
+}
+
 .match-hero__shot:hover {
   transform: rotate(0deg) translateY(-6px);
   box-shadow: 0 32px 60px rgba(9, 26, 32, 0.24);

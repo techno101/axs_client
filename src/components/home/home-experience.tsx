@@ -7,6 +7,7 @@ import { CountUp } from "@/components/motion/count-up";
 import { MarketingMotion } from "@/components/motion/marketing-motion";
 import { Magnetic } from "@/components/motion/magnetic";
 import { MatchClock } from "@/components/motion/match-clock";
+import { FootballIcon } from "@/components/ui/football-icon";
 import { ArrowRightIcon, ArrowUpRightIcon, PinIcon } from "@/components/ui/icons";
 import type { AvailabilityDaySummary, BookingBlock, FaqItem, Field, SiteConfigView } from "@/lib/api/types";
 import { formatTimePair12 } from "@/lib/format";
@@ -100,6 +101,7 @@ export function HomeExperience({ locale, fields, blocks, faqs, availability, sit
                   </figure>
                 ))
               )}
+              <FootballIcon className="match-hero__ball" />
             </div>
             <div className="match-hero__copy">
               <p className="match-label">{copy.eyebrow}</p>
@@ -110,8 +112,7 @@ export function HomeExperience({ locale, fields, blocks, faqs, availability, sit
                   <span>{primaryAction}</span>
                   <ArrowRightIcon />
                 </Link>
-              </Magnetic>
-              <div className="hero-quick" aria-label="Quick booking">
+              </Magnetic>              <div className="hero-quick" aria-label="Quick booking">
                 <p className="hero-quick__label">Check today and the next few days</p>
                 <div className="hero-quick__strip">
                   {quickDates.map((date, index) => {

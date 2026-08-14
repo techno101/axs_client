@@ -55,6 +55,33 @@ function MotionStage({ children, enabled }: { children: React.ReactNode; enabled
       });
     };
 
+    // Landing-page micro-motion: the session chips pop in one after another and
+    // the quick-booking days cascade in beneath them. Decorative only.
+    const chips = root.querySelectorAll<HTMLElement>(".match-hero__chips li");
+    if (chips.length) {
+      gsap.from(chips, {
+        y: 18,
+        opacity: 0,
+        duration: 0.55,
+        stagger: 0.09,
+        ease: "power3.out",
+        delay: 0.55,
+        scrollTrigger: { trigger: ".match-hero", start: "top 60%", once: true },
+      });
+    }
+    const quickDays = root.querySelectorAll<HTMLElement>(".hero-quick__day");
+    if (quickDays.length) {
+      gsap.from(quickDays, {
+        y: 14,
+        opacity: 0,
+        duration: 0.5,
+        stagger: 0.07,
+        ease: "power3.out",
+        delay: 0.35,
+        scrollTrigger: { trigger: ".hero-quick", start: "top 80%", once: true },
+      });
+    }
+
     reveal(".match-pitches");
     reveal(".match-booking");
     reveal(".match-team__layout");
