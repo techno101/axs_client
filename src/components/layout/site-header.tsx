@@ -106,25 +106,28 @@ export function SiteHeader() {
       </div>
 
       <div className={`site-menu${open ? " menu-open" : ""}`} id="site-menu" ref={menuRef} role="dialog" aria-modal="true" aria-label={copy.navLabel} aria-hidden={!open}>
-        <div className="site-menu__top shell">
-          <BrandMark href={homeHref(locale)} />
-          <button className="site-menu__close" type="button" onClick={close} aria-label={copy.closeMenu}>
-            <span>Close</span>
-            <i aria-hidden="true" />
-          </button>
-        </div>
-        <nav className="site-menu__nav shell" aria-label={copy.navLabel}>
-          {navItems.map((item, index) => (
-            <Link href={item.href} key={`${item.href}-${item.label}`} onClick={close} className="menu-line" style={{ "--menu-i": index } as React.CSSProperties}>
-              <span>{item.label}</span>
-              <b aria-hidden="true">0{index + 1}</b>
-            </Link>
-          ))}
-        </nav>
-        <div className="site-menu__foot shell">
-          <Link className="site-header__book" href="/book" onClick={close}>{copy.book}</Link>
-          <Link href={isBm ? "/" : "/bm"} hrefLang={isBm ? "en" : "ms"} onClick={close}>{isBm ? "English" : "Bahasa Melayu"}</Link>
-        </div>
+        <button className="site-menu__scrim" type="button" tabIndex={-1} aria-hidden="true" onClick={close} />
+        <aside className="site-menu__panel">
+          <div className="site-menu__top shell">
+            <BrandMark href={homeHref(locale)} />
+            <button className="site-menu__close" type="button" onClick={close} aria-label={copy.closeMenu}>
+              <span>Close</span>
+              <i aria-hidden="true" />
+            </button>
+          </div>
+          <nav className="site-menu__nav shell" aria-label={copy.navLabel}>
+            {navItems.map((item, index) => (
+              <Link href={item.href} key={`${item.href}-${item.label}`} onClick={close} className="menu-line" style={{ "--menu-i": index } as React.CSSProperties}>
+                <span>{item.label}</span>
+                <b aria-hidden="true">0{index + 1}</b>
+              </Link>
+            ))}
+          </nav>
+          <div className="site-menu__foot shell">
+            <Link className="site-header__book" href="/book" onClick={close}>{copy.book}</Link>
+            <Link href={isBm ? "/" : "/bm"} hrefLang={isBm ? "en" : "ms"} onClick={close}>{isBm ? "English" : "Bahasa Melayu"}</Link>
+          </div>
+        </aside>
       </div>
     </header>
   );
