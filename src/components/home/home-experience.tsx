@@ -231,7 +231,7 @@ export function HomeExperience({ locale, fields, blocks, faqs, availability, sit
           </div>
         </section>
 
-        {galleryEnabled ? <section className="match-gallery match-reveal" aria-labelledby="gallery-title">
+        {galleryEnabled ? <section className="match-gallery match-reveal" id="gallery" aria-labelledby="gallery-title">
           <div className="shell match-gallery__head">
             <div>
               <p className="match-label match-label--ink">Matchday</p>
@@ -242,7 +242,7 @@ export function HomeExperience({ locale, fields, blocks, faqs, availability, sit
           <div className="match-gallery__track" tabIndex={0} role="region" aria-label="Matchday gallery — scrollable">
             {galleryFrames.map((image, index) => (
               <figure className="match-gallery__figure" style={{ "--gallery-i": index % 5 } as React.CSSProperties} key={`${image.src}-${index}`}>
-                <Image src={image.src} alt={image.alt} fill sizes="(max-width: 767px) 62vw, 300px" />
+                <Image src={image.src} alt={image.alt} fill sizes="(max-width: 767px) 78vw, 30vw" loading={index > 2 ? "lazy" : undefined} />
                 <figcaption><span>{image.caption}</span></figcaption>
               </figure>
             ))}

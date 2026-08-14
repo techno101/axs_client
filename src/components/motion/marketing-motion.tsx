@@ -128,6 +128,57 @@ function MotionStage({ children, enabled }: { children: React.ReactNode; enabled
     const refresh = () => ScrollTrigger.refresh();
     window.addEventListener("load", refresh, { once: true });
 
+    // Pinned horizontal matchday reel on desktop only. Vertical scroll drives the
+    // track sideways; the frames grow in the middle and shrink at the edges, and
+    // the pin releases back to normal vertical flow at the last frame.
+    const gallery = root.querySelector<HTMLElement>(".match-gallery");
+    const track = root.querySelector<HTMLElement>(".match-gallery__track");
+    const figures = track ? Array.from(track.querySelectorAll<HTMLElement>(".match-gallery__figure")) : [];
+
+    if (gallery && track && figures.length) {
+      mediaQueries.add("(min-width: 900px)", () => {
+        const distance = () => Math.max(0, track.scrollWidth - window.innerWidth);
+        const tween = gsap.to(track, {
+          x: () => -distance(),
+          ease: "none",
+          scrollTrigger: {
+            trigger: gallery,
+            start: "top top",
+            end: () => `+=${distance() + window.innerHeight * 0.5}`,
+            pin: true,
+            scrub: 1,
+            anticipatePin: 1,
+            invalidateOnRefresh: true,
+          },
+        });
+
+        figures.forEach((figure) => {
+          gsap.fromTo(figure, { scale: 0.86 }, {
+            scale: 1.1,
+            ease: "none",
+            scrollTrigger: {
+              containerAnimation: tween,
+              trigger: figure,
+              start: "left 68%",
+              end: "center 50%",
+              scrub: true,
+            },
+          });
+          gsap.fromTo(figure, { scale: 1.1 }, {
+            scale: 0.86,
+            ease: "none",
+            scrollTrigger: {
+              containerAnimation: tween,
+              trigger: figure,
+              start: "center 50%",
+              end: "right 32%",
+              scrub: true,
+            },
+          });
+        });
+      });
+    }
+
     ScrollTrigger.refresh();
 
     return () => {
