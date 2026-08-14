@@ -4367,50 +4367,53 @@ html.axs-cursor-on input, html.axs-cursor-on textarea, html.axs-cursor-on select
 .about-visual { display: grid; gap: 24px; }
 .about-visual__frame--second { min-height: 520px; }
 
-/* In-image count-up markers. */
-.match-pitches__markers {
+/* Venue stat bar over the pitches aerial. */
+.match-pitches__stats {
   position: absolute;
   z-index: 2;
-  inset: 0;
-  pointer-events: none;
+  right: clamp(20px, 4vw, 48px);
+  bottom: clamp(20px, 4vh, 40px);
+  display: flex;
+  align-items: stretch;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 16px;
+  background: rgba(11, 14, 19, 0.42);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  backdrop-filter: blur(14px) saturate(1.2);
+  box-shadow: 0 24px 50px rgba(9, 26, 32, 0.28);
 }
-.match-pitches__marker {
-  position: absolute;
+.match-pitches__stat {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
-  min-width: 120px;
-  min-height: 120px;
-  padding: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  border-radius: 50%;
-  background: #1b1e22;
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  gap: 4px;
+  min-width: 112px;
+  padding: 16px 22px;
   color: #ffffff;
   text-align: center;
 }
-.match-pitches__marker--one { top: 22%; left: 10%; }
-.match-pitches__marker--two { top: 30%; right: 12%; }
-.match-pitches__marker--three { bottom: 24%; left: 22%; }
-.countup { display: contents; }
-.countup-value,
-.countup-suffix {
+.match-pitches__stat + .match-pitches__stat {
+  border-left: 1px solid rgba(255, 255, 255, 0.18);
+}
+.match-pitches__stat .countup-value,
+.match-pitches__stat .countup-suffix {
   font-family: var(--font-display), "Arial Narrow", sans-serif;
-  font-size: clamp(30px, 3.4vw, 52px);
+  font-size: clamp(28px, 3vw, 40px);
   font-weight: 900;
   line-height: 1;
   color: #ffffff;
 }
-.countup-suffix { color: #a6e06a; }
-.countup-label {
-  color: rgba(255, 255, 255, 0.8);
+.match-pitches__stat .countup-suffix { color: #a6e06a; }
+.match-pitches__stat small {
+  color: rgba(255, 255, 255, 0.78);
   font-size: 9px;
   font-weight: 800;
   letter-spacing: 0.14em;
   text-transform: uppercase;
+  white-space: nowrap;
 }
+.countup { display: contents; }
 
 /* Team audience stagger + clip reveal. */
 .match-team__media { clip-path: inset(0 0 0 0); }
@@ -4809,10 +4812,7 @@ html.menu-locked { overflow: hidden; }
   .match-sessions__head { grid-template-columns: 1fr; gap: 20px; }
   .match-sessions__grid { grid-template-columns: 1fr; }
   .match-session-card { min-height: 440px; }
-  .match-pitches__marker { min-width: 96px; min-height: 96px; }
-  .match-pitches__marker--one { top: 16%; left: 6%; }
-  .match-pitches__marker--two { top: 22%; right: 6%; }
-  .match-pitches__marker--three { bottom: 20%; left: 14%; }
+  .match-pitches__stat { min-width: 96px; padding: 12px 16px; }
 }
 
 @media (max-width: 767px) {
@@ -4821,7 +4821,8 @@ html.menu-locked { overflow: hidden; }
   .match-pitches__media img { object-position: center 58%; }
   .match-pitches__media::after { background: linear-gradient(0deg, rgba(11, 14, 19, 0.7), transparent 62%); }
   .match-pitches h2 { font-size: clamp(46px, 13vw, 68px); }
-  .match-pitches__markers { display: none; }
+  .match-pitches__stats { right: 50%; transform: translateX(50%); bottom: clamp(16px, 3vh, 28px); }
+  .match-pitches__stat { min-width: 88px; padding: 10px 12px; }
   .match-gallery { padding: 82px 0; }
   .match-gallery__head { margin-bottom: 36px; }
   .match-gallery__track figure { flex-basis: 78vw; min-height: 360px; }

@@ -141,12 +141,12 @@ export function HomeExperience({ locale, fields, blocks, faqs, availability, sit
 
         <section className="match-pitches match-reveal" id="pitches" aria-labelledby="pitches-title">
           <div className="match-pitches__media match-cut-media">
-            <Image src="/images/matchday/pitches/pitch-1.webp" alt="Aerial view of the two ArmourX Sports pitches in Iskandar Puteri" fill priority sizes="100vw" />
+            <Image src="/images/venue/pitches-aerial.webp" alt="Aerial view of the two ArmourX Sports pitches in Iskandar Puteri" fill priority sizes="100vw" />
           </div>
-          <div className="match-pitches__markers" aria-hidden="true">
-            <span className="match-pitches__marker match-pitches__marker--one"><CountUp to={2} label="full-size pitches" /></span>
-            <span className="match-pitches__marker match-pitches__marker--two"><CountUp to={6} suffix="hr" label="sessions" /></span>
-            <span className="match-pitches__marker match-pitches__marker--three"><CountUp to={90} suffix="d" label="booking window" /></span>
+          <div className="match-pitches__stats" aria-label="Venue at a glance">
+            <span className="match-pitches__stat"><CountUp to={2} /><small>full-size pitches</small></span>
+            <span className="match-pitches__stat"><CountUp to={6} suffix="hr" /><small>sessions</small></span>
+            <span className="match-pitches__stat"><CountUp to={90} suffix="d" /><small>booking window</small></span>
           </div>
           <div className="shell match-pitches__layout">
             <div className="match-pitches__copy">
@@ -154,12 +154,10 @@ export function HomeExperience({ locale, fields, blocks, faqs, availability, sit
               <h2 id="pitches-title">{copy.groundTitle}</h2>
               <p>{copy.groundIntro}</p>
             </div>
-            <Magnetic>
-              <Link className="match-button match-button--ink" href="/fields">
-                <span>See the pitches</span>
-                <ArrowRightIcon />
-              </Link>
-            </Magnetic>
+            <Link className="match-button match-button--ink" href="/fields">
+              <span>See the pitches</span>
+              <ArrowRightIcon />
+            </Link>
           </div>
         </section>
 

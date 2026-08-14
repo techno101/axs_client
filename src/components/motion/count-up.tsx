@@ -6,7 +6,7 @@ import { animate, createScope, onScroll } from "animejs";
 type CountUpProps = {
   to: number;
   suffix?: string;
-  label: string;
+  label?: string;
 };
 
 export function CountUp({ to, suffix = "", label }: CountUpProps) {
@@ -44,7 +44,7 @@ export function CountUp({ to, suffix = "", label }: CountUpProps) {
     <div className="countup" ref={rootRef}>
       <span className="countup-value">{0}</span>
       <span className="countup-suffix">{suffix}</span>
-      <span className="countup-label">{label}</span>
+      {label ? <span className="countup-label">{label}</span> : null}
     </div>
   );
 }
