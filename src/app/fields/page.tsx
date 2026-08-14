@@ -41,7 +41,7 @@ export default async function FieldsPage() {
           <div className="field-listing">
             {fields.map((field) => (
               <article className="field-listing__row" key={field.id}>
-                <div className="field-listing__image">
+                <div className={`field-listing__image field-listing__image--${field.id.toLowerCase()}`}>
                   <Image src={field.image} alt={field.imageAlt} fill sizes="(max-width: 800px) 100vw, 48vw" />
                 </div>
                 <div className="field-listing__copy">

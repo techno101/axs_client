@@ -56,7 +56,7 @@ export default async function FieldDetailPage({ params }: FieldDetailProps) {
       </section>
       <section className="field-detail-media">
         <div className="shell field-detail-media__grid">
-          <div className="field-detail-media__image">
+          <div className={`field-detail-media__image field-listing__image--${field.id.toLowerCase()}`}>
             <Image src={field.image} alt={field.imageAlt} fill sizes="(max-width: 800px) 100vw, 60vw" />
           </div>
           <aside>
