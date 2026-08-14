@@ -4399,6 +4399,19 @@ html.axs-cursor-on input, html.axs-cursor-on textarea, html.axs-cursor-on select
 .about-visual { display: grid; gap: 24px; }
 .about-visual__frame--second { min-height: 520px; }
 
+.match-pitches .match-button--ink {
+  border-color: var(--armour-green);
+  background: var(--armour-green);
+  color: var(--night-950);
+  box-shadow: 0 18px 38px rgba(9, 26, 32, 0.35);
+}
+
+.match-pitches .match-button--ink:hover {
+  border-color: #a1dc71;
+  background: #a1dc71;
+  color: var(--night-950);
+}
+
 /* Venue stat bar over the pitches aerial. */
 .match-pitches__stats {
   position: absolute;
@@ -4409,7 +4422,7 @@ html.axs-cursor-on input, html.axs-cursor-on textarea, html.axs-cursor-on select
   align-items: stretch;
   border: 1px solid rgba(255, 255, 255, 0.28);
   border-radius: 16px;
-  background: rgba(11, 14, 19, 0.42);
+  background: rgba(11, 14, 19, 0.58);
   -webkit-backdrop-filter: blur(14px) saturate(1.2);
   backdrop-filter: blur(14px) saturate(1.2);
   box-shadow: 0 24px 50px rgba(9, 26, 32, 0.28);
