@@ -64,10 +64,10 @@ export function HomeExperience({ locale, fields, blocks, faqs, availability, sit
     return date.toISOString().slice(0, 10);
   });
   const quickDot: Record<string, string> = {
-    full: "bg-[var(--success)]",
-    partial: "bg-[var(--warning)]",
-    none: "bg-[var(--danger)]",
-    past: "bg-[var(--line)]",
+    full: "availability-light--full",
+    partial: "availability-light--partial",
+    none: "availability-light--none",
+    past: "availability-light--past",
   };
 
   // Builder overrides: configured sections replace the committed defaults.
@@ -118,14 +118,14 @@ export function HomeExperience({ locale, fields, blocks, faqs, availability, sit
                     const level = availabilityDotLevel(date, summaryByDate[date], businessDate);
                     return (
                       <Link className="hero-quick__day" href={`/book?date=${date}`} key={date}>
+                        <i className={`availability-light availability-light--top ${quickDot[level]}`} aria-hidden="true" />
                         <span>{index === 0 ? "Today" : new Intl.DateTimeFormat("en-MY", { weekday: "short", timeZone: "UTC" }).format(new Date(`${date}T00:00:00.000Z`))}</span>
                         <strong>{new Intl.DateTimeFormat("en-MY", { day: "2-digit", month: "short", timeZone: "UTC" }).format(new Date(`${date}T00:00:00.000Z`))}</strong>
-                        <i className={`hero-quick__dot ${quickDot[level]}`} aria-hidden="true" />
                       </Link>
                     );
                   })}
                 </div>
-                <p className="hero-quick__legend"><span className="hero-quick__dot bg-[var(--success)]" /> Open · <span className="hero-quick__dot bg-[var(--warning)]" /> Filling · <span className="hero-quick__dot bg-[var(--danger)]" /> Full</p>
+                <p className="hero-quick__legend"><span className="availability-light availability-light--full" /> Open · <span className="availability-light availability-light--partial" /> Filling · <span className="availability-light availability-light--none" /> Full</p>
               </div>
               <ul className="match-hero__chips" aria-label="Sessions">
                 <li><span>Morning</span><strong>{formatTimePair12("09:00", "15:00")}</strong></li>

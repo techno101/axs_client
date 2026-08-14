@@ -5074,12 +5074,32 @@ html.menu-locked { overflow: hidden; }
   color: var(--ink);
 }
 
-.date-chip-dot {
+/* Availability status light: a small glowing bar, not a dot. */
+.availability-light {
   display: inline-block;
-  width: 7px;
-  height: 7px;
-  margin-top: 5px;
-  border-radius: 50%;
+  width: 16px;
+  height: 3px;
+  border-radius: 999px;
+  flex: 0 0 auto;
+}
+.availability-light--top {
+  margin-bottom: 6px;
+}
+.availability-light--full {
+  background: var(--success);
+  box-shadow: 0 0 6px rgba(82, 164, 35, 0.75);
+}
+.availability-light--partial {
+  background: var(--warning);
+  box-shadow: 0 0 6px rgba(214, 158, 46, 0.75);
+}
+.availability-light--none {
+  background: var(--danger);
+  box-shadow: 0 0 6px rgba(193, 57, 43, 0.75);
+}
+.availability-light--past {
+  background: var(--line);
+  box-shadow: none;
 }
 
 /* Hero quick-book strip */
@@ -5135,12 +5155,12 @@ html.menu-locked { overflow: hidden; }
   font-size: 12px;
 }
 
-.hero-quick__dot {
+.availability-light {
   display: inline-block;
-  width: 8px;
-  height: 8px;
-  margin-top: 3px;
-  border-radius: 50%;
+  width: 16px;
+  height: 3px;
+  border-radius: 999px;
+  flex: 0 0 auto;
 }
 
 .hero-quick__legend {
@@ -5152,7 +5172,7 @@ html.menu-locked { overflow: hidden; }
   font-size: 10px;
 }
 
-.hero-quick__legend .hero-quick__dot {
+.hero-quick__legend .availability-light {
   margin: 0;
 }
 
@@ -5340,7 +5360,8 @@ html.menu-locked { overflow: hidden; }
   align-items: center;
   justify-content: center;
   gap: 2px;
-  min-height: 76px;
+  min-height: 78px;
+  padding-top: 10px;
   border: 1px solid var(--line);
   border-radius: 10px;
   background: var(--white);

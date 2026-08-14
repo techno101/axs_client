@@ -20,10 +20,10 @@ export type CalendarProps = {
 };
 
 const dotClass: Record<AvailabilityDot, string> = {
-  full: "bg-[var(--success)]",
-  partial: "bg-[var(--warning)]",
-  none: "bg-[var(--danger)]",
-  past: "bg-[var(--line)]",
+  full: "availability-light availability-light--full",
+  partial: "availability-light availability-light--partial",
+  none: "availability-light availability-light--none",
+  past: "availability-light availability-light--past",
 };
 
 function startOfUtcDay(value: Date): Date {
@@ -112,8 +112,8 @@ export function Calendar({ selected, onSelect, min, max, availability, businessD
                 isSelected && "bg-[var(--ink)] text-white",
               )}
             >
+              {level ? <i className={cn("availability-light--top", dotClass[level])} aria-hidden="true" /> : null}
               {day.getUTCDate()}
-              {level ? <i className={cn("mt-0.5 h-1.5 w-1.5 rounded-full", dotClass[level])} aria-hidden="true" /> : null}
             </button>
           );
         })}

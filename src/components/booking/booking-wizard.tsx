@@ -143,10 +143,10 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
   }, [client, date]);
 
   const dotClass: Record<string, string> = {
-    full: "bg-[var(--success)]",
-    partial: "bg-[var(--warning)]",
-    none: "bg-[var(--danger)]",
-    past: "bg-[var(--line)]",
+    full: "availability-light--full",
+    partial: "availability-light--partial",
+    none: "availability-light--none",
+    past: "availability-light--past",
   };
 
   useEffect(() => {
@@ -291,10 +291,10 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
                     aria-pressed={date === option.value}
                     onClick={() => { setDate(option.value); }}
                   >
+                    <i className={`availability-light availability-light--top ${dotClass[level]}`} aria-hidden="true" />
                     <span>{option.day}</span>
                     <strong>{option.date}</strong>
                     <small>{option.month}</small>
-                    <i className={`date-chip-dot ${dotClass[level]}`} aria-hidden="true" />
                   </button>
                 );
               })}
