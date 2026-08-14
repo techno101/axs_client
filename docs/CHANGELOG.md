@@ -1,5 +1,19 @@
 # Client Changelog
 
+## Premium pass + branch rules (v15) - 2026-08-14
+
+- Git/branch rules added to `AGENTS.md` + `docs/START-HERE.md` (all repos): branches are always `v<N>`, created from published `origin/main` and pushed immediately; one small fix = one commit; env files never committed/printed.
+- Menu is now a right-side frosted-glass drawer (430px panel, blurred scrim, Escape + focus trap, softer link type) instead of a full-screen white sheet.
+- All technical/system wording removed from customer surfaces ("Current booking data is connected…", "payment is verified", "sandbox checkout", "privacy-limited", "secure lookup", "Verified" status): replaced with human copy; the only failure message is "Service temporarily unavailable. We're really sorry… please email armourxsports@gmail.com".
+- Pitches section: aerial that shows both pitches (`/images/venue/pitches-aerial.webp`), circle "egg" markers replaced by a bottom glass stat bar (2 pitches / 6 hr / 90 d), static "See the pitches" link (no magnetic rush).
+- Availability indicators: round dots replaced by small glowing status-light bars at the top of the 91-day rail, hero strip, calendar cells and legend.
+- Field images: 1.3× taller frames on the fields pages; Field 2 crop shifted up (`object-position: center 18%`) so heads show; Field 1 keeps its crop.
+- Matchday gallery: pinned horizontal reel on desktop — vertical scroll drives it sideways, each frame scales 0.86 → 1.1 → 0.86 as it passes the center, then releases to vertical scroll at the last frame; touch keeps native swipe; captions always visible; bottom border band removed.
+- Map: directions button now links to the owner's exact Google Maps place (`https://maps.app.goo.gl/NAeYpPYdnV4r9wK77`, ARMOURX SPORTS SDN. BHD.); map card is elevated, rounded, softer tiles.
+- Footer: rolling football SVG with glow (reduced-motion disabled), animated underline + arrow nudge on link hover, tiny "Web developer / IT" credit linking to `https://github.com/AlMahmud22`.
+- Hero: small rotating football beside the shots; GSAP stagger for session chips and quick-booking days (landing page only).
+- Validation: lint/typecheck/contract, 34 tests, route smoke (all PASS incl. 200% zoom + overflow sweeps), axe a11y, motion smoke, build + browser-bundle scan all pass.
+
 ## Functional-repair pass - 2026-08-14
 
 - Voucher apply fixed: the proxy now allowlists `POST /v1/public/vouchers/validate` (previously returned 404, so "Apply" always failed on `/book`).
