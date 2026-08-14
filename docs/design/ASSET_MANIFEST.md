@@ -1,25 +1,39 @@
 # ArmourXSports Checkpoint 1 asset manifest
 
-## Owner-authorized archive-first execution update - 2026-08-03
+## Owner-authorized archive-first execution update - 2026-08-09
 
-Status: `IMPLEMENTED` for static public fallback media. The owner directly instructed the Client to stop using AI imagery and to use the supplied local `RANDOM FIELD IMAGES FOR ARMOURX SPORTS` archive across every public marketing route. This owner direction supersedes the earlier direct-publication block recorded below. The following derivatives are deterministic, metadata-stripped WebP conversions only; no person, kit, venue detail or scene was generated, retouched or composited.
+Status: `IMPLEMENTED` for static public fallback media. On 2026-08-09 all venue derivatives were regenerated brighter (+5% brightness, +4% contrast) from their original sources, and two session images were added: `venue/session-day.webp` (from the 4000×2252 `Players playing a poper match.jpg` day shot) for the Morning card and `venue/session-night.webp` (from the dusk-toned `team winning moment after match.jpg`) for the Evening card. The video backgrounds produced earlier the same day were removed after review (pulsing feel + network weight); `public/video/` and the `VideoBackground` component were deleted. The home page is now a static-image pure-white experience.
 
 | Public derivative | Archive source | Role |
 | --- | --- | --- |
-| `venue/home-hero.webp` | `random team 1 live match going.jpg` | Home Match Cut opening and hero; the one deliberate continuity reuse. |
+| `venue/home-hero.webp` | `Players playing a poper match.jpg` | Home hero (3840px derivative from the 4000x2252 source). |
+| `venue/opening-a.webp` | `a fllyingkick by a player with many playerrs around him.jpg` | Home opening detail frame A. |
+| `venue/opening-b.webp` | `2 opposite temam players pushing with the ball.jpg` | Home opening detail frame B. |
+| `venue/opening-c.webp` | `awesome jumping head to the ball around the dbox and cool moment.jpg` | Home opening detail frame C. |
 | `venue/home-action.webp` | `cool moment of player rushing with the ball.jpg` | Home match-action chapter. |
-| `venue/home-community.webp` | `cool momen 3 playes and 3 playes of both teams with the refree as well in the frame twhen the player dribbling and passing all along.jpg` | Home community chapter. |
+| `venue/home-community.webp` | `referees and teams askaking hands in the middle of the match.jpg` | Home community chapter. |
+| `venue/pitches-aerial.webp` | `aerial shot from a corner with the whole both 2 fields view.jpeg` | Home "Two pitches. One venue." lead. |
+| `venue/gallery-1.webp` | `a fllyingkick by a player with many playerrs around him.jpg` | Home matchday gallery 1. |
+| `venue/gallery-2.webp` | `extreme pushing and dribling between two players in the frame.jpg` | Home matchday gallery 2. |
+| `venue/gallery-3.webp` | `player at the moment of beating the defenders grasp with the ball.jpg` | Home matchday gallery 3. |
+| `venue/gallery-4.webp` | `succefully driblled and got out of the defenders graspp.jpg` | Home matchday gallery 4. |
+| `venue/gallery-5.webp` | `awesome tavking and evading it by players with 2 of opponent tema and one of the other team.jpg` | Home matchday gallery 5. |
+| `venue/gallery-6.webp` | `almost a foul where someone pushing another player but not fallen down just the moment depicted.jpg` | Home matchday gallery 6. |
 | `venue/about-hero.webp` | `about to shot the ball and another player on the moment to stop it.jpg` | About hero. |
-| `venue/venue-overview.webp` | `Players playing a poper match.jpg` | Venue/Fields visual context. |
+| `venue/about-pitches.webp` | `aeraial shot with the whole area also captured.jpeg` | About venue visual. |
+| `venue/about-office.webp` | `armourxsports office.png` | About office visual. |
+| `venue/contact-photo.webp` | `aeraial shot with the whole area also captured but from a different angle.jpeg` | Contact page hero. |
+| `venue/venue-overview.webp` | `armourx field.jpg` | Venue/Fields visual context (PageHero default). |
+| `venue/fields-hero.webp` | `Proper aerial shot taken from the middle properly with both the fields looks as landscaped take from the side tilted not perpendicular.jpeg` | Fields page hero. |
 | `venue/field-one.webp` | `everyone playing in midfield of field 1.jpg` | Field 1 fallback. |
 | `venue/field-two.webp` | `cool moment of the players passing ball between thenm'.jpg` | Field 2 fallback. |
 | `venue/booking-hero.webp` | `awesme cool shot of the player about to hit the ball with a cool heroic moment.jpg` | Booking hero. |
-| `venue/notes-hero.webp` | `awesome jumping head to the ball around the dbox and cool moment.jpg` | Field notes hero. |
+| `venue/notes-hero.webp` | `player walking, referee behind and two players as well in the bg.jpg` | Field notes hero. |
 | `venue/article-booking.webp` | `sprinting with the ball with full force.jpg` | Booking article. |
 | `venue/article-sessions.webp` | `two players striker and defender tackling and dribbling.jpg` | Session article. |
 | `venue/article-checklist.webp` | `player with the ball thinking where to pass also a cool moment.jpg` | Checklist article. |
 
-The former generated Match Cut stills and rejected visual fallbacks are no longer public-source candidates. The owner also explicitly rejected the night-player image. Physical deletion is `BLOCKED` by the controlled filesystem policy after the exact 15 public targets were verified; no owner archive original is deleted.
+The former generated Match Cut stills, the night-player image and all rejected visual fallbacks are removed from public source and from `public/images/` on 2026-08-06. `matchcut/hero-title-en.png` and `hero-title-bm.png` remain as flattened Ethnocentric display artwork (approved, non-AI font artwork) with live Exo 2 semantic fallback. The three night/AI renders in `project/assets/field/` were deleted on 2026-08-07. No owner archive original is deleted.
 
 Status: `PARTIALLY IMPLEMENTED — STATIC-POSTER CANDIDATE`
 Inventory date: 2026-08-02
@@ -180,7 +194,7 @@ The actual output path, image dimensions, file size, SHA-256, generation tool/ve
 
 ## Quarantined Client assets
 
-These v12 assets and all derivatives are excluded from Checkpoint 1 customer-facing use. They remain in place during pre-production so the rejected branch stays inspectable; implementation must remove their public references or move them to a clearly non-public archive without deleting owner data.
+The v12 assets below and all derivatives were excluded from Checkpoint 1 customer-facing use. On 2026-08-06, following the owner's explicit removal instruction, every file on this list was physically deleted from `public/images/`. The fixture server, visual captures and route smoke now serve the archive-derived venue images only.
 
 1. `public/images/demo/night-stadium.jpg`
 2. `public/images/night-stadium.webp`
@@ -193,8 +207,12 @@ These v12 assets and all derivatives are excluded from Checkpoint 1 customer-fac
 9. `public/images/demo/aerial-pitch.jpg`
 10. `public/images/aerial-pitch.png`
 11. `public/images/aerial-pitch.webp`
+12. `public/images/matchcut/hero.png`
+13. `public/images/matchcut/opening.png`
+14. `public/images/matchcut/team.png`
+15. `public/images/matchcut/action-v2.png`
 
-Quarantine status: `PASSED` for this pre-production pack because none is assigned a role or used as an anchor source. Physical removal/reference cleanup is `DEFERRED` until owner and verifier approve implementation.
+Quarantine status: `REMOVED` — physically deleted from `public/images/` on 2026-08-06 with owner authority; only the approved flattened title artwork and the archive-derived venue set remain.
 
 ## Acceptance checks for every generated master
 
