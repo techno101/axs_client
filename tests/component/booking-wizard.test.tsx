@@ -58,9 +58,10 @@ describe("BookingWizard", () => {
     expect(screen.queryByRole("heading", { name: "Your details" })).not.toBeInTheDocument();
   });
 
-  it("keeps an unmistakable non-production banner visible for sandbox checkout", async () => {
+  it("keeps sandbox checkout free of technical wording", async () => {
     vi.stubGlobal("fetch", vi.fn(async () => Response.json({ data: [], meta: {}, error: null })));
     render(<BookingWizard fields={fields} blocks={blocks} availability={[]} addons={[]} onlinePayment={{ enabled: true, environment: "sandbox" }} businessDate="2026-07-16" initialDate="2026-07-18" />);
-    await waitFor(() => expect(screen.getByText(/sandbox checkout.*no real payment/i)).toBeVisible());
+    await waitFor(() => expect(screen.getByRole("heading", { name: "Pick your sessions" })).toBeVisible());
+    expect(screen.queryByText(/sandbox|no real payment|testing only/i)).not.toBeInTheDocument();
   });
 });
