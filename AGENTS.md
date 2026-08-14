@@ -1,5 +1,12 @@
 # ArmourXSports Client Instructions
 
+## Git and branch rules (MANDATORY)
+
+1. Branch names are always `v<number>` (e.g. `v15`). `main` is the trunk. No other branch names exist: any `work/*`, feature, or non-`v<N>` branch must be deleted (local and remote) on sight.
+2. Every branch is created from the latest published `origin/main`, then **pushed and published immediately** (`git push -u origin <branch>`). A local-only branch is forbidden at any moment.
+3. During work: one small fix = one commit (no push). When the whole task is complete: push the branch, then fast-forward `origin/main` to it and push main.
+4. Env files: the only files are `.env` (local runtime) and `.env.production` (deployed production). Never create, commit, print, or push `.env`/`.env.production` or any other env file (no `.env.test`, `.env.local`, etc.). `git status` before every commit; never stage an env file.
+
 ## Boundary
 
 This repository owns only the public website and customer booking experience. It consumes the admin-owned `/v1` API. It has no admin pages, database driver/ORM, provider secret, webhook handler, authoritative price/availability calculation, or direct import from `axs_admin`.
