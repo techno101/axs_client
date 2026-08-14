@@ -10,10 +10,10 @@ import { formatMoney } from "@/lib/format";
 import { customerApi, type CustomerSessionView } from "@/lib/customer-api";
 
 const copy: Record<PaymentState, { title: string; body: string }> = {
-  pending: { title: "We are verifying your payment.", body: "Keep this page open, or return later with your booking reference. The result updates when the status is confirmed." },
+  pending: { title: "Confirming your booking…", body: "Keep this page open, or come back later with your booking reference. The result updates the moment everything is settled." },
   confirmed: { title: "Your field is confirmed.", body: "Save your booking reference and bring it with you on the day." },
-  failed: { title: "Payment was not completed.", body: "The field is not confirmed. The live service may offer a new payment attempt only when the booking remains eligible." },
-  expired: { title: "The booking hold expired.", body: "No field is reserved. Return to availability and choose a new session." },
+  failed: { title: "Payment was not completed.", body: "The field is not reserved yet. You can book again whenever you're ready." },
+  expired: { title: "That slot has gone.", body: "No field is reserved. Head back to availability and pick a new session." },
 };
 
 function BookingReferenceActions({ references }: { references: string[] }) {
@@ -27,7 +27,7 @@ function BookingReferenceActions({ references }: { references: string[] }) {
   }
   async function download(reference: string) {
     if (ownerSession === null) {
-      setNotice("Checking whether this booking belongs to your signed-in account.");
+      setNotice("Checking your account for this booking.");
       return;
     }
     try {
@@ -44,8 +44,8 @@ function BookingReferenceActions({ references }: { references: string[] }) {
       const anchor = document.createElement("a");
       anchor.href = url; anchor.download = `ArmourXSports-booking-${reference}.pdf`; anchor.click();
       URL.revokeObjectURL(url);
-      setNotice(`Private PDF prepared for ${reference}.`);
-    } catch { setNotice("The private download could not be prepared. Use Find a booking to try again."); }
+      setNotice(`Your booking PDF for ${reference} is ready.`);
+    } catch { setNotice("That download is not ready just now. Try Find a booking instead."); }
   }
   if (!references.length) return null;
   return <section className="booking-reference-actions" aria-label="Booking references"><h3>Save every booking reference</h3>{references.map((reference) => <div key={reference}><code>{reference}</code><button type="button" onClick={() => void copyReference(reference)}>Copy</button><button type="button" onClick={() => void download(reference)} disabled={ownerSession === null}>Download</button></div>)}{notice ? <p role="status">{notice}</p> : null}</section>;

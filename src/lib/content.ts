@@ -114,7 +114,7 @@ export const faqs: FaqItem[] = [
   {
     question: "When is an online payment confirmed?",
     answer:
-      "After payment is verified. The booking result page shows the current confirmation status.",
+      "The moment the payment goes through. Your booking result page and confirmation email will show everything.",
   },
   {
     question: "What are the cancellation and refund terms?",
@@ -125,7 +125,7 @@ export const faqs: FaqItem[] = [
 
 export const articles: Article[] = [
   {
-    slug: "how-booking-status-is-verified",
+    slug: "how-booking-confirmation-works",
     category: "Booking guide",
     title: "How booking confirmation works",
     excerpt: "What happens between choosing a session and seeing your field confirmed.",
@@ -135,16 +135,16 @@ export const articles: Article[] = [
     imageAlt: "A player sprinting with the ball at ArmourX Sports",
     body: [
       {
-        heading: "Availability is checked live",
+        heading: "Your slot is shown live",
         paragraphs: [
           "The booking page shows the latest field, date and session availability. Your selection is checked again before payment.",
-          "A selection is held briefly while checkout is completed. If it expires, return to availability and choose again.",
+          "A selection is held briefly while checkout is completed. If it runs out of time, return to availability and choose again.",
         ],
       },
       {
-        heading: "Payment redirects are not confirmation",
+        heading: "Your field locks in after payment",
         paragraphs: [
-          "The result page checks the payment status for you. A return from the payment page is not confirmation on its own.",
+          "The result page shows your booking the moment the payment goes through — and your confirmation email will have everything too.",
         ],
       },
     ],

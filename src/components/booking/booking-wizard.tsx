@@ -133,8 +133,8 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
           setLiveAvailability(next);
           setError(null);
         }
-      } catch (refreshError) {
-        if (active) setError(refreshError instanceof PublicApiError ? refreshError.message : "Availability could not be refreshed. Check your connection and try again.");
+      } catch {
+        if (active) setError("Service temporarily unavailable. We're really sorry about this — please try again in a moment, or email armourxsports@gmail.com.");
       }
     };
     void refresh();
@@ -230,10 +230,10 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
       if (!result) { setVoucher(null); setVoucherStatus("rejected"); setVoucherError("That voucher code is not valid for this booking."); return; }
       setVoucher(result);
       setVoucherStatus("applied");
-    } catch (voucherError) {
+    } catch {
       setVoucher(null);
       setVoucherStatus("rejected");
-      setVoucherError(voucherError instanceof PublicApiError ? voucherError.message : "The voucher could not be checked.");
+      setVoucherError("We couldn't check that voucher just now. Please try again in a moment.");
     }
   }
 
@@ -273,7 +273,6 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
       </div>
 
       <h2 className="booking-wizard__heading" tabIndex={-1} ref={headingRef}>{phase === "sessions" ? "Pick your sessions" : "Your details"}</h2>
-      {onlinePayment.enabled && onlinePayment.environment === "sandbox" ? <p className="booking-note booking-note--sandbox" role="status"><strong>Sandbox checkout — no real payment will be taken.</strong> This checkout is for testing only.</p> : null}
       {error ? <p className="booking-error" role="alert">{error}</p> : null}
 
       {phase === "sessions" ? (
@@ -360,7 +359,7 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
               );
             })}
           </div>
-          <p className="availability-refresh" role="status">Times shown in Malaysia time · up to 90 days ahead</p>
+          <p className="availability-refresh" role="status">All times are Malaysia time · book up to 90 days ahead</p>
         </>
       ) : (
         <form className="booking-details-form" id="booking-details-form" onSubmit={submitDetails}>
@@ -435,13 +434,13 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
         ) : (
           <div className="booking-bar__actions">
             <Button type="button" variant="ghost" onClick={backToSessions}>Back</Button>
-            <Button type="submit" form="booking-details-form" disabled={!basket.length || requestState !== "idle" || paymentBlocked}>{requestState === "booking" ? "Creating payment…" : "Proceed to secure payment"} <ArrowRight className="h-4 w-4" /></Button>
+            <Button type="submit" form="booking-details-form" disabled={!basket.length || requestState !== "idle" || paymentBlocked}>{requestState === "booking" ? "Taking you to payment…" : "Continue to payment"} <ArrowRight className="h-4 w-4" /></Button>
           </div>
         )}
       </div>
 
       {phase === "sessions" ? (
-        <p className="booking-note">Your session is confirmed once payment is verified.</p>
+        <p className="booking-note">Your booking is confirmed as soon as the payment goes through.</p>
       ) : null}
     </div>
   );

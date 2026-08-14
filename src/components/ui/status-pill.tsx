@@ -10,10 +10,10 @@ const availabilityLabels: Record<AvailabilityStatus, string> = {
 };
 
 const paymentLabels: Record<PaymentState, string> = {
-  pending: "Pending verification",
+  pending: "Almost there",
   confirmed: "Booking confirmed",
-  failed: "Payment failed",
-  expired: "Hold expired",
+  failed: "Not completed",
+  expired: "Slot released",
 };
 
 export function AvailabilityPill({ status }: { status: AvailabilityStatus }) {

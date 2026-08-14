@@ -14,11 +14,11 @@ export default async function BookingResultPage({ searchParams }: { searchParams
   const reference = query.reference && /^AXO-[A-Z0-9]{6,16}$/.test(query.reference) ? query.reference : "AXO-PENDING";
   return (
     <>
-      <PageHero compact eyebrow="Booking status" title={<>Your order<br />status.</>} intro="Keep this page open after checkout. It checks your payment and shows when the field is confirmed." />
+      <PageHero compact eyebrow="Booking status" title={<>Your order<br />status.</>} intro="Keep this page open after checkout. It shows when your field is locked in." />
       <section className="payment-result-section">
         <div className="shell payment-result-section__grid">
           <LivePaymentResult reference={reference} />
-          <aside><p className="eyebrow"><span aria-hidden="true" />How confirmation works</p><h2>Verified before confirmed.</h2><p>Returning from the payment page does not confirm a booking by itself. This page shows your field as confirmed only after the payment has been verified on the server.</p></aside>
+          <aside><p className="eyebrow"><span aria-hidden="true" />How it works</p><h2>You&apos;re confirmed the moment it&apos;s done.</h2><p>Your field shows as confirmed right here as soon as the payment goes through — and your confirmation email will have everything too.</p></aside>
         </div>
       </section>
     </>

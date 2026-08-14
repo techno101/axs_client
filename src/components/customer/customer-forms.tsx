@@ -8,7 +8,7 @@ import { formatTimePair12 } from "@/lib/format";
 import type { CustomerBooking } from "@/lib/api/types";
 
 type Notice = { tone: "error" | "success" | "info"; text: string } | null;
-const serviceMessage = "This account action is unavailable right now. You can still book as a guest.";
+const serviceMessage = "Service temporarily unavailable. We're really sorry about this — please try again in a moment, or email armourxsports@gmail.com.";
 
 function messageFor(error: unknown): Notice {
   if (error instanceof CustomerApiError) return { tone: "error", text: error.code === "SERVICE_UNAVAILABLE" ? serviceMessage : error.message };
@@ -77,7 +77,7 @@ function AccountState({ account, children }: { account: CustomerAccount | null; 
 
 function useAccount() { const [account, setAccount] = useState<CustomerAccount | null>(null); const [notice, setNotice] = useState<Notice>(null); useEffect(() => { void customerApi<CustomerSessionView>("session").then((value) => setAccount(value.account)).catch(() => { setNotice({ tone: "info", text: "Sign in to view your account." }); }); }, []); return { account, setAccount, notice }; }
 
-export function AccountOverview() { const { account, notice } = useAccount(); return <AccountShell eyebrow="Your account" title="Account overview"><AccountNavigation/><NoticeBox notice={notice}/><AccountState account={account}>{(value) => <div className="customer-summary"><p>Signed in as <strong>{value.displayName}</strong>.</p><dl><div><dt>Email</dt><dd>{value.email}</dd></div><div><dt>Status</dt><dd>Verified</dd></div></dl><Link className="customer-submit" href="/book">Book your spot</Link></div>}</AccountState></AccountShell>; }
+export function AccountOverview() { const { account, notice } = useAccount(); return <AccountShell eyebrow="Your account" title="Account overview"><AccountNavigation/><NoticeBox notice={notice}/><AccountState account={account}>{(value) => <div className="customer-summary"><p>Signed in as <strong>{value.displayName}</strong>.</p><dl><div><dt>Email</dt><dd>{value.email}</dd></div><div><dt>Status</dt><dd>Active</dd></div></dl><Link className="customer-submit" href="/book">Book your spot</Link></div>}</AccountState></AccountShell>; }
 
 function rescheduleMessage(error: unknown): Notice {
   if (!(error instanceof CustomerApiError)) return messageFor(error);
