@@ -12,7 +12,7 @@ export function useCustomerSession(): { state: CustomerSessionState; signOut: ()
 
   useEffect(() => {
     let active = true;
-    void customerApi<{ account?: { status?: string } | null }>("/session", { method: "GET" })
+    void customerApi<{ account?: { status?: string } | null }>("session", { method: "GET" })
       .then((session) => { if (active) setState(session?.account ? "member" : "guest"); })
       .catch(() => { if (active) setState("guest"); });
     return () => { active = false; };
