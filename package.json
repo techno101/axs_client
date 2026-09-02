@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev --webpack -p 4173",
+    "stop": "powershell -Command \"$pids = @(Get-NetTCPConnection -LocalPort 4173 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique); if ($pids.Count -gt 0) { foreach($p in $pids) { try { taskkill /PID $p /T /F | Out-Null } catch {} }; Write-Host 'Stopped axs_client on port 4173.' } else { Write-Host 'No running server found on port 4173.' }\"",
+    "show": "powershell -Command \"Get-NetTCPConnection -LocalPort 4173 -ErrorAction SilentlyContinue | Format-Table LocalAddress, LocalPort, OwningProcess, State\"",
     "build": "next build --webpack && node scripts/check-browser-bundles.mjs",
     "start": "next start",
     "start:test": "next start -p 4173",
