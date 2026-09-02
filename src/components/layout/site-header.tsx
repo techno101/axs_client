@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { animate, createScope, stagger, type TargetsParam } from "animejs";
 import { BrandMark } from "@/components/ui/brand-mark";
+import { AuthMenu, useCustomerSession } from "@/components/layout/auth-menu";
 import { homeHref, localeFromPath, shellCopy } from "@/lib/site-copy";
 
 export function SiteHeader() {
@@ -13,9 +14,17 @@ export function SiteHeader() {
   const copy = shellCopy[locale];
   const isBm = locale === "bm";
   const [open, setOpen] = useState(false);
+  const [signOutBusy, setSignOutBusy] = useState(false);
+  const { state: sessionState, signOut } = useCustomerSession();
   const menuRef = useRef<HTMLDivElement>(null);
   const scopeRef = useRef<ReturnType<typeof createScope> | null>(null);
   const lineAnimationRef = useRef<{ restart: () => void } | null>(null);
+
+  const authLabels = { signIn: copy.signIn, createAccount: copy.createAccount, myAccount: copy.myAccount, signOut: copy.signOut };
+  const handleSignOut = () => {
+    setSignOutBusy(true);
+    void signOut();
+  };
 
   const navItems = [
     { href: "/fields", label: copy.fields },
@@ -96,6 +105,7 @@ export function SiteHeader() {
           ))}
         </nav>
         <div className="site-header__actions">
+          <AuthMenu state={sessionState} onSignOut={handleSignOut} labels={authLabels} busy={signOutBusy} />
           <Link className="header-language" href={isBm ? "/" : "/bm"} hrefLang={isBm ? "en" : "ms"} aria-label={copy.switchLanguage}>{isBm ? "EN" : "BM"}</Link>
           <button className="site-header__menu" type="button" onClick={() => setOpen(true)} aria-expanded={open} aria-controls="site-menu">
             <span>Menu</span>
@@ -122,9 +132,27 @@ export function SiteHeader() {
                 <b aria-hidden="true">0{index + 1}</b>
               </Link>
             ))}
+            {sessionState === "guest" ? (
+              <>
+                <Link href="/sign-in" onClick={close} className="menu-line" style={{ "--menu-i": navItems.length } as React.CSSProperties}>
+                  <span>{copy.signIn}</span>
+                  <b aria-hidden="true">0{navItems.length + 1}</b>
+                </Link>
+                <Link href="/sign-up" onClick={close} className="menu-line" style={{ "--menu-i": navItems.length + 1 } as React.CSSProperties}>
+                  <span>{copy.createAccount}</span>
+                  <b aria-hidden="true">0{navItems.length + 2}</b>
+                </Link>
+              </>
+            ) : (
+              <Link href="/account" onClick={close} className="menu-line" style={{ "--menu-i": navItems.length } as React.CSSProperties}>
+                <span>{copy.myAccount}</span>
+                <b aria-hidden="true">0{navItems.length + 1}</b>
+              </Link>
+            )}
           </nav>
           <div className="site-menu__foot shell">
             <Link className="site-header__book" href="/book" onClick={close}>{copy.book}</Link>
+            {sessionState === "member" ? <button className="auth-menu__signout" type="button" disabled={signOutBusy} onClick={handleSignOut}>{signOutBusy ? "…" : copy.signOut}</button> : null}
             <Link href={isBm ? "/" : "/bm"} hrefLang={isBm ? "en" : "ms"} onClick={close}>{isBm ? "English" : "Bahasa Melayu"}</Link>
           </div>
         </aside>

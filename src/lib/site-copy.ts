@@ -40,6 +40,9 @@ type ShellCopy = {
   faq: string;
   contact: string;
   signIn: string;
+  createAccount: string;
+  myAccount: string;
+  signOut: string;
   findBooking: string;
   book: string;
   switchLanguage: string;
@@ -146,6 +149,9 @@ export const shellCopy: Record<SiteLocale, ShellCopy> = {
     faq: "FAQ",
     contact: "Contact",
     signIn: "Sign in",
+    createAccount: "Create account",
+    myAccount: "My account",
+    signOut: "Sign out",
     findBooking: "Find booking",
     book: "Book your spot",
     switchLanguage: "View this site in Bahasa Melayu",
@@ -171,6 +177,9 @@ export const shellCopy: Record<SiteLocale, ShellCopy> = {
     faq: "Soalan lazim",
     contact: "Hubungi",
     signIn: "Log masuk",
+    createAccount: "Buat akaun",
+    myAccount: "Akaun saya",
+    signOut: "Log keluar",
     findBooking: "Cari tempahan",
     book: "Tempah slot anda",
     switchLanguage: "View this site in English",

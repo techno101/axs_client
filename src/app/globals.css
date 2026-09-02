@@ -3661,6 +3661,32 @@ body { font-family: var(--font-body); }
 .site-header__nav a::after,
 .header-find::after { background: var(--armour-green); }
 .site-header__actions { gap: 14px; }
+
+/* Session-aware header auth (v15): compact text links matching the nav styling. */
+.auth-menu { display: inline-flex; align-items: center; gap: 12px; }
+.auth-menu--loading { width: 96px; height: 20px; }
+.auth-menu a,
+.auth-menu button {
+  position: relative;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  cursor: pointer;
+}
+.auth-menu__signup { color: var(--armour-green, #b6f09c); }
+.auth-menu__signout { opacity: 0.78; }
+.auth-menu__signout:hover { opacity: 1; }
+@media (max-width: 640px) { .auth-menu__signup { display: none; } }
+.site-menu__foot .auth-menu__signout { min-height: 42px; padding: 8px 0; font-size: 13px; }
+
 .site-header__book {
   display: inline-flex;
   min-height: 42px;
