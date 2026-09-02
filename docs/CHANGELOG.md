@@ -1,5 +1,14 @@
 # Client Changelog
 
+## Header auth entry points + account sign-out (v15) - 2026-09-03
+
+- The complete customer auth surface (sign-up, sign-in, verify, recovery, Google, account pages) existed since Checkpoint 2 but had **no entry point anywhere in the shell** — pages were reachable only by typing the URL. The header now renders a session-aware auth area: guests see **Sign in / Create account**, members see **My account / Sign out** (compact links matching the nav styling; hidden `create account` on small screens where the menu overlay covers it).
+- The full-screen menu overlay gained conditional links (Sign in + Create account for guests, My account for members) and a Sign out action in the menu foot.
+- `AccountOverview` gained a working Sign out button (the BFF `logout` rule existed but was never called; it now clears the session and returns home).
+- New shared `useCustomerSession` hook + `AuthMenu` (`src/components/layout/auth-menu.tsx`); copy keys `createAccount`/`myAccount`/`signOut` added for EN + BM (`signIn` existed unused).
+- Google sign-in/up buttons are now reachable; completion requires the admin-side customer Google OAuth configuration (present on the admin deployment) and the matching authorized redirect URI in the Google Cloud console.
+- Validation: typecheck, lint (repo files), 34/34 tests, production build + browser-bundle scan all green.
+
 ## Premium pass + branch rules (v15) - 2026-08-14
 
 - Git/branch rules added to `AGENTS.md` + `docs/START-HERE.md` (all repos): branches are always `v<N>`, created from published `origin/main` and pushed immediately; one small fix = one commit; env files never committed/printed.
