@@ -155,23 +155,28 @@ function MotionStage({ children, enabled }: { children: React.ReactNode; enabled
     const refresh = () => ScrollTrigger.refresh();
     window.addEventListener("load", refresh, { once: true });
 
-    // Pinned horizontal matchday reel on desktop only. Vertical scroll drives the
-    // track sideways; the frames grow in the middle and shrink at the edges, and
-    // the pin releases back to normal vertical flow at the last frame.
+    // Pinned horizontal 3D matchday reel on desktop. Vertical scroll drives the
+    // track sideways with 3D perspective, dynamic rotateY, translateZ depth pop,
+    // inner image parallax, and specular sheen.
     const gallery = root.querySelector<HTMLElement>(".match-gallery");
     const track = root.querySelector<HTMLElement>(".match-gallery__track");
     const figures = track ? Array.from(track.querySelectorAll<HTMLElement>(".match-gallery__figure")) : [];
+    const prevBtn = root.querySelector<HTMLButtonElement>(".match-gallery__nav-btn--prev");
+    const nextBtn = root.querySelector<HTMLButtonElement>(".match-gallery__nav-btn--next");
+
+    let cleanupGalleryNav: (() => void) | undefined;
 
     if (gallery && track && figures.length) {
       mediaQueries.add("(min-width: 900px)", () => {
-        const distance = () => Math.max(0, track.scrollWidth - window.innerWidth);
+        const distance = () => Math.max(0, track.scrollWidth - window.innerWidth + 80);
         const tween = gsap.to(track, {
           x: () => -distance(),
           ease: "none",
           scrollTrigger: {
+            id: "galleryPin",
             trigger: gallery,
             start: "top top",
-            end: () => `+=${distance() + window.innerHeight * 0.5}`,
+            end: () => `+=${distance() + window.innerHeight * 0.6}`,
             pin: true,
             scrub: 1,
             anticipatePin: 1,
@@ -180,36 +185,127 @@ function MotionStage({ children, enabled }: { children: React.ReactNode; enabled
         });
 
         figures.forEach((figure) => {
-          gsap.fromTo(figure, { scale: 0.86 }, {
-            scale: 1.1,
+          const card = figure.querySelector<HTMLElement>(".match-gallery__card") || figure;
+          const img = figure.querySelector<HTMLElement>("img");
+          const sheen = figure.querySelector<HTMLElement>(".match-gallery__sheen");
+
+          // Approaching focal center: rotates inward, lifts forward from recessed depth
+          gsap.fromTo(card, {
+            rotateY: 22,
+            z: -120,
+            scale: 0.88,
+            opacity: 0.7,
+            transformOrigin: "50% 50% -80px",
+          }, {
+            rotateY: 0,
+            z: 48,
+            scale: 1.08,
+            opacity: 1,
             ease: "none",
             scrollTrigger: {
               containerAnimation: tween,
               trigger: figure,
-              start: "left 68%",
+              start: "left 88%",
               end: "center 50%",
               scrub: true,
             },
           });
-          gsap.fromTo(figure, { scale: 1.1 }, {
-            scale: 0.86,
+
+          // Leaving focal center: swings outward, recedes into the background
+          gsap.fromTo(card, {
+            rotateY: 0,
+            z: 48,
+            scale: 1.08,
+            opacity: 1,
+            transformOrigin: "50% 50% -80px",
+          }, {
+            rotateY: -22,
+            z: -120,
+            scale: 0.88,
+            opacity: 0.7,
             ease: "none",
             scrollTrigger: {
               containerAnimation: tween,
               trigger: figure,
               start: "center 50%",
-              end: "right 32%",
+              end: "right 12%",
               scrub: true,
             },
           });
+
+          // Multi-plane inner image parallax for holographic depth
+          if (img) {
+            gsap.fromTo(img, { xPercent: -7 }, {
+              xPercent: 7,
+              ease: "none",
+              scrollTrigger: {
+                containerAnimation: tween,
+                trigger: figure,
+                start: "left 90%",
+                end: "right 10%",
+                scrub: true,
+              },
+            });
+          }
+
+          // Dynamic specular sheen highlight as card faces the viewer
+          if (sheen) {
+            gsap.fromTo(sheen, { opacity: 0 }, {
+              opacity: 0.55,
+              ease: "none",
+              scrollTrigger: {
+                containerAnimation: tween,
+                trigger: figure,
+                start: "left 75%",
+                end: "center 50%",
+                scrub: true,
+              },
+            });
+            gsap.fromTo(sheen, { opacity: 0.55 }, {
+              opacity: 0,
+              ease: "none",
+              scrollTrigger: {
+                containerAnimation: tween,
+                trigger: figure,
+                start: "center 50%",
+                end: "right 25%",
+                scrub: true,
+              },
+            });
+          }
         });
       });
+
+      // Manual Prev / Next navigation
+      if (prevBtn && nextBtn) {
+        const onPrev = () => {
+          if (window.innerWidth < 900) {
+            track.scrollBy({ left: -320, behavior: "smooth" });
+          } else {
+            window.scrollBy({ top: -Math.round(window.innerHeight * 0.42), behavior: "smooth" });
+          }
+        };
+        const onNext = () => {
+          if (window.innerWidth < 900) {
+            track.scrollBy({ left: 320, behavior: "smooth" });
+          } else {
+            window.scrollBy({ top: Math.round(window.innerHeight * 0.42), behavior: "smooth" });
+          }
+        };
+        prevBtn.addEventListener("click", onPrev);
+        nextBtn.addEventListener("click", onNext);
+        cleanupGalleryNav = () => {
+          prevBtn.removeEventListener("click", onPrev);
+          nextBtn.removeEventListener("click", onNext);
+        };
+      }
     }
 
     ScrollTrigger.refresh();
 
     return () => {
       window.removeEventListener("load", refresh);
+      cleanupGalleryNav?.();
       mediaQueries.revert();
     };
   }, { scope, dependencies: [enabled], revertOnUpdate: true });

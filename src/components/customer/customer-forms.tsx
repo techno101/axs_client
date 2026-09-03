@@ -16,7 +16,36 @@ function messageFor(error: unknown): Notice {
 }
 
 function AccountShell({ eyebrow, title, children }: { eyebrow: string; title: string; children: React.ReactNode }) {
-  return <section className="customer-page"><div className="shell customer-page__grid"><aside><p className="eyebrow">{eyebrow}</p><h1>{title}</h1><p>Guest booking works without an account. Sign up to track your bookings, download receipts, and keep your history in one place.</p><Link href="/book" className="customer-text-link">Book as guest</Link></aside><div className="customer-card">{children}</div></div></section>;
+  return (
+    <section className="customer-page">
+      <div className="shell customer-page__grid">
+        <aside>
+          <p className="eyebrow">{eyebrow}</p>
+          <h1>{title}</h1>
+          <p>Guest booking works without an account. Sign up to track your bookings, download receipts, and keep your history in one place.</p>
+          <Link href="/book" className="customer-text-link">Book as guest</Link>
+        </aside>
+        <div className="customer-card">{children}</div>
+      </div>
+    </section>
+  );
+}
+
+function DashboardShell({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <section className="customer-dashboard">
+      <div className="shell customer-dashboard__grid">
+        <aside className="customer-dashboard__sidebar">
+          <p className="eyebrow">Your account</p>
+          <AccountNavigation />
+        </aside>
+        <div className="customer-dashboard__main">
+          <h1>{title}</h1>
+          <div className="customer-dashboard__content">{children}</div>
+        </div>
+      </div>
+    </section>
+  );
 }
 
 function NoticeBox({ notice }: { notice: Notice }) { return notice ? <p className={`customer-notice customer-notice--${notice.tone}`} role={notice.tone === "error" ? "alert" : "status"}>{notice.text}</p> : null; }
@@ -88,7 +117,7 @@ export function ResetPasswordForm() {
   return <AccountShell eyebrow="Account recovery" title="Choose a new passphrase"><NoticeBox notice={notice}/><form className="customer-form" onSubmit={submit}><label className="customer-form__wide">New passphrase<input name="password" type="password" autoComplete="new-password" required minLength={12} maxLength={128}/></label><button className="customer-submit customer-form__wide" disabled={busy}>Save passphrase</button></form><p className="customer-help"><Link href="/sign-in">Return to sign in</Link></p></AccountShell>;
 }
 
-function AccountNavigation() { return <nav className="customer-account-nav" aria-label="Account navigation"><Link href="/account">Overview</Link><Link href="/account/bookings">Bookings</Link><Link href="/account/profile">Profile</Link><Link href="/account/security">Security</Link></nav>; }
+function AccountNavigation() { return <nav className="customer-dashboard__nav" aria-label="Account navigation"><Link href="/account">Overview</Link><Link href="/account/bookings">Bookings</Link><Link href="/account/profile">Profile</Link><Link href="/account/security">Security</Link></nav>; }
 function AccountState({ account, children }: { account: CustomerAccount | null; children: (account: CustomerAccount) => React.ReactNode }) { if (!account) return <p className="customer-notice customer-notice--info" role="status">Loading your account…</p>; if (account.status === "pending") return <><p className="customer-notice customer-notice--info" role="status">Verify your email before using account features.</p><Link className="customer-secondary" href="/verify-email?state=pending">Verify email</Link></>; return <>{children(account)}</>; }
 
 function useAccount() { const [account, setAccount] = useState<CustomerAccount | null>(null); const [notice, setNotice] = useState<Notice>(null); useEffect(() => { void customerApi<CustomerSessionView>("session").then((value) => setAccount(value.account)).catch(() => { setNotice({ tone: "info", text: "Sign in to view your account." }); }); }, []); return { account, setAccount, notice }; }
@@ -97,7 +126,7 @@ export function AccountOverview() {
   const { account, notice } = useAccount();
   const [signingOut, setSigningOut] = useState(false);
   const signOut = async () => { setSigningOut(true); try { await postCustomer("logout", {}); } catch { /* cookies are cleared regardless */ } window.location.assign("/"); };
-  return <AccountShell eyebrow="Your account" title="Account overview"><AccountNavigation/><NoticeBox notice={notice}/><AccountState account={account}>{(value) => <div className="customer-summary"><p>Signed in as <strong>{value.displayName}</strong>.</p><dl><div><dt>Email</dt><dd>{value.email}</dd></div><div><dt>Status</dt><dd>Active</dd></div></dl><Link className="customer-submit" href="/book">Book your spot</Link><button className="customer-secondary" type="button" disabled={signingOut} onClick={() => void signOut()}>{signingOut ? "Signing out…" : "Sign out"}</button></div>}</AccountState></AccountShell>;
+  return <DashboardShell title="Account overview"><NoticeBox notice={notice}/><AccountState account={account}>{(value) => <div className="customer-summary"><p>Signed in as <strong>{value.displayName}</strong>.</p><dl><div><dt>Email</dt><dd>{value.email}</dd></div><div><dt>Status</dt><dd>Active</dd></div></dl><Link className="customer-submit" href="/book">Book your spot</Link><button className="customer-secondary" type="button" disabled={signingOut} onClick={() => void signOut()}>{signingOut ? "Signing out…" : "Sign out"}</button></div>}</AccountState></DashboardShell>;
 }
 
 function rescheduleMessage(error: unknown): Notice {
@@ -170,15 +199,15 @@ export function AccountBookings() {
       const blob = await response.blob(); const url = URL.createObjectURL(blob); const anchor = document.createElement("a"); anchor.href = url; anchor.download = `ArmourXSports-booking-${reference}.pdf`; anchor.click(); URL.revokeObjectURL(url);
     } catch { setLocal({ tone: "error", text: "This booking is no longer available in your account history." }); }
   }
-  return <AccountShell eyebrow="Your account" title="Booking history"><AccountNavigation/><NoticeBox notice={notice ?? local}/><AccountState account={account}>{() => <div className="customer-security">{bookings.length ? bookings.map((booking) => <article className="customer-booking" key={booking.reference}><p><strong>{booking.timelineState}</strong><span>Booking: {booking.bookingStatus}</span><span>Payment: {booking.paymentStatus}</span></p><h2>{booking.fieldName}</h2><p>{booking.bookingDate} · {booking.blockLabel} · {formatTimePair12(booking.startsAt, booking.endsAt)}</p><p>Reference: <code>{booking.reference}</code>{booking.receiptReference ? <span>Receipt: <code>{booking.receiptReference}</code></span> : null}</p><button className="customer-secondary" type="button" onClick={() => void download(booking.reference)}>Download booking PDF</button><RescheduleBooking booking={booking} onSaved={refreshBookings}/></article>) : <p className="customer-notice customer-notice--info" role="status">No account-owned bookings yet. Guest bookings remain private guest records and do not appear here.</p>}</div>}</AccountState></AccountShell>;
+  return <DashboardShell title="Booking history"><NoticeBox notice={notice ?? local}/><AccountState account={account}>{() => <div className="customer-security">{bookings.length ? bookings.map((booking) => <article className="customer-booking customer-booking--card" key={booking.reference}><div className="customer-booking__header"><p className="customer-booking__status"><strong>{booking.timelineState}</strong><span>{booking.bookingStatus}</span></p><h2 className="customer-booking__title">{booking.fieldName}</h2><p className="customer-booking__time">{booking.bookingDate} · {booking.blockLabel} · {formatTimePair12(booking.startsAt, booking.endsAt)}</p></div><div className="customer-booking__details"><p>Ref: <code>{booking.reference}</code></p>{booking.receiptReference ? <p>Receipt: <code>{booking.receiptReference}</code></p> : null}</div><div className="customer-booking__actions"><button className="customer-secondary customer-secondary--small" type="button" onClick={() => void download(booking.reference)}>Download PDF</button><RescheduleBooking booking={booking} onSaved={refreshBookings}/></div></article>) : <p className="customer-notice customer-notice--info" role="status">No account-owned bookings yet. Guest bookings remain private guest records and do not appear here.</p>}</div>}</AccountState></DashboardShell>;
 }
 
 export function ProfileForm() { const { account, setAccount, notice } = useAccount(); const [local, setLocal] = useState<Notice>(null); const [busy, setBusy] = useState(false); async function submit(event: FormEvent<HTMLFormElement>) { event.preventDefault(); setBusy(true); try { await customerApi("profile/update", { method: "PATCH", body: JSON.stringify(profilePayload(event.currentTarget)) }); setLocal({ tone: "success", text: "Your profile is updated. Sign in again to continue." }); window.setTimeout(() => window.location.assign("/sign-in"), 900); } catch (error) { setLocal(messageFor(error)); } finally { setBusy(false); } }
   useEffect(() => { if (account) setAccount(account); }, [account, setAccount]);
-  return <AccountShell eyebrow="Your account" title="Profile"><AccountNavigation/><NoticeBox notice={notice ?? local}/><AccountState account={account}>{(value) => <form className="customer-form" onSubmit={submit}><label className="customer-form__wide">Email<input value={value.email} readOnly aria-readonly="true"/></label><label>Name<input name="displayName" defaultValue={value.displayName} required/></label><label>Phone<input name="phone" defaultValue={value.phone} required/></label><label>Age<input name="age" type="number" min="1" max="120" defaultValue={value.age} required/></label><button className="customer-submit customer-form__wide" disabled={busy}>Save profile</button></form>}</AccountState></AccountShell>; }
+  return <DashboardShell title="Profile"><NoticeBox notice={notice ?? local}/><AccountState account={account}>{(value) => <form className="customer-form customer-form--card" onSubmit={submit}><label className="customer-form__wide">Email<input value={value.email} readOnly aria-readonly="true"/></label><label>Name<input name="displayName" defaultValue={value.displayName} required/></label><label>Phone<input name="phone" defaultValue={value.phone} required/></label><label>Age<input name="age" type="number" min="1" max="120" defaultValue={value.age} required/></label><button className="customer-submit customer-form__wide" disabled={busy}>Save profile</button></form>}</AccountState></DashboardShell>; }
 
 export function SecurityForm() { const { account, notice } = useAccount(); const [local, setLocal] = useState<Notice>(null); const [busy, setBusy] = useState(false); async function setPassword(event: FormEvent<HTMLFormElement>) { event.preventDefault(); setBusy(true); try { await postCustomer("password/set", { password: String(new FormData(event.currentTarget).get("password") ?? "") }); setLocal({ tone: "success", text: "Password set. Sign in again to continue." }); } catch (error) { setLocal(messageFor(error)); } finally { setBusy(false); } } async function linkGoogle() { setBusy(true); try { const result = await postCustomer<{ authorizationUrl: string }>("google/link/start"); window.location.assign(result.authorizationUrl); } catch (error) { setLocal(messageFor(error)); } finally { setBusy(false); } } async function unlinkGoogle() { setBusy(true); try { await customerApi("google/unlink", { method: "DELETE" }); setLocal({ tone: "success", text: "Google is unlinked. Sign in again to continue." }); } catch (error) { setLocal(messageFor(error)); } finally { setBusy(false); } }
-  return <AccountShell eyebrow="Your account" title="Security"><AccountNavigation/><NoticeBox notice={notice ?? local}/><AccountState account={account}>{(value) => <div className="customer-security"><p><strong>Google</strong><span>{value.googleLinked ? "Connected" : "Not connected"}</span></p>{value.googleLinked ? <GoogleButton label="Unlink Google" onClick={unlinkGoogle} disabled={busy || !value.passwordSet} /> : <GoogleButton label="Link Google" onClick={linkGoogle} disabled={busy} />}{!value.passwordSet ? <form className="customer-form" onSubmit={setPassword}><label className="customer-form__wide">Set a passphrase<input name="password" type="password" autoComplete="new-password" required minLength={12} maxLength={128}/></label><button className="customer-submit customer-form__wide" disabled={busy}>Set passphrase</button></form> : <p className="customer-help">A passphrase is set for this account.</p>}</div>}</AccountState></AccountShell>; }
+  return <DashboardShell title="Security"><NoticeBox notice={notice ?? local}/><AccountState account={account}>{(value) => <div className="customer-security customer-security--card"><p><strong>Google</strong><span>{value.googleLinked ? "Connected" : "Not connected"}</span></p>{value.googleLinked ? <GoogleButton label="Unlink Google" onClick={unlinkGoogle} disabled={busy || !value.passwordSet} /> : <GoogleButton label="Link Google" onClick={linkGoogle} disabled={busy} />}{!value.passwordSet ? <form className="customer-form" onSubmit={setPassword}><label className="customer-form__wide">Set a passphrase<input name="password" type="password" autoComplete="new-password" required minLength={12} maxLength={128}/></label><button className="customer-submit customer-form__wide" disabled={busy}>Set passphrase</button></form> : <p className="customer-help">A passphrase is set for this account.</p>}</div>}</AccountState></DashboardShell>; }
 
 async function withTimeout<T>(promise: Promise<T>, ms = 12_000): Promise<T> {
   return await Promise.race([promise, new Promise<never>((_, reject) => window.setTimeout(() => reject(new Error("This is taking longer than expected. Please try again.")), ms))]);

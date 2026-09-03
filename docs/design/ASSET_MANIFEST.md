@@ -12,7 +12,7 @@ Status: `IMPLEMENTED` for static public fallback media. On 2026-08-09 all venue 
 | `venue/opening-c.webp` | `awesome jumping head to the ball around the dbox and cool moment.jpg` | Home opening detail frame C. |
 | `venue/home-action.webp` | `cool moment of player rushing with the ball.jpg` | Home match-action chapter. |
 | `venue/home-community.webp` | `referees and teams askaking hands in the middle of the match.jpg` | Home community chapter. |
-| `venue/pitches-aerial.webp` | `aerial shot from a corner with the whole both 2 fields view.jpeg` | Home "Two pitches. One venue." lead. |
+| `venue/field-aerial-landscape.jpg` | `field aerial view landscape.jpg` | Home "The grounds at Iskandar Puteri." lead aerial. |
 | `venue/gallery-1.webp` | `a fllyingkick by a player with many playerrs around him.jpg` | Home matchday gallery 1. |
 | `venue/gallery-2.webp` | `extreme pushing and dribling between two players in the frame.jpg` | Home matchday gallery 2. |
 | `venue/gallery-3.webp` | `player at the moment of beating the defenders grasp with the ball.jpg` | Home matchday gallery 3. |

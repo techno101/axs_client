@@ -1,5 +1,17 @@
 # Client Memory
 
+On 2026-09-04, the Matchday Gallery (`match-gallery`) was upgraded into an Awwwards-grade 3D perspective carousel per owner instructions:
+1. Pruning: Removed the last 6 photos (`gallery-15` through `gallery-20`), keeping 14 curated high-intensity on-pitch action shots (`gallery-01` to `gallery-14`).
+2. 3D Perspective Reel: Injected true 3D spatial perspective (`perspective: 1200px`, `transform-style: preserve-3d`) with hardware-accelerated GSAP transforms. Cards dynamically rotate on the Y-axis (`rotateY: 22deg → 0deg → -22deg`) and elevate on the Z-axis (`z: -120px → +48px → -120px`) as they traverse the focal point, with inner-image lenticular parallax (`xPercent: -7 → +7`) and a dynamic specular sheen glint.
+3. Controls & Polish: Added Prev / Next pill buttons in the header for tactile manual navigation alongside vertical scroll-jacking; styled figures with 20px rounded borders, card numbers `01-14`, and deep drop shadows. Mobile keeps native horizontal scroll-snap.
+
+On 2026-09-04, the homepage Pitches section underwent a UI and content refresh per owner instructions:
+1. Media: Swapped the aerial shot to the owner's landscape evening aerial (`/images/venue/field-aerial-landscape.jpg` from `assets/field/field aerial view landscape.jpg`), showing both floodlit fields with surrounding city lights.
+2. Stat bar: Removed the redundant 90-day booking window metric. Fixed the session length stat so `6` and `hr` sit side-by-side horizontally (`.countup` with `inline-flex` and baseline alignment) rather than stacking vertically. Polished the glassmorphic container for a balanced 2-metric layout.
+3. Copy: Replaced "Two pitches. One venue." with "The grounds at Iskandar Puteri." (BM: "Padang di Iskandar Puteri.").
+
+On 2026-09-04, following the owner's feedback for a more polished and professional design, a premium UI pass was executed on the customer account portal and header. The account page transitioned to a sidebar-based `DashboardShell` layout with a glassmorphic aesthetic. The sign-in and sign-up header buttons were modernized with subtle hover states, and form inputs across the app were unified. The desktop layout glitch where the mobile hamburger menu conflicted with the desktop navigation was fixed. Local testing confirms these changes meet the requested premium design standards while retaining the existing functionality.
+
 On 2026-09-03, deployment documentation was overhauled to reflect that `axs_client` is officially deployed on Coolify (using default Nixpacks/buildpacks), permanently retiring the previous intent to deploy to Vercel. Google Analytics is used for SEO instead of `@vercel/analytics`. The repository maintains no `.github/workflows` or `Dockerfile`, relying entirely on Coolify's containerized build process.
 
 On 2026-09-03 (brand pass), the favicon/OG/menu/Google issues from the owner audit were fixed: a proper icon set (favicon.ico + 32/192/512 squares + opaque 180px apple-touch-icon + 1200×630 OG image) was generated from the official transparent mark, replacing the 640KB-banner-as-favicon and the deleted "AX" placeholder icon.svg; site.webmanifest + OG/Twitter metadata complete social previews; the mobile hamburger/close are real SVGs (the old 1px CSS hairlines were the "hurts the eyes" complaint) and drawer close returns focus to the Menu button; Google OAuth buttons carry the official G mark. Scratch files (tmp/, test-*.mjs) are now gitignored AND eslint-ignored. Live on `main@b5dd652`; manifest/favicon/OG verified live.

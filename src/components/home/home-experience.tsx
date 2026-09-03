@@ -8,7 +8,7 @@ import { MarketingMotion } from "@/components/motion/marketing-motion";
 import { Magnetic } from "@/components/motion/magnetic";
 import { MatchClock } from "@/components/motion/match-clock";
 
-import { ArrowRightIcon, ArrowUpRightIcon, PinIcon } from "@/components/ui/icons";
+import { ArrowLeftIcon, ArrowRightIcon, ArrowUpRightIcon, PinIcon } from "@/components/ui/icons";
 import type { AvailabilityDaySummary, BookingBlock, FaqItem, Field, SiteConfigView } from "@/lib/api/types";
 import { formatTimePair12 } from "@/lib/format";
 import { availabilityDotLevel } from "@/lib/api/types";
@@ -47,12 +47,6 @@ const galleryShots = [
   { src: "/images/matchday/gallery/gallery-12.webp", alt: "Beating the defender's grasp with the ball at ArmourX Sports", caption: "Slipped away" },
   { src: "/images/matchday/gallery/gallery-13.webp", alt: "A player walking with the referee behind at ArmourX Sports", caption: "Walking it off" },
   { src: "/images/matchday/gallery/gallery-14.webp", alt: "A player weighing up the pass at ArmourX Sports", caption: "Picking the pass" },
-  { src: "/images/matchday/gallery/gallery-15.webp", alt: "A player in full flow with the ball at ArmourX Sports", caption: "In full flow" },
-  { src: "/images/matchday/gallery/gallery-16.webp", alt: "A live match under way at ArmourX Sports", caption: "Live" },
-  { src: "/images/matchday/gallery/gallery-17.webp", alt: "Dribbling clear of the defenders' grasp at ArmourX Sports", caption: "Clear" },
-  { src: "/images/matchday/gallery/gallery-18.webp", alt: "Winning the match at ArmourX Sports", caption: "Full time" },
-  { src: "/images/matchday/gallery/gallery-19.webp", alt: "Sprinting with the ball at full force at ArmourX Sports", caption: "Full gas" },
-  { src: "/images/matchday/gallery/gallery-20.webp", alt: "The ArmourX Sports office and venue", caption: "The base" },
 ];
 
 export function HomeExperience({ locale, fields, blocks, faqs, availability, siteConfig, businessDate, degraded }: Props) {
@@ -142,12 +136,11 @@ export function HomeExperience({ locale, fields, blocks, faqs, availability, sit
 
         <section className="match-pitches match-reveal" id="pitches" aria-labelledby="pitches-title">
           <div className="match-pitches__media match-cut-media">
-            <Image src="/images/venue/pitches-aerial.webp" alt="Aerial view of the two ArmourX Sports pitches in Iskandar Puteri" fill priority sizes="100vw" />
+            <Image src="/images/venue/field-aerial-landscape.jpg" alt="Aerial landscape view of the ArmourX Sports pitches in Iskandar Puteri" fill priority sizes="100vw" />
           </div>
           <div className="match-pitches__stats" aria-label="Venue at a glance">
             <span className="match-pitches__stat"><CountUp to={2} /><small>full-size pitches</small></span>
             <span className="match-pitches__stat"><CountUp to={6} suffix="hr" /><small>sessions</small></span>
-            <span className="match-pitches__stat"><CountUp to={90} suffix="d" /><small>booking window</small></span>
           </div>
           <div className="shell match-pitches__layout">
             <div className="match-pitches__copy">
@@ -235,18 +228,34 @@ export function HomeExperience({ locale, fields, blocks, faqs, availability, sit
         {galleryEnabled ? <section className="match-gallery match-reveal" id="gallery" aria-labelledby="gallery-title">
           <div className="shell match-gallery__head">
             <div>
-              <p className="match-label match-label--ink">Matchday</p>
+              <p className="match-label match-label--ink">Matchday · 3D Reel</p>
               <h2 id="gallery-title">Football, as it happens.</h2>
             </div>
-            <p>Real sessions at the venue — tackles, headers, sprints and team moments captured on the pitch.</p>
+            <div className="match-gallery__head-side">
+              <p>Real sessions at the venue — tackles, headers, sprints and team moments captured on the pitch.</p>
+              <div className="match-gallery__nav" aria-label="Gallery carousel controls">
+                <button className="match-gallery__nav-btn match-gallery__nav-btn--prev" aria-label="Previous photos" type="button">
+                  <ArrowLeftIcon />
+                </button>
+                <button className="match-gallery__nav-btn match-gallery__nav-btn--next" aria-label="Next photos" type="button">
+                  <ArrowRightIcon />
+                </button>
+              </div>
+            </div>
           </div>
-          <div className="match-gallery__track" tabIndex={0} role="region" aria-label="Matchday gallery — scrollable">
-            {galleryFrames.map((image, index) => (
-              <figure className="match-gallery__figure" style={{ "--gallery-i": index % 5 } as React.CSSProperties} key={`${image.src}-${index}`}>
-                <Image src={image.src} alt={image.alt} fill sizes="(max-width: 767px) 78vw, 30vw" loading={index > 2 ? "lazy" : undefined} />
-                <figcaption><span>{image.caption}</span></figcaption>
-              </figure>
-            ))}
+          <div className="match-gallery__viewport">
+            <div className="match-gallery__track" tabIndex={0} role="region" aria-label="Matchday gallery — 3D scrollable reel">
+              {galleryFrames.map((image, index) => (
+                <figure className="match-gallery__figure" style={{ "--gallery-i": index % 5 } as React.CSSProperties} key={`${image.src}-${index}`}>
+                  <div className="match-gallery__card">
+                    <Image src={image.src} alt={image.alt} fill sizes="(max-width: 767px) 78vw, 32vw" loading={index > 2 ? "lazy" : undefined} />
+                    <span className="match-gallery__sheen" aria-hidden="true" />
+                    <span className="match-gallery__badge" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+                    <figcaption><span>{image.caption}</span></figcaption>
+                  </div>
+                </figure>
+              ))}
+            </div>
           </div>
         </section> : null}
 

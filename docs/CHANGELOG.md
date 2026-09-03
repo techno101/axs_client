@@ -1,5 +1,23 @@
 # Client Changelog
 
+## 2026-09-04 (3D Matchday Gallery Carousel)
+- Curated gallery down from 20 to 14 action shots (`gallery-01` through `gallery-14`), removing the last 6 non-essential frames.
+- Rebuilt gallery reel as a 3D perspective carousel (`perspective: 1200px`, `transform-style: preserve-3d`) using GSAP ScrollTrigger with hardware-accelerated transforms.
+- Implemented focal 3D interpolation: dynamic Y-axis rotation (`rotateY: 22deg → 0deg → -22deg`), Z-depth elevation (`z: -120px → +48px → -120px`), and inner image lenticular parallax (`xPercent: -7 → +7`).
+- Added specular sheen glints, card counter badges (`01-14`), and tactile Prev / Next header navigation controls.
+- Optimized mobile view with smooth horizontal scroll-snap.
+
+## 2026-09-04 (Pitches Section UI Refresh)
+- Swapped pitches aerial image to high-res landscape view `/images/venue/field-aerial-landscape.jpg` from `assets/field/field aerial view landscape.jpg`.
+- Removed redundant 90-day booking window metric from the venue stats HUD.
+- Restyled `.countup` and `.match-pitches__stat` with `inline-flex` and baseline alignment so number and suffix (e.g. `6` and `hr`) sit side-by-side horizontally.
+- Updated section title to "The grounds at Iskandar Puteri." (BM: "Padang di Iskandar Puteri.").
+- Balanced the glassmorphic pill layout for the 2-metric presentation on desktop and mobile.
+
+## 2026-09-04 (Premium UI Pass)
+- Overhauled the customer account portal with a professional `DashboardShell` sidebar layout.
+- Applied premium glassmorphic styles, custom form inputs, and hover states to the account pages and header authentication buttons.
+- Fixed the desktop double-menu glitch by ensuring mobile navigation logic is strictly hidden on desktop.
 ## Documentation update: Coolify deployment replaces Vercel - 2026-09-03
 
 - **Deployment topology reality check (docs):** The intent to deploy `axs_client` to Vercel has been retired. The Next.js public website is officially deployed on Coolify as `armourxsports.com`. 
