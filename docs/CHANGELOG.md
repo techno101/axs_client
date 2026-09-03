@@ -1,5 +1,14 @@
 # Client Changelog
 
+## Brand icon set, SVG menu icons, official Google G button (v15) - 2026-09-03
+
+- **Proper brand icon pipeline.** Generated from the official transparent mark: `favicon.ico` (602 B), `favicon-32.png`, `icon-192.png`, `icon-512.png` (white background) and an opaque 180×180 `apple-touch-icon.png` (iOS renders transparency as black), plus a 1200×630 `og-image.png` on brand navy. The 640 KB 17,520×3,392 banner is no longer abused as favicon/apple icon, and the competing "AX" text placeholder `src/app/icon.svg` was deleted — the site previously shipped two mismatched favicons.
+- **Metadata.** `site.webmanifest` (name, theme color #17469e, icons), OG `images`/`url`/`siteName` and a Twitter `summary_large_image` card now complete the social preview story.
+- **Mobile menu icons.** The hamburger was two CSS 1px hairline `<i>` bars that rendered as faint aliased slivers on phone screens, and the close button was a rotated 1px bar. Both are real inline SVGs now (three rounded 2.2px bars; a rounded X), sized 20px with proper `currentColor`, and focus returns to the Menu button when the drawer closes.
+- **Google OAuth branding.** The sign-up, sign-in, link and unlink buttons carry the official four-color Google "G" mark (inline SVG per Google brand guidelines) in a white bordered button. Sign-up's Google start now uses the identical body as sign-in (the previous empty-profile form payload was dead data).
+- Housekeeping: lint ignores owner-local scratch files (`tmp/`, `test-*.mjs`).
+- Validation: lint (0 problems), typecheck, 34 tests, production build + browser-bundle scan all green; deployed `main@b5dd652` and verified live (`/site.webmanifest` 200, `/brand/favicon.ico` 200, homepage references OG image + manifest).
+
 ## Header auth entry points + account sign-out (v15) - 2026-09-03
 
 - The complete customer auth surface (sign-up, sign-in, verify, recovery, Google, account pages) existed since Checkpoint 2 but had **no entry point anywhere in the shell** — pages were reachable only by typing the URL. The header now renders a session-aware auth area: guests see **Sign in / Create account**, members see **My account / Sign out** (compact links matching the nav styling; hidden `create account` on small screens where the menu overlay covers it).
