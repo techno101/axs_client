@@ -32,16 +32,13 @@ function ruleFor(segments: string[]): RouteRule | null {
   if (rest.length === 2 && rest[0] === "pages" && SLUG.test(rest[1])) return { methods: ["GET"] };
   if (rest.length === 2 && rest[0] === "media" && MEDIA_ID.test(rest[1])) return { methods: ["GET"] };
   if (rest.length === 1 && ["holds", "hold-groups", "bookings", "orders", "visitors"].includes(rest[0])) {
-    return { methods: ["POST"], privateResponse: true, idempotency: rest[0] !== "visitors", jsonBody: true };
+    return { methods: ["POST"], privateResponse: true, idempotency: rest[0] !== "visitors", jsonBody: true, customerSession: ["bookings", "orders"].includes(rest[0]) };
   }
   if (rest.length === 2 && rest[0] === "vouchers" && rest[1] === "validate") {
     return { methods: ["POST"], privateResponse: true, jsonBody: true };
   }
   if (rest.length === 2 && rest[0] === "visitors" && rest[1] === "heartbeat") {
     return { methods: ["POST"], privateResponse: true, jsonBody: true };
-  }
-  if (rest.length === 1 && ["holds", "hold-groups", "bookings", "orders"].includes(rest[0])) {
-    return { methods: ["POST"], privateResponse: true, idempotency: true, jsonBody: true, customerSession: ["bookings", "orders"].includes(rest[0]) };
   }
   if (rest.length === 2 && rest[0] === "bookings" && rest[1] === "find") {
     return { methods: ["POST"], privateResponse: true, jsonBody: true };
