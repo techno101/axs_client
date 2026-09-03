@@ -24,6 +24,7 @@ const rules: Record<string, RouteRule> = {
   "profile/update": { method: "PATCH", upstream: "profile", mutation: true, session: true, csrf: true, body: true },
   "google/start": { method: "POST", upstream: "google/start", mutation: true, body: true },
   "google/exchange": { method: "POST", upstream: "google/exchange", mutation: true, body: true },
+  "google/complete-profile": { method: "POST", upstream: "google/complete-profile", mutation: true, body: true },
   "google/link/start": { method: "POST", upstream: "google/link/start", mutation: true, session: true, csrf: true, body: true },
   "google/unlink": { method: "DELETE", upstream: "google/unlink", mutation: true, session: true, csrf: true },
 };
@@ -174,12 +175,20 @@ export async function handleCustomerBff(request: Request, segments: string[], co
       }
       return response;
     }
-    if (key === "google/exchange") {
+    if (key === "google/exchange" || key === "google/complete-profile") {
       const handoff = cookieValue(request, HANDOFF_COOKIE);
-      const result = await upstream(request, config, route, { handoff: handoff ?? "" });
+      const result = await upstream(request, config, route, { handoff: handoff ?? "", ...body });
       const response = noStore(sanitize(result.payload), result.status);
       const data = result.payload && typeof result.payload === "object" ? (result.payload as { data?: Record<string, unknown> }).data : null;
-      if (data?.session && typeof data.session === "object") setSession(response, config, data.session as Record<string, unknown>);
+      if (data?.session && typeof data.session === "object") {
+        if (setSession(response, config, data.session as Record<string, unknown>)) {
+          response.cookies.set(HANDOFF_COOKIE, "", { ...cookieOptions(config), maxAge: 0 });
+          response.cookies.set(GOOGLE_COOKIE, "", { ...cookieOptions(config), maxAge: 0 });
+          return response;
+        }
+        // The upstream session failed validation — never fake a signed-in state.
+        return noStore({ data: null, error: { code: "SESSION_INVALID", message: "We could not start your session. Please try signing in again." } }, 502);
+      }
       response.cookies.set(HANDOFF_COOKIE, "", { ...cookieOptions(config), maxAge: 0 });
       response.cookies.set(GOOGLE_COOKIE, "", { ...cookieOptions(config), maxAge: 0 });
       return response;
@@ -218,6 +227,13 @@ export async function completeGoogleCallback(request: Request, config = loadClie
     if (data?.state === "handoff" && typeof data.handoff === "string") {
       response.cookies.set(HANDOFF_COOKIE, data.handoff, { ...cookieOptions(config), maxAge: 300 });
       target = new URL("/google/return?status=complete", config.clientOrigin);
+      response.headers.set("Location", target.toString());
+    } else if (data?.state === "profile_required" && typeof data.handoff === "string") {
+      response.cookies.set(HANDOFF_COOKIE, data.handoff, { ...cookieOptions(config), maxAge: 900 });
+      const prefill = new URLSearchParams({ status: "profile_required" });
+      if (typeof data.email === "string") prefill.set("email", data.email);
+      if (typeof data.displayName === "string") prefill.set("name", data.displayName);
+      target = new URL(`/google/return?${prefill.toString()}`, config.clientOrigin);
       response.headers.set("Location", target.toString());
     } else if (typeof data?.state === "string") {
       target = new URL(`/google/return?status=${encodeURIComponent(data.state)}`, config.clientOrigin);

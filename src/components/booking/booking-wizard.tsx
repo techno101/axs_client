@@ -2,8 +2,8 @@
 
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import Image from "next/image";
-import { ArrowRight, Calendar as CalendarIcon, ChevronDown } from "lucide-react";
 import { SlotCard } from "@/components/booking/slot-card";
+import { ArrowRightIcon, CalendarIcon, ChevronIcon } from "@/components/ui/icons";
 import type {
   AvailabilityDaySummary,
   AvailabilitySlot,
@@ -303,7 +303,7 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
             <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
               <PopoverTrigger asChild>
                 <button className="date-picker-button" type="button" aria-label="Open the calendar">
-                  <CalendarIcon className="h-4 w-4" />
+                  <CalendarIcon />
                   <span>Calendar</span>
                 </button>
               </PopoverTrigger>
@@ -419,7 +419,7 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
           <span className="booking-bar__count">{basket.length}</span>
           <span className="booking-bar__label">{basket.length ? `${basket.length} session${basket.length === 1 ? "" : "s"}` : "No sessions"}</span>
           <strong>{formatMoney(estimatedTotalMinor)}</strong>
-          <ChevronDown className="h-4 w-4 text-white/50" />
+          <ChevronIcon className="text-white/50" />
         </button>
         {basketOpen ? (
           <ul className="booking-bar__list">
@@ -430,11 +430,11 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
           </ul>
         ) : null}
         {phase === "sessions" ? (
-          <Button className="booking-bar__continue" type="button" disabled={!basket.length || paymentBlocked} onClick={goToDetails}>{!basket.length ? "Pick a session to continue" : `Continue · ${formatMoney(estimatedTotalMinor)}`} <ArrowRight className="h-4 w-4" /></Button>
+          <Button className="booking-bar__continue" type="button" disabled={!basket.length || paymentBlocked} onClick={goToDetails}>{!basket.length ? "Pick a session to continue" : `Continue · ${formatMoney(estimatedTotalMinor)}`} <ArrowRightIcon /></Button>
         ) : (
           <div className="booking-bar__actions">
             <Button type="button" variant="ghost" onClick={backToSessions}>Back</Button>
-            <Button type="submit" form="booking-details-form" disabled={!basket.length || requestState !== "idle" || paymentBlocked}>{requestState === "booking" ? "Taking you to payment…" : "Continue to payment"} <ArrowRight className="h-4 w-4" /></Button>
+            <Button type="submit" form="booking-details-form" disabled={!basket.length || requestState !== "idle" || paymentBlocked}>{requestState === "booking" ? "Taking you to payment…" : "Continue to payment"} <ArrowRightIcon /></Button>
           </div>
         )}
       </div>

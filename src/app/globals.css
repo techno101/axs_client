@@ -1729,8 +1729,7 @@ img {
   min-width: 0;
 }
 
-.date-strip > button,
-.date-picker-button {
+.date-strip > button {
   min-height: 128px;
   border: 1px solid #d4d9d7;
   border-radius: 14px;
@@ -1787,19 +1786,24 @@ img {
 
 .date-picker-button {
   position: relative;
-  display: flex;
-  flex-direction: column;
+  display: inline-flex;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  font-size: 9px;
+  gap: 8px;
+  padding: 0 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--white);
+  color: var(--ink);
+  cursor: pointer;
+  font-size: 12px;
   font-weight: 800;
-  text-align: center;
-  text-transform: uppercase;
 }
 
 .date-picker-button svg {
   color: var(--grass);
+  flex: none;
 }
 
 .date-picker-button input {
@@ -2045,11 +2049,13 @@ img {
 
 .slot-card__time {
   margin: auto 0;
+  min-width: 0;
   font-family: var(--font-display), sans-serif;
-  font-size: clamp(24px, 2.6vw, 34px);
+  font-size: clamp(21px, 2.2vw, 30px);
   font-weight: 700;
-  line-height: 1.05;
-  white-space: nowrap;
+  line-height: 1.12;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .slot-card__bottom {
@@ -2741,7 +2747,7 @@ img {
   .booking-progress > div > span { width: 32px; height: 32px; }
   .booking-panel { min-height: 600px; padding: 28px 18px; }
   .date-strip { display: flex; overflow-x: auto; padding-bottom: 8px; scroll-snap-type: x mandatory; }
-  .date-strip > button, .date-picker-button { min-width: 86px; min-height: 118px; scroll-snap-align: start; }
+  .date-strip > button { min-width: 86px; min-height: 118px; scroll-snap-align: start; }
   .field-choice-grid, .slot-grid, .customer-form__grid, .state-guide__grid { grid-template-columns: 1fr; }
   .field-choice-grid .wizard-buttons { grid-column: auto; }
   .field-choice { min-height: 190px; }
@@ -2764,7 +2770,7 @@ img {
 
 @media (max-width: 389px) {
   .booking-summary { display: none; }
-  .slot-card__time { font-size: 38px; }
+  .slot-card__time { font-size: 30px; }
   .wizard-next { padding-inline: 15px; }
   .review-step dl > div { grid-template-columns: 1fr 1fr; gap: 8px; }
 }
@@ -4439,7 +4445,11 @@ html.axs-cursor-on input, html.axs-cursor-on textarea, html.axs-cursor-on select
 .match-pitches__media { position: absolute; z-index: -2; inset: 0; }
 .match-pitches__media img { object-fit: cover; object-position: center 62%; }
 .match-pitches__media::after { content: ""; position: absolute; inset: 0; background: linear-gradient(0deg, rgba(11, 14, 19, 0.62), transparent 58%), linear-gradient(90deg, rgba(11, 14, 19, 0.25), transparent 70%); }
-.match-pitches__layout { position: relative; z-index: 2; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 32px; align-items: end; padding-bottom: clamp(48px, 8vh, 84px); }
+.match-pitches__layout { position: relative; z-index: 2; display: grid;
+  grid-template-columns: minmax(0, 1fr) auto; gap: 32px; align-items: end;
+  /* Reserve the vertical band the absolutely-positioned glass stats bar occupies
+     so the "See the pitches" button can never intersect the numbers. */
+  padding-bottom: clamp(170px, 22vh, 220px); }
 .match-pitches__copy { max-width: 860px; }
 .match-pitches__copy .match-label { color: var(--armour-green); }
 .match-pitches h2 { margin: 18px 0 20px; color: #ffffff; font-size: clamp(52px, 8vw, 120px); font-weight: 800; letter-spacing: -0.07em; line-height: 0.84; }
@@ -5151,22 +5161,6 @@ html.menu-locked { overflow: hidden; }
 
 .field-card__media img {
   object-fit: cover;
-}
-
-.date-picker-button {
-  min-height: 60px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 0 16px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: var(--white);
-  cursor: pointer;
-  font-size: 12px;
-  font-weight: 800;
-  color: var(--ink);
 }
 
 .date-strip > button {

@@ -1,15 +1,15 @@
-// PINNED CONTRACT ARTIFACT — public v1 copy of the admin-generated contract.
 /*
+ * PINNED CONTRACT ARTIFACT
  * GENERATED FILE — do not edit manually.
  * Source: openapi/openapi.v1.json
  * Run: npm run contract:generate
  */
 
-export const API_CONTRACT_VERSION = "1.18.0" as const;
-export const API_CONTRACT_SHA256 = "22102e26c956948532334fdf8a06fa0fe1f14809cdc3f802ce0beb97856c9a37" as const;
+export const API_CONTRACT_VERSION = "1.21.0" as const;
+export const API_CONTRACT_SHA256 = "88638d8d343ef915d8865e9a12ce4dcda208ff1a096ac833b235ad7d100e5546" as const;
 export const API_TIMEZONE = "Asia/Kuala_Lumpur" as const;
 
-export interface ApiMeta { requestId: string; serverTime: string; timezone: "Asia/Kuala_Lumpur"; contractVersion: "1.15.0"; nextPage?: number | null; pageSize?: number; total?: number; }
+export interface ApiMeta { requestId: string; serverTime: string; timezone: "Asia/Kuala_Lumpur"; contractVersion: "1.21.0"; nextPage?: number | null; pageSize?: number; total?: number; }
 
 export interface CustomerProfileRequest { displayName: string; phone: string; age: number; }
 
@@ -124,10 +124,6 @@ export type AdminPermission = "bookings.read" | "bookings.write" | "bookings.can
 export interface AdminProfile { id: string; username: string; displayName: string; role: AdminRole; permissions: Array<AdminPermission>; }
 
 export interface AdminLoginRequest { username: string; password: string; }
-
-export interface StaffAccessRequest { id: string; email: string; displayName: string; status: "pending" | "approved" | "rejected"; requestedAt: string; reviewedAt: string | null; role: "admin" | "operations" | "editor_developer" | null; }
-
-export interface StaffAccessDecisionRequest { decision: "approve" | "reject"; role?: "admin" | "operations" | "editor_developer"; }
 
 export interface AdminSession { actor: AdminProfile; expiresAt: string; }
 
@@ -305,7 +301,7 @@ export interface CounterSlot { fieldId: string; blockCode: string; bookingDate: 
 
 export interface AdminDashboard { businessDate: string; bookingCount: number; attentionCount: number; }
 
-export interface Health { status: "ok"; service: string; contractVersion: "1.15.0"; }
+export interface Health { status: "ok"; service: string; contractVersion: "1.21.0"; }
 
 export interface Readiness { status: "ready" | "not_ready"; database: "connected" | "not_configured" | "unavailable"; authoritative: boolean; }
 
@@ -388,8 +384,6 @@ export interface ConfigurationBundleImportResponse { data: ConfigurationBundleIm
 export interface PosSaleResponse { data: PosSale; meta: ApiMeta; error: null; }
 
 export interface PosReceiptEmailResponse { data: PosReceiptEmailQueued; meta: ApiMeta; error: null; }
-
-export interface StaffAccessRequestListResponse { data: Array<StaffAccessRequest>; meta: ApiMeta; error: null; }
 
 export interface MediaAssetResponse { data: MediaAsset; meta: ApiMeta; error: null; }
 
@@ -490,3 +484,31 @@ export interface VisitorSession { token: string; consent: boolean; }
 export interface VisitorSessionResponse { data: VisitorSession; meta?: ApiMeta; error?: null; }
 
 export interface VisitorHeartbeatRequest { token: string; pagePath?: string; }
+
+export interface AdminVerifyLoginRequest { code: string; }
+
+export interface InviteStaffRequest { email: string; displayName: string; roleKey: "admin" | "operations" | "editor_developer"; }
+
+export interface InviteStaffResponse { email: string; expiresAt: string; emailed: boolean; }
+
+export interface InviteAcceptRequest { token: string; password: string; }
+
+export interface InviteAcceptResponse { email: string; displayName: string; }
+
+export interface PublicBookingsRequest { enabled: boolean; version: number; }
+
+export interface PublicBookingsResponse { key: "public.bookings_enabled"; enabled: boolean; version: number; }
+
+export interface PaymentTestRequest { enabled: boolean; version: number; }
+
+export interface PaymentTestResponse { key: "public.payment_test_enabled"; enabled: boolean; version: number; }
+
+export interface BookingSlipTemplateSaveRequest { template: BookingSlipTemplate; version: number; }
+
+export interface BookingSlipTemplate { businessName: string; tagline: string; address: string; phone: string; email: string; website: string; thankYouMessage: string; footerNote: string; accent: "navy" | "green" | "charcoal"; bilingual: boolean; showCustomerCard: boolean; showPaymentSummary: boolean; showSupportBlock: boolean; }
+
+export interface BookingSlipTemplateSaveResponse { template: BookingSlipTemplate; version: number; }
+
+export interface GoogleProfileCompleteRequest { displayName: string; phone: string; age: number; }
+
+export interface PaymentProofResponse { paymentId: string; fileName: string; contentType: "image/jpeg" | "image/png" | "application/pdf"; byteSize: number; sha256: string; }

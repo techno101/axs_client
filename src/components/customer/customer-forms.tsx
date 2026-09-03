@@ -180,21 +180,50 @@ export function ProfileForm() { const { account, setAccount, notice } = useAccou
 export function SecurityForm() { const { account, notice } = useAccount(); const [local, setLocal] = useState<Notice>(null); const [busy, setBusy] = useState(false); async function setPassword(event: FormEvent<HTMLFormElement>) { event.preventDefault(); setBusy(true); try { await postCustomer("password/set", { password: String(new FormData(event.currentTarget).get("password") ?? "") }); setLocal({ tone: "success", text: "Password set. Sign in again to continue." }); } catch (error) { setLocal(messageFor(error)); } finally { setBusy(false); } } async function linkGoogle() { setBusy(true); try { const result = await postCustomer<{ authorizationUrl: string }>("google/link/start"); window.location.assign(result.authorizationUrl); } catch (error) { setLocal(messageFor(error)); } finally { setBusy(false); } } async function unlinkGoogle() { setBusy(true); try { await customerApi("google/unlink", { method: "DELETE" }); setLocal({ tone: "success", text: "Google is unlinked. Sign in again to continue." }); } catch (error) { setLocal(messageFor(error)); } finally { setBusy(false); } }
   return <AccountShell eyebrow="Your account" title="Security"><AccountNavigation/><NoticeBox notice={notice ?? local}/><AccountState account={account}>{(value) => <div className="customer-security"><p><strong>Google</strong><span>{value.googleLinked ? "Connected" : "Not connected"}</span></p>{value.googleLinked ? <GoogleButton label="Unlink Google" onClick={unlinkGoogle} disabled={busy || !value.passwordSet} /> : <GoogleButton label="Link Google" onClick={linkGoogle} disabled={busy} />}{!value.passwordSet ? <form className="customer-form" onSubmit={setPassword}><label className="customer-form__wide">Set a passphrase<input name="password" type="password" autoComplete="new-password" required minLength={12} maxLength={128}/></label><button className="customer-submit customer-form__wide" disabled={busy}>Set passphrase</button></form> : <p className="customer-help">A passphrase is set for this account.</p>}</div>}</AccountState></AccountShell>; }
 
+async function withTimeout<T>(promise: Promise<T>, ms = 12_000): Promise<T> {
+  return await Promise.race([promise, new Promise<never>((_, reject) => window.setTimeout(() => reject(new Error("This is taking longer than expected. Please try again.")), ms))]);
+}
+
+function GoogleErrorActions({ text }: { text: string }) {
+  return <><NoticeBox notice={{ tone: "error", text }} /><div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}><Link className="customer-secondary" href="/sign-in">Try again</Link><Link className="customer-secondary" href="/book">Continue as guest</Link></div></>;
+}
+
+function GoogleProfileForm({ email, name }: { email: string; name: string }) {
+  const [notice, setNotice] = useState<Notice>(null);
+  const [busy, setBusy] = useState(false);
+  async function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault(); setBusy(true); setNotice(null);
+    const values = new FormData(event.currentTarget);
+    try {
+      const result = await withTimeout(postCustomer<{ state: string; session?: CustomerSessionView }>("google/complete-profile", { displayName: String(values.get("displayName") ?? ""), phone: String(values.get("phone") ?? ""), age: Number(values.get("age") ?? 0) }));
+      if (result.state === "authenticated" && result.session) window.location.assign(result.session.account.status === "pending" ? "/verify-email?state=pending" : "/account");
+      else setNotice({ tone: "error", text: result.state === "suspended" ? "This account is suspended." : "We could not finish setting up your account. Please try again." });
+    } catch (error) { setNotice(messageFor(error)); } finally { setBusy(false); }
+  }
+  return <form className="customer-form" onSubmit={submit} noValidate><NoticeBox notice={notice}/><p style={{ margin: "0 0 12px", fontSize: 14 }}>Almost there! Confirm a few details to finish creating your account{email ? <> for <strong>{email}</strong></> : null}.</p><label>Name<input name="displayName" defaultValue={name} autoComplete="name" required minLength={2} maxLength={120}/></label><label>Mobile<input name="phone" type="tel" autoComplete="tel" required inputMode="tel" placeholder="+60…"/></label><label>Age<input name="age" type="number" min="1" max="120" required inputMode="numeric"/></label><button className="customer-submit" disabled={busy}>{busy ? "Creating your account" : "Finish and sign in"}</button></form>;
+}
+
 export function GoogleReturn() {
   const [notice, setNotice] = useState<Notice>({ tone: "info", text: "Completing your Google sign-in…" });
+  const [params] = useState(() => typeof window === "undefined" ? new URLSearchParams() : new URLSearchParams(window.location.search));
+  const status = params.get("status");
   useEffect(() => {
-    const status = new URLSearchParams(window.location.search).get("status");
     if (status !== "complete") {
-      const text = status === "link_required" ? "Sign in to the existing account before linking Google." : status === "profile_required" ? "Create an account first and include the requested profile details." : status === "expired" || status === "replayed" ? "This Google sign-in attempt is no longer valid. Try again." : "Google sign-in could not be completed.";
+      const text = status === "link_required" ? "This email already has an ArmourXSports account. Sign in with your passphrase first, then link Google from Account → Security."
+        : status === "expired" || status === "replayed" ? "This Google sign-in attempt is no longer valid. Please try again."
+        : "We could not complete Google sign-in. Please try again — if it keeps failing, sign up with your email instead.";
       const timer = window.setTimeout(() => setNotice({ tone: "error", text }), 0);
       return () => window.clearTimeout(timer);
     }
-    void postCustomer<{ state: string; session?: CustomerSessionView }>("google/exchange")
+    void withTimeout(postCustomer<{ state: string; session?: CustomerSessionView }>("google/exchange"))
       .then((result) => {
-        if (result.state === "authenticated") window.location.assign(result.session?.account.status === "pending" ? "/verify-email?state=pending" : "/account");
-        else setNotice({ tone: "error", text: result.state === "suspended" ? "This account is suspended." : "This Google sign-in link is expired or has already been used." });
+        if (result.state === "authenticated" && result.session) window.location.assign(result.session.account.status === "pending" ? "/verify-email?state=pending" : "/account");
+        else setNotice({ tone: "error", text: result.state === "suspended" ? "This account is suspended." : "This Google sign-in link is expired or has already been used. Please try again." });
       })
       .catch((error) => setNotice(messageFor(error)));
-  }, []);
-  return <AccountShell eyebrow="Google sign-in" title="Completing sign-in"><NoticeBox notice={notice}/><Link className="customer-secondary" href="/sign-in">Return to sign in</Link></AccountShell>;
+  }, [status]);
+  if (status === "profile_required") {
+    return <AccountShell eyebrow="Google sign-in" title="Finish setting up"><GoogleProfileForm email={params.get("email") ?? ""} name={params.get("name") ?? ""} /><p className="customer-help">Already have an account? <Link href="/sign-in">Sign in</Link></p></AccountShell>;
+  }
+  return <AccountShell eyebrow="Google sign-in" title="Completing sign-in">{status === "complete" ? <NoticeBox notice={notice}/> : <GoogleErrorActions text={notice?.tone === "error" ? notice.text : "We could not complete Google sign-in. Please try again."} />}</AccountShell>;
 }
