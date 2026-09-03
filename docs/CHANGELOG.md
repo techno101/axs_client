@@ -1,5 +1,12 @@
 # Client Changelog
 
+## Documentation update: Coolify deployment replaces Vercel - 2026-09-03
+
+- **Deployment topology reality check (docs):** The intent to deploy `axs_client` to Vercel has been retired. The Next.js public website is officially deployed on Coolify as `armourxsports.com`. 
+- `docs/DEPLOYMENT.md`, `ARCHITECTURE.md`, `START-HERE.md`, and the root `project_info.md` were rewritten to remove Vercel references and confirm Coolify container hosting.
+- The build uses Coolify's default buildpacks/Nixpacks (no `Dockerfile` or `.github/workflows` deploy jobs are maintained in the repository).
+- Google Analytics is used in production; Vercel Analytics is officially retired.
+
 ## Brand icon set, SVG menu icons, official Google G button (v15) - 2026-09-03
 
 - **Proper brand icon pipeline.** Generated from the official transparent mark: `favicon.ico` (602 B), `favicon-32.png`, `icon-192.png`, `icon-512.png` (white background) and an opaque 180×180 `apple-touch-icon.png` (iOS renders transparency as black), plus a 1200×630 `og-image.png` on brand navy. The 640 KB 17,520×3,392 banner is no longer abused as favicon/apple icon, and the competing "AX" text placeholder `src/app/icon.svg` was deleted — the site previously shipped two mismatched favicons.
