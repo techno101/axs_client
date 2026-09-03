@@ -16,6 +16,10 @@ const eslintConfig = defineConfig([
     "output/**",
     "playwright-report/**",
     "test-results/**",
+    // Owner-local scratch files (kept on disk, never committed):
+    "tmp/**",
+    "test-checkout.mjs",
+    "test-flow.mjs",
   ]),
 ]);
 

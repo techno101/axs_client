@@ -17,6 +17,7 @@ export function SiteHeader() {
   const [signOutBusy, setSignOutBusy] = useState(false);
   const { state: sessionState, signOut } = useCustomerSession();
   const menuRef = useRef<HTMLDivElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
   const scopeRef = useRef<ReturnType<typeof createScope> | null>(null);
   const lineAnimationRef = useRef<{ restart: () => void } | null>(null);
 
@@ -93,7 +94,10 @@ export function SiteHeader() {
     return () => document.removeEventListener("keydown", onKeyDown);
   }, [open]);
 
-  const close = () => setOpen(false);
+  const close = () => {
+    setOpen(false);
+    menuButtonRef.current?.focus();
+  };
 
   return (
     <header className="site-header">
@@ -107,10 +111,11 @@ export function SiteHeader() {
         <div className="site-header__actions">
           <AuthMenu state={sessionState} onSignOut={handleSignOut} labels={authLabels} busy={signOutBusy} />
           <Link className="header-language" href={isBm ? "/" : "/bm"} hrefLang={isBm ? "en" : "ms"} aria-label={copy.switchLanguage}>{isBm ? "EN" : "BM"}</Link>
-          <button className="site-header__menu" type="button" onClick={() => setOpen(true)} aria-expanded={open} aria-controls="site-menu">
+          <button ref={menuButtonRef} className="site-header__menu" type="button" onClick={() => setOpen(true)} aria-expanded={open} aria-controls="site-menu">
             <span>Menu</span>
-            <i aria-hidden="true" />
-            <i aria-hidden="true" />
+            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false">
+              <path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+            </svg>
           </button>
         </div>
       </div>
@@ -122,7 +127,9 @@ export function SiteHeader() {
             <BrandMark href={homeHref(locale)} />
             <button className="site-menu__close" type="button" onClick={close} aria-label={copy.closeMenu}>
               <span>Close</span>
-              <i aria-hidden="true" />
+              <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false">
+                <path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+              </svg>
             </button>
           </div>
           <nav className="site-menu__nav shell" aria-label={copy.navLabel}>

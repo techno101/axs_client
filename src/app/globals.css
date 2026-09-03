@@ -4789,13 +4789,7 @@ html.boot-locked { overflow: hidden; }
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
-.site-header__menu i {
-  display: block;
-  width: 18px;
-  height: 1px;
-  background: var(--ink);
-}
-.site-header__menu i + i { margin-top: 4px; }
+.site-header__menu svg { display: block; flex: none; }
 
 .site-menu {
   position: fixed;
@@ -4868,20 +4862,7 @@ html.boot-locked { overflow: hidden; }
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
-.site-menu__close i {
-  position: relative;
-  display: block;
-  width: 20px;
-  height: 1px;
-  background: #53a423;
-}
-.site-menu__close i::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  transform: rotate(90deg);
-  background: inherit;
-}
+.site-menu__close svg { display: block; flex: none; color: #53a423; }
 .site-menu__nav {
   display: flex;
   flex: 1;
@@ -5581,3 +5562,15 @@ html.menu-locked { overflow: hidden; }
 
 .booking-wizard--simple > * { min-width: 0; }
 .date-rail { min-width: 0; }
+
+.customer-secondary--google {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: #ffffff;
+  color: #1f1f1f;
+  border: 1px solid #dadce0;
+}
+.customer-secondary--google .google-glyph { flex: none; }
+.customer-secondary--google:hover:not(:disabled) { border-color: #17469e; }

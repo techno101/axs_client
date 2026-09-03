@@ -158,3 +158,8 @@ assets/
 .claude/
 skills-lock.json
 .playwright-cli/
+
+# Owner-local scratch files
+tmp/
+test-checkout.mjs
+test-flow.mjs

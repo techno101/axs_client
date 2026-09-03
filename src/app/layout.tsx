@@ -27,9 +27,14 @@ export const metadata: Metadata = {
     template: "%s | ArmourX Sports",
   },
   description: "Football at ArmourX Sports in Iskandar Puteri, Johor. Check current availability and book online.",
+  manifest: "/site.webmanifest",
   icons: {
-    icon: "/brand/armourxsports-logo.png",
-    apple: "/brand/armourxsports-logo.png",
+    icon: [
+      { url: "/brand/favicon.ico", sizes: "32x32", type: "image/x-icon" },
+      { url: "/brand/favicon-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/brand/icon-192.png", sizes: "192x192", type: "image/png" },
+    ],
+    apple: "/brand/apple-touch-icon.png",
   },
   openGraph: {
     title: "ArmourX Sports | Book your spot in Iskandar Puteri",
@@ -37,6 +42,15 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_MY",
     alternateLocale: ["ms_MY"],
+    url: "https://www.armourxsports.com",
+    siteName: "ArmourX Sports",
+    images: [{ url: "/brand/og-image.png", width: 1200, height: 630, alt: "ArmourX Sports" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "ArmourX Sports | Book your spot in Iskandar Puteri",
+    description: "Check current football availability and book online.",
+    images: ["/brand/og-image.png"],
   },
 };
 
