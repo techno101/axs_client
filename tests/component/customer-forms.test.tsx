@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { AccountOverview, SignInForm, SignUpForm, VerifyEmailForm } from "@/components/customer/customer-forms";
+import { AccountBookings, AccountOverview, SignInForm, SignUpForm, VerifyEmailForm } from "@/components/customer/customer-forms";
 
 describe("customer account forms", () => {
   beforeEach(() => {
@@ -91,6 +91,87 @@ describe("customer account forms", () => {
       expect(screen.getByText("Sam Lee")).toBeInTheDocument();
       expect(screen.getAllByText("Verified").length).toBeGreaterThanOrEqual(1);
       expect(screen.queryByRole("button", { name: /verify account/i })).not.toBeInTheDocument();
+    });
+  });
+
+  it("renders AccountBookings safely with empty bookings and points guest link to /booking/find", async () => {
+    const activeAccount = {
+      id: "cust-3",
+      email: "player@example.com",
+      displayName: "Player One",
+      phone: "+60123456789",
+      age: 24,
+      status: "active",
+      verifiedAt: "2026-09-01T12:00:00Z",
+      passwordSet: true,
+      googleLinked: false,
+    };
+
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockImplementation((url: string) => {
+        if (url.includes("/session")) {
+          return Promise.resolve({
+            ok: true,
+            json: async () => ({ data: { account: activeAccount }, error: null }),
+          });
+        }
+        if (url.includes("/bookings")) {
+          return Promise.resolve({
+            ok: true,
+            json: async () => ({ data: [], error: null }),
+          });
+        }
+        return Promise.resolve({ ok: true, json: async () => ({ data: null, error: null }) });
+      }),
+    );
+
+    render(<AccountBookings />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/no account-owned bookings yet/i)).toBeInTheDocument();
+      const findLink = screen.getByRole("link", { name: /find guest booking/i });
+      expect(findLink).toHaveAttribute("href", "/booking/find");
+    });
+  });
+
+  it("renders AccountBookings without throwing TypeError when bookings API returns non-array data", async () => {
+    const activeAccount = {
+      id: "cust-4",
+      email: "player4@example.com",
+      displayName: "Player Four",
+      phone: "+60123456789",
+      age: 25,
+      status: "active",
+      verifiedAt: "2026-09-01T12:00:00Z",
+      passwordSet: true,
+      googleLinked: false,
+    };
+
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockImplementation((url: string) => {
+        if (url.includes("/session")) {
+          return Promise.resolve({
+            ok: true,
+            json: async () => ({ data: { account: activeAccount }, error: null }),
+          });
+        }
+        if (url.includes("/bookings")) {
+          // Simulating corrupted object response
+          return Promise.resolve({
+            ok: true,
+            json: async () => ({ data: { notAnArray: true }, error: null }),
+          });
+        }
+        return Promise.resolve({ ok: true, json: async () => ({ data: null, error: null }) });
+      }),
+    );
+
+    render(<AccountBookings />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/no account-owned bookings yet/i)).toBeInTheDocument();
     });
   });
 });

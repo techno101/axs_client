@@ -58,4 +58,20 @@ describe("same-origin customer BFF", () => {
     expect(fetcher).not.toHaveBeenCalled();
     vi.unstubAllGlobals();
   });
+
+  it("preserves array data without converting it into an object for bookings list", async () => {
+    const session = "s".repeat(43);
+    const mockBookings = [
+      { reference: "AXS-ABCD-EFGH-JKMN-PRST", fieldName: "Pitch 1", amountMinor: 10000 },
+      { reference: "AXS-WXYZ-2345-6789-ABCD", fieldName: "Pitch 2", amountMinor: 12000 },
+    ];
+    const fetcher = vi.fn().mockResolvedValue(new Response(JSON.stringify({ data: mockBookings, meta: {}, error: null }), { status: 200, headers: { "content-type": "application/json" } }));
+    vi.stubGlobal("fetch", fetcher);
+    const response = await handleCustomerBff(new Request("https://client.example.test/api/customer/bookings", { method: "GET", headers: { Cookie: `axs_customer_session=${session}` } }), ["bookings"], config);
+    expect(response.status).toBe(200);
+    const body = await response.json();
+    expect(Array.isArray(body.data)).toBe(true);
+    expect(body.data).toEqual(mockBookings);
+    vi.unstubAllGlobals();
+  });
 });

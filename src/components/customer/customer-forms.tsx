@@ -771,15 +771,17 @@ export function AccountBookings() {
   const [activeFilter, setActiveFilter] = useState<"all" | "upcoming" | "past">("all");
 
   const refreshBookings = useCallback(async () => {
-    try { setBookings(await customerApi<CustomerBooking[]>("bookings")); }
-    catch (error) { setLocal(messageFor(error)); }
+    try {
+      const data = await customerApi<CustomerBooking[]>("bookings");
+      setBookings(Array.isArray(data) ? data : []);
+    } catch (error) { setLocal(messageFor(error)); }
   }, []);
 
   useEffect(() => {
     if (!account || account.status === "suspended") return;
     let current = true;
     void customerApi<CustomerBooking[]>("bookings")
-      .then((nextBookings) => { if (current) setBookings(nextBookings); })
+      .then((nextBookings) => { if (current) setBookings(Array.isArray(nextBookings) ? nextBookings : []); })
       .catch((error: unknown) => { if (current) setLocal(messageFor(error)); });
     return () => { current = false; };
   }, [account]);
@@ -800,7 +802,8 @@ export function AccountBookings() {
     }
   }
 
-  const filteredBookings = bookings.filter((b) => {
+  const list = Array.isArray(bookings) ? bookings : [];
+  const filteredBookings = list.filter((b) => {
     if (activeFilter === "upcoming") return b.timelineState !== "past";
     if (activeFilter === "past") return b.timelineState === "past";
     return true;
@@ -812,7 +815,7 @@ export function AccountBookings() {
       <AccountState account={account}>
         {() => (
           <div className="customer-bookings-view">
-            {bookings.length > 0 ? (
+            {list.length > 0 ? (
               <div className="customer-filter-tabs" role="tablist" aria-label="Booking filters">
                 <button
                   type="button"
@@ -821,7 +824,7 @@ export function AccountBookings() {
                   className={`customer-filter-tab ${activeFilter === "all" ? "customer-filter-tab--active" : ""}`}
                   onClick={() => setActiveFilter("all")}
                 >
-                  All bookings ({bookings.length})
+                  All bookings ({list.length})
                 </button>
                 <button
                   type="button"
@@ -882,7 +885,7 @@ export function AccountBookings() {
                   <Link href="/book" className="customer-submit customer-btn-action">
                     Book a pitch
                   </Link>
-                  <Link href="/find-booking" className="customer-secondary customer-btn-action">
+                  <Link href="/booking/find" className="customer-secondary customer-btn-action">
                     Find guest booking
                   </Link>
                 </div>

@@ -1,6 +1,8 @@
 # Client Changelog
 
 ## 2026-09-04 (v16 Release & Deployment to main)
+- **Fix Customer Bookings Array Deserialization (TypeError: s.filter is not a function)**: In `src/server/customer-bff/handler.ts`, `sanitize()` now preserves array responses directly instead of converting them into plain objects with `{ ...data }`. Hardened `AccountBookings` with `Array.isArray` fallback.
+- **Fix /find-booking 404 & Add Redirect**: Corrected empty state link to `/booking/find` and added permanent redirect in `next.config.ts` from `/find-booking` to `/booking/find`.
 - **Branch Promotion (v16)**: Promoted customer account portal UI/UX redesign, bespoke vector SVGs, fixed button widths, danger zone deactivation/deletion, and home gallery copy updates to release branch `v16` and merged into `main` for production live deployment.
 - **Home Experience**: Updated match gallery subtitle copy ("Game Day Vibes | See the pace, the passion, and the pitch in action.").
 - **Strict Branching Guidelines**: Enforced `v<number>` format published directly to origin; banned multi-word and `work/next-session-...` branch names.

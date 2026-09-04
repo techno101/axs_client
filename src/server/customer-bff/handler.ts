@@ -108,6 +108,7 @@ function sanitize(payload: unknown): unknown {
   if (!payload || typeof payload !== "object") return payload;
   const envelope = payload as { data?: unknown };
   if (!envelope.data || typeof envelope.data !== "object") return payload;
+  if (Array.isArray(envelope.data)) return payload;
   const data = { ...(envelope.data as Record<string, unknown>) };
   delete data.verificationToken;
   delete data.resetToken;
