@@ -9,6 +9,7 @@ import { Magnetic } from "@/components/motion/magnetic";
 import { MatchClock } from "@/components/motion/match-clock";
 
 import { ArrowLeftIcon, ArrowRightIcon, ArrowUpRightIcon, PinIcon } from "@/components/ui/icons";
+import { PaymentBadges } from "@/components/ui/payment-badges";
 import type { AvailabilityDaySummary, BookingBlock, FaqItem, Field, SiteConfigView } from "@/lib/api/types";
 import { formatTimePair12 } from "@/lib/format";
 import { availabilityDotLevel } from "@/lib/api/types";
@@ -210,6 +211,9 @@ export function HomeExperience({ locale, fields, blocks, faqs, availability, sit
               <span>{copy.primaryAction}</span>
               <ArrowRightIcon />
             </Link>
+            <div className="match-booking__payment-strip">
+              <PaymentBadges title="Supported Payment Methods" className="landing-payments" />
+            </div>
           </div>
         </section>
 

@@ -23,7 +23,7 @@ Status: `IMPLEMENTED` for static public fallback media. On 2026-08-09 all venue 
 | `venue/about-pitches.webp` | `aeraial shot with the whole area also captured.jpeg` | About venue visual. |
 | `venue/about-office.webp` | `armourxsports office.png` | About office visual. |
 | `venue/contact-photo.webp` | `aeraial shot with the whole area also captured but from a different angle.jpeg` | Contact page hero. |
-| `venue/venue-overview.webp` | `armourx field.jpg` | Venue/Fields visual context (PageHero default). |
+| `venue/stadium-lights-aerial.jpg` | `another cool aerial shot with the stadium lights as wekk focused in th front froom back.jpeg` | Booking lookup / PageHero default high-resolution stadium aerial. |
 | `venue/fields-hero.webp` | `Proper aerial shot taken from the middle properly with both the fields looks as landscaped take from the side tilted not perpendicular.jpeg` | Fields page hero. |
 | `venue/field-one.webp` | `everyone playing in midfield of field 1.jpg` | Field 1 fallback. |
 | `venue/field-two.webp` | `cool moment of the players passing ball between thenm'.jpg` | Field 2 fallback. |

@@ -320,14 +320,21 @@ img {
 
 .page-hero__image {
   object-fit: cover;
+  object-position: center 20%;
+}
+
+@media (min-width: 900px) {
+  .page-hero__image {
+    object-position: center 18%;
+  }
 }
 
 .page-hero__scrim {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(90deg, rgba(3, 13, 23, 0.97) 0%, rgba(3, 13, 23, 0.72) 48%, rgba(3, 13, 23, 0.25) 100%),
-    linear-gradient(0deg, rgba(3, 13, 23, 0.78), transparent 55%);
+    linear-gradient(90deg, rgba(7, 10, 19, 0.92) 0%, rgba(7, 10, 19, 0.65) 45%, rgba(7, 10, 19, 0.15) 100%),
+    linear-gradient(0deg, rgba(7, 10, 19, 0.85) 0%, transparent 65%);
 }
 
 .pitch-grid {
@@ -6373,11 +6380,11 @@ html.menu-locked { overflow: hidden; }
   margin: 0;
 }
 
-/* Payment Support Badges */
+/* Payment Support Badges & Trustmarks */
 .payment-support {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
 }
 .payment-support__title {
   margin: 0;
@@ -6390,35 +6397,79 @@ html.menu-locked { overflow: hidden; }
 .payment-support__badges {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 10px;
   align-items: center;
 }
 .payment-badge {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  padding: 8px 14px;
-  border-radius: 8px;
-  background: #f7fafc;
-  border: 1px solid rgba(15, 19, 57, 0.1);
+  padding: 6px 14px 6px 8px;
+  border-radius: 9999px;
+  background: #ffffff;
+  border: 1px solid rgba(15, 19, 57, 0.12);
   color: var(--ink);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
-  transition: all 160ms ease;
+  box-shadow: 0 2px 6px rgba(15, 19, 57, 0.04);
+  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+  user-select: none;
 }
 .payment-badge:hover {
+  transform: translateY(-1px);
   background: #ffffff;
   border-color: #53a423;
-  box-shadow: 0 3px 12px rgba(15, 19, 57, 0.06);
+  box-shadow: 0 6px 16px rgba(15, 19, 57, 0.08);
 }
-.payment-badge__icon {
-  display: flex;
+.payment-badge__logo-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.payment-badge__logo-pill {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #53a423;
+  height: 26px;
+  padding: 0 4px;
+  background: #ffffff;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.payment-badge__logo-pill--duitnow,
+.payment-badge__logo-pill--tng {
+  border-radius: 6px;
+}
+.payment-badge__logo {
+  display: block;
+  object-fit: contain;
+}
+.payment-badge__logo--visa {
+  height: 12px;
+  width: auto;
+}
+.payment-badge__logo--mc {
+  height: 20px;
+  width: auto;
+}
+.payment-badge__logo--fpx {
+  height: 18px;
+  width: auto;
+}
+.payment-badge__logo--duitnow {
+  height: 20px;
+  width: auto;
+}
+.payment-badge__logo--tng {
+  height: 20px;
+  width: auto;
 }
 .payment-badge__label {
-  letter-spacing: 0.01em;
+  letter-spacing: -0.01em;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: inherit;
+  white-space: nowrap;
 }
 
 /* Responsive breakdowns */
@@ -6447,28 +6498,51 @@ html.menu-locked { overflow: hidden; }
   }
 }
 
-.site-footer__payment-badges {
-  margin-top: 24px;
+/* Placement variants */
+.match-booking__payment-strip {
+  margin-top: 48px;
+  padding-top: 36px;
+  border-top: 1px solid rgba(15, 19, 57, 0.12);
 }
-.site-footer__payment-badges .payment-support__title {
-  color: rgba(255, 255, 255, 0.45);
-  font-size: 10px;
-  letter-spacing: 0.12em;
+.fields-payment-strip {
+  margin: 40px 0 24px;
+  padding-top: 28px;
+  border-top: 1px solid rgba(15, 19, 57, 0.1);
 }
-.site-footer__payment-badges .payment-badge {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.12);
-  color: rgba(255, 255, 255, 0.85);
+.finder-payments-wrapper {
+  margin-top: 36px;
+  padding-top: 28px;
+  border-top: 1px solid rgba(15, 19, 57, 0.1);
 }
-.site-footer__payment-badges .payment-badge:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: #53a423;
-  color: #ffffff;
-}
-
 .booking-details-payments {
   margin-top: 24px;
   padding-top: 20px;
   border-top: 1px solid rgba(15, 19, 57, 0.08);
+}
+
+/* Dark mode footer integration */
+.site-footer__payment-badges {
+  margin-top: 24px;
+}
+.site-footer__payment-badges .payment-support__title {
+  color: rgba(255, 255, 255, 0.52);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+}
+.site-footer__payment-badges .payment-badge {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.16);
+  color: rgba(255, 255, 255, 0.92);
+  box-shadow: none;
+}
+.site-footer__payment-badges .payment-badge:hover {
+  background: rgba(255, 255, 255, 0.13);
+  border-color: #53a423;
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28);
+}
+.site-footer__payment-badges .payment-badge__logo-pill {
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
 }
 

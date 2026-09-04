@@ -1,5 +1,29 @@
 # Client Changelog
 
+## 2026-09-04 (v18 Release & Deployment to main)
+- **Desktop Page Hero Focal Point Optimization**:
+  - Tuned `.page-hero__image` to `object-position: center 20%` (with desktop `@media (min-width: 900px)` set to `center 18%`) across all page heroes so the top portion of venue photography (stadium floodlights, sky, upper pitch) is framed beautifully rather than cropped at the center.
+- **`/booking/find` Image Replacement & Scrim Calibration**:
+  - Permanently deleted disliked asset `venue-overview.webp` from `public/images/venue/`.
+  - Replaced with high-resolution stadium floodlights aerial master (`stadium-lights-aerial.jpg`).
+  - Updated `images.venueOverview` in `src/lib/content.ts` and `/booking/find/page.tsx` default image parameters.
+  - Re-tuned `.page-hero__scrim` from heavy, muddy flat overlay (`0.97/0.72`) to a directional asymmetric vignette (`0.92 -> 0.65 -> 0.15`), maintaining high text contrast on the left while letting stadium lighting and green turf shine through vibrantly.
+- **Authentic Malaysian Payment Vector Logos & Site-Wide Trustmarks**:
+  - Replaced generic icon SVGs with official, authentic vector logos for:
+    - Visa (`/images/payments/visa.svg`)
+    - Mastercard (`/images/payments/mastercard.svg`)
+    - FPX Online Banking (`/images/payments/fpx.svg` - PayNet)
+    - DuitNow QR (`/images/payments/duitnow.svg` - PayNet)
+    - Touch 'n Go eWallet (`/images/payments/tng.svg`)
+  - Redesigned `PaymentBadges` with crisp white logo chips, smooth elevation hover micro-interactions, responsive flex-wrap layout, and dark-mode adaptation for the footer.
+  - Prominently integrated payment trustmarks across the customer journey:
+    - Homepage (`/`): Reassurance strip in `.match-booking` below "Pick. Book. Play."
+    - Pitch Directory (`/fields`): Payment support section before the booking CTA banner.
+    - Booking Wizard (`/book`): Step 2 review totals payment reassurance.
+    - Private Booking Lookup (`/booking/find`): Direct payment support strip below the lookup form.
+    - Site Footer: Refined white-chip pills on dark glass.
+- **Validation**: Passed 11 test suites (42 tests), 0 TypeScript errors, ESLint clean, production Next.js build completed with bundle security check verified.
+
 ## 2026-09-04 (v17 Release & Deployment to main)
 - **Responsive Header & Right Sidebar Drawer**:
   - Aligned navigation breakpoint to 1024px, eliminating the dead zone where desktop links and mobile menu were simultaneously hidden.
