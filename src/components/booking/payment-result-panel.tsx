@@ -20,7 +20,7 @@ function BookingReferenceActions({ references }: { references: string[] }) {
   const client = useMemo(() => createHttpPublicClient(), []);
   const [notice, setNotice] = useState("");
   const [ownerSession, setOwnerSession] = useState<boolean | null>(null);
-  useEffect(() => { void customerApi<CustomerSessionView>("session").then(({ account }) => setOwnerSession(account.status === "active")).catch(() => setOwnerSession(false)); }, []);
+  useEffect(() => { void customerApi<CustomerSessionView>("session").then(({ account }) => setOwnerSession(account.status !== "suspended")).catch(() => setOwnerSession(false)); }, []);
   async function copyReference(reference: string) {
     try { await navigator.clipboard.writeText(reference); setNotice(`${reference} copied.`); }
     catch { setNotice(`Copy ${reference} manually.`); }

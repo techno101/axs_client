@@ -1,5 +1,12 @@
 # Client Changelog
 
+## 2026-09-04 (Unified Google Sign-In & Non-Blocking Verification)
+- Unified the "Continue with Google" action across `/sign-in` and `/sign-up`: existing users automatically sign in (auto-linking existing password accounts seamlessly); first-time users complete profile details (mobile + age) and proceed directly to their account dashboard.
+- Made email verification non-blocking: unverified (`pending`) accounts can freely access their account overview, booking history, receipt downloads, and checkout flows.
+- Added non-intrusive "Unverified" account status badge with a single-click email verification request banner on the account dashboard.
+- Updated `payment-result-panel` to allow non-suspended users (including unverified accounts) to download booking receipts without barrier.
+- Added component test coverage in `tests/component/customer-forms.test.tsx` verifying Google sign-in button parity on `SignInForm`.
+
 ## 2026-09-04 (3D Matchday Gallery Carousel)
 - Curated gallery down from 20 to 14 action shots (`gallery-01` through `gallery-14`), removing the last 6 non-essential frames.
 - Rebuilt gallery reel as a 3D perspective carousel (`perspective: 1200px`, `transform-style: preserve-3d`) using GSAP ScrollTrigger with hardware-accelerated transforms.

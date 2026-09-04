@@ -90,7 +90,7 @@ export function SignUpForm() {
 
 export function SignInForm() {
   const [notice, setNotice] = useState<Notice>(null); const [busy, setBusy] = useState(false);
-  async function submit(event: FormEvent<HTMLFormElement>) { event.preventDefault(); setBusy(true); setNotice(null); const values = new FormData(event.currentTarget); try { const result = await postCustomer<{ suspended: boolean; session?: CustomerSessionView }>("login", { email: String(values.get("email") ?? ""), password: String(values.get("password") ?? "") }); if (result.suspended) setNotice({ tone: "error", text: "This account is suspended. Contact ArmourXSports if you need help." }); else window.location.assign(result.session?.account.status === "pending" ? "/verify-email?state=pending" : "/account"); } catch (error) { setNotice(messageFor(error)); } finally { setBusy(false); } }
+  async function submit(event: FormEvent<HTMLFormElement>) { event.preventDefault(); setBusy(true); setNotice(null); const values = new FormData(event.currentTarget); try { const result = await postCustomer<{ suspended: boolean; session?: CustomerSessionView }>("login", { email: String(values.get("email") ?? ""), password: String(values.get("password") ?? "") }); if (result.suspended) setNotice({ tone: "error", text: "This account is suspended. Contact ArmourXSports if you need help." }); else window.location.assign("/account"); } catch (error) { setNotice(messageFor(error)); } finally { setBusy(false); } }
   async function google() { setBusy(true); setNotice(null); try { const result = await postCustomer<{ authorizationUrl: string }>("google/start"); window.location.assign(result.authorizationUrl); } catch (error) { setNotice(messageFor(error)); } finally { setBusy(false); } }
   return <AccountShell eyebrow="Customer account" title="Welcome back"><NoticeBox notice={notice}/><form className="customer-form" onSubmit={submit} noValidate><label className="customer-form__wide">Email<input name="email" type="email" autoComplete="email" required/></label><label className="customer-form__wide">Passphrase<input name="password" type="password" autoComplete="current-password" required minLength={12} maxLength={128}/></label><button className="customer-submit customer-form__wide" disabled={busy}>{busy ? "Signing in" : "Sign in"}</button></form><p className="customer-help"><Link href="/forgot-password">Forgot your passphrase?</Link></p><div className="customer-divider"><span>or</span></div><GoogleButton label="Continue with Google" onClick={google} disabled={busy} /><p className="customer-help">New here? <Link href="/sign-up">Create an account</Link></p></AccountShell>;
 }
@@ -118,7 +118,21 @@ export function ResetPasswordForm() {
 }
 
 function AccountNavigation() { return <nav className="customer-dashboard__nav" aria-label="Account navigation"><Link href="/account">Overview</Link><Link href="/account/bookings">Bookings</Link><Link href="/account/profile">Profile</Link><Link href="/account/security">Security</Link></nav>; }
-function AccountState({ account, children }: { account: CustomerAccount | null; children: (account: CustomerAccount) => React.ReactNode }) { if (!account) return <p className="customer-notice customer-notice--info" role="status">Loading your account…</p>; if (account.status === "pending") return <><p className="customer-notice customer-notice--info" role="status">Verify your email before using account features.</p><Link className="customer-secondary" href="/verify-email?state=pending">Verify email</Link></>; return <>{children(account)}</>; }
+function AccountState({ account, children }: { account: CustomerAccount | null; children: (account: CustomerAccount) => React.ReactNode }) {
+  if (!account) return <p className="customer-notice customer-notice--info" role="status">Loading your account…</p>;
+  if (account.status === "suspended") return <p className="customer-notice customer-notice--error" role="alert">This account is suspended. Contact ArmourXSports if you need help.</p>;
+  return (
+    <>
+      {account.status === "pending" || !account.verifiedAt ? (
+        <div className="customer-notice customer-notice--info" role="status" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8, marginBottom: 16 }}>
+          <span>Email verification is pending. You can use your account freely, or verify now.</span>
+          <Link className="customer-text-link" href="/verify-email?state=pending" style={{ textDecoration: "underline" }}>Verify email</Link>
+        </div>
+      ) : null}
+      {children(account)}
+    </>
+  );
+}
 
 function useAccount() { const [account, setAccount] = useState<CustomerAccount | null>(null); const [notice, setNotice] = useState<Notice>(null); useEffect(() => { void customerApi<CustomerSessionView>("session").then((value) => setAccount(value.account)).catch(() => { setNotice({ tone: "info", text: "Sign in to view your account." }); }); }, []); return { account, setAccount, notice }; }
 
@@ -126,7 +140,7 @@ export function AccountOverview() {
   const { account, notice } = useAccount();
   const [signingOut, setSigningOut] = useState(false);
   const signOut = async () => { setSigningOut(true); try { await postCustomer("logout", {}); } catch { /* cookies are cleared regardless */ } window.location.assign("/"); };
-  return <DashboardShell title="Account overview"><NoticeBox notice={notice}/><AccountState account={account}>{(value) => <div className="customer-summary"><p>Signed in as <strong>{value.displayName}</strong>.</p><dl><div><dt>Email</dt><dd>{value.email}</dd></div><div><dt>Status</dt><dd>Active</dd></div></dl><Link className="customer-submit" href="/book">Book your spot</Link><button className="customer-secondary" type="button" disabled={signingOut} onClick={() => void signOut()}>{signingOut ? "Signing out…" : "Sign out"}</button></div>}</AccountState></DashboardShell>;
+  return <DashboardShell title="Account overview"><NoticeBox notice={notice}/><AccountState account={account}>{(value) => <div className="customer-summary"><p>Signed in as <strong>{value.displayName}</strong>.</p><dl><div><dt>Email</dt><dd>{value.email}</dd></div><div><dt>Status</dt><dd>{value.status === "active" || value.verifiedAt ? "Verified" : "Unverified"}</dd></div></dl><Link className="customer-submit" href="/book">Book your spot</Link><button className="customer-secondary" type="button" disabled={signingOut} onClick={() => void signOut()}>{signingOut ? "Signing out…" : "Sign out"}</button></div>}</AccountState></DashboardShell>;
 }
 
 function rescheduleMessage(error: unknown): Notice {
@@ -185,13 +199,13 @@ export function AccountBookings() {
   const [local, setLocal] = useState<Notice>(null);
   const refreshBookings = useCallback(async () => { try { setBookings(await customerApi<CustomerBooking[]>("bookings")); } catch (error) { setLocal(messageFor(error)); } }, []);
   useEffect(() => {
-    if (account?.status !== "active") return;
+    if (!account || account.status === "suspended") return;
     let current = true;
     void customerApi<CustomerBooking[]>("bookings")
       .then((nextBookings) => { if (current) setBookings(nextBookings); })
       .catch((error: unknown) => { if (current) setLocal(messageFor(error)); });
     return () => { current = false; };
-  }, [account?.status]);
+  }, [account]);
   async function download(reference: string) {
     try {
       const response = await fetch(`/api/customer/bookings/${encodeURIComponent(reference)}/download`, { credentials: "same-origin", cache: "no-store" });
@@ -225,7 +239,7 @@ function GoogleProfileForm({ email, name }: { email: string; name: string }) {
     const values = new FormData(event.currentTarget);
     try {
       const result = await withTimeout(postCustomer<{ state: string; session?: CustomerSessionView }>("google/complete-profile", { displayName: String(values.get("displayName") ?? ""), phone: String(values.get("phone") ?? ""), age: Number(values.get("age") ?? 0) }));
-      if (result.state === "authenticated" && result.session) window.location.assign(result.session.account.status === "pending" ? "/verify-email?state=pending" : "/account");
+      if (result.state === "authenticated" && result.session) window.location.assign("/account");
       else setNotice({ tone: "error", text: result.state === "suspended" ? "This account is suspended." : "We could not finish setting up your account. Please try again." });
     } catch (error) { setNotice(messageFor(error)); } finally { setBusy(false); }
   }
@@ -246,7 +260,7 @@ export function GoogleReturn() {
     }
     void withTimeout(postCustomer<{ state: string; session?: CustomerSessionView }>("google/exchange"))
       .then((result) => {
-        if (result.state === "authenticated" && result.session) window.location.assign(result.session.account.status === "pending" ? "/verify-email?state=pending" : "/account");
+        if (result.state === "authenticated" && result.session) window.location.assign("/account");
         else setNotice({ tone: "error", text: result.state === "suspended" ? "This account is suspended." : "This Google sign-in link is expired or has already been used. Please try again." });
       })
       .catch((error) => setNotice(messageFor(error)));

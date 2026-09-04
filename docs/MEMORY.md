@@ -1,5 +1,9 @@
 # Client Memory
 
+On 2026-09-04, the Google authentication flow was unified across `axs_client` per owner instructions:
+1. Unified 'Continue with Google': The Google sign-in/up action is constant and identical across `/sign-in` and `/sign-up`. Users with existing accounts (OAuth or password-based) sign in seamlessly without encountering error walls. First-time Google visitors complete mobile & age setup and land directly on their account dashboard.
+2. Non-blocking verification UX: Unverified (`pending`) accounts are no longer locked behind a blocking barrier. Customers can freely view their dashboard, booking history, download receipts, and complete checkouts. The account overview displays their verified/unverified state with a friendly banner to trigger email verification as an optional formality.
+
 On 2026-09-04, the Matchday Gallery (`match-gallery`) was upgraded into an Awwwards-grade 3D perspective carousel per owner instructions:
 1. Pruning: Removed the last 6 photos (`gallery-15` through `gallery-20`), keeping 14 curated high-intensity on-pitch action shots (`gallery-01` to `gallery-14`).
 2. 3D Perspective Reel: Injected true 3D spatial perspective (`perspective: 1200px`, `transform-style: preserve-3d`) with hardware-accelerated GSAP transforms. Cards dynamically rotate on the Y-axis (`rotateY: 22deg → 0deg → -22deg`) and elevate on the Z-axis (`z: -120px → +48px → -120px`) as they traverse the focal point, with inner-image lenticular parallax (`xPercent: -7 → +7`) and a dynamic specular sheen glint.

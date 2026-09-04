@@ -1,5 +1,11 @@
 # Client Decisions
 
+| Unified Google Auth & Non-Blocking Verification - 2026-09-04 | Result |
+| --- | --- |
+| Google button uniformity | Both `/sign-in` and `/sign-up` present identical "Continue with Google" buttons. Existing accounts (whether registered via password or Google) sign in seamlessly. |
+| Account auto-linking | Users who registered with password first can log in using Google; existing password remains valid for either login method. |
+| Non-blocking verification | Unverified (`pending`) accounts are treated as active for customer dashboard, booking history, checkout attachment, and receipt download. Verification is an optional formality surfaced via a clean notice with a single-click verification request. |
+
 | Availability dots - 2026-08-12 | Result |
 | --- | --- |
 | Dot rule | Green = all slots free, yellow = some free, red = none free, grey = past. Fed by the additive `availability/summary` endpoint (v1.16.0); a date with zero configured slots counts as red. |
