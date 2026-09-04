@@ -5,6 +5,12 @@
 | Google button uniformity | Both `/sign-in` and `/sign-up` present identical "Continue with Google" buttons. Existing accounts (whether registered via password or Google) sign in seamlessly. |
 | Account auto-linking | Users who registered with password first can log in using Google; existing password remains valid for either login method. |
 | Non-blocking verification | Unverified (`pending`) accounts are treated as active for customer dashboard, booking history, checkout attachment, and receipt download. Verification is an optional formality surfaced via a clean notice with a single-click verification request. |
+| Verification Expiry TTL | Email verification links expire after 10 minutes (strictly aligned across admin and client). |
+| Token Hygiene & Sanitization | `?token=...` is stripped immediately from the browser URL upon mounting via `window.history.replaceState` to prevent token leakage in history/referrers. |
+| Zero-Form Verification | Clicking the verification link immediately authenticates the customer and auto-redirects to `/account` without prompting for email or displaying a redundant resend form. |
+| Cross-Tab Synchronization | Waiting tabs listen via `BroadcastChannel`, `localStorage`, and periodic session probing to auto-redirect to `/account` when verification succeeds in another tab. |
+| Profile Avatar & Verify Account Button | `AccountOverview` presents a customer avatar with initials; unverified status renders an inline badge and a 1-click "Verify account" button beside the avatar with a 60s cooldown. |
+| Guest Session Probe | `/api/customer/session` returns 200 `{ data: { account: null } }` when unauthenticated to prevent red 401s in console. |
 
 | Availability dots - 2026-08-12 | Result |
 | --- | --- |

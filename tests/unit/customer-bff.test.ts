@@ -47,4 +47,15 @@ describe("same-origin customer BFF", () => {
     expect(JSON.parse(init.body)).toMatchObject({ fieldId: "FIELD_02", blockCode: "MORNING", bookingDate: "2026-08-20" });
     vi.unstubAllGlobals();
   });
+
+  it("returns 200 with null account for unauthenticated guest session probe without calling upstream", async () => {
+    const fetcher = vi.fn();
+    vi.stubGlobal("fetch", fetcher);
+    const response = await handleCustomerBff(new Request("https://client.example.test/api/customer/session", { method: "GET" }), ["session"], config);
+    expect(response.status).toBe(200);
+    const body = await response.json();
+    expect(body.data).toEqual({ account: null });
+    expect(fetcher).not.toHaveBeenCalled();
+    vi.unstubAllGlobals();
+  });
 });

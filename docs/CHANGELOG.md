@@ -3,9 +3,17 @@
 ## 2026-09-04 (Unified Google Sign-In & Non-Blocking Verification)
 - Unified the "Continue with Google" action across `/sign-in` and `/sign-up`: existing users automatically sign in (auto-linking existing password accounts seamlessly); first-time users complete profile details (mobile + age) and proceed directly to their account dashboard.
 - Made email verification non-blocking: unverified (`pending`) accounts can freely access their account overview, booking history, receipt downloads, and checkout flows.
-- Added non-intrusive "Unverified" account status badge with a single-click email verification request banner on the account dashboard.
-- Updated `payment-result-panel` to allow non-suspended users (including unverified accounts) to download booking receipts without barrier.
-- Added component test coverage in `tests/component/customer-forms.test.tsx` verifying Google sign-in button parity on `SignInForm`.
+- Overhauled email verification flow (`VerifyEmailForm`):
+  - Clicking verification link now authenticates customer immediately (session cookie set by BFF) and redirects to `/account` without prompting for email or displaying redundant resend form.
+  - Sanitizes URL immediately upon mount (`window.history.replaceState`) to prevent exposing raw verification tokens in the address bar or browser history.
+  - Added cross-tab synchronization (`BroadcastChannel`, `localStorage`, and 3s session polling) so waiting tabs auto-redirect to `/account` when verification completes in another tab.
+  - Wrapped `/verify-email` page in `<Suspense>` to eliminate Next.js/React hydration error #418.
+  - Updated client BFF handler for `/api/customer/session` to return 200 `{ data: { account: null } }` for unauthenticated guests, eliminating red 401 errors in browser console.
+- Added Profile Avatar & "Verify account" Action on Account Dashboard:
+  - Rendered customer initials profile picture / avatar with sports-gradient background.
+  - Placed "Unverified" status badge and a 1-click "Verify account" action button directly beside the profile picture.
+  - Configured 10-minute expiry copy and 60-second button cooldown.
+- Added component test coverage in `tests/component/customer-forms.test.tsx` verifying Google sign-in button parity on `SignInForm`, 10-minute expiry on `VerifyEmailForm`, and unverified/verified states on `AccountOverview`.
 
 ## 2026-09-04 (3D Matchday Gallery Carousel)
 - Curated gallery down from 20 to 14 action shots (`gallery-01` through `gallery-14`), removing the last 6 non-essential frames.

@@ -145,6 +145,10 @@ export async function handleCustomerBff(request: Request, segments: string[], co
   const key = segments.join("/");
   const route = rules[key] ?? bookingRule(segments);
   if (!route || request.method !== route.method || segments.some((part) => !part || part === "." || part === ".." || /[\\/]/.test(part))) return noStore({ data: null, error: { code: "NOT_FOUND", message: "This account route is not available." } }, 404);
+  if (key === "session") {
+    const session = cookieValue(request, SESSION_COOKIE);
+    if (!session) return noStore({ data: { account: null }, meta: {}, error: null }, 200);
+  }
   if (route.mutation && !originIsTrusted(request, config.clientOrigin)) return noStore({ data: null, error: { code: "CSRF_INVALID", message: "Cross-site account requests are not allowed." } }, 403);
   let body: Record<string, unknown> | undefined;
   if (route.body) {

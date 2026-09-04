@@ -95,13 +95,184 @@ export function SignInForm() {
   return <AccountShell eyebrow="Customer account" title="Welcome back"><NoticeBox notice={notice}/><form className="customer-form" onSubmit={submit} noValidate><label className="customer-form__wide">Email<input name="email" type="email" autoComplete="email" required/></label><label className="customer-form__wide">Passphrase<input name="password" type="password" autoComplete="current-password" required minLength={12} maxLength={128}/></label><button className="customer-submit customer-form__wide" disabled={busy}>{busy ? "Signing in" : "Sign in"}</button></form><p className="customer-help"><Link href="/forgot-password">Forgot your passphrase?</Link></p><div className="customer-divider"><span>or</span></div><GoogleButton label="Continue with Google" onClick={google} disabled={busy} /><p className="customer-help">New here? <Link href="/sign-up">Create an account</Link></p></AccountShell>;
 }
 
+function getInitials(name: string): string {
+  if (!name) return "U";
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return "U";
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
 export function VerifyEmailForm() {
-  const initialState = typeof window === "undefined" ? "" : new URLSearchParams(window.location.search).get("state") ?? "";
-  const [notice, setNotice] = useState<Notice>(initialState === "unavailable" ? { tone: "error", text: "Email verification is unavailable right now. Your account is not active yet." } : { tone: "info", text: "Check your inbox for a one-time verification link. The link expires after 24 hours." }); const [busy, setBusy] = useState(false);
-  const token = typeof window === "undefined" ? "" : new URLSearchParams(window.location.search).get("token") ?? "";
-  useEffect(() => { if (!token) return; void (async () => { setBusy(true); try { const result = await postCustomer<{ state: string }>("verification/confirm", { token }); if (result.state === "verified") { setNotice({ tone: "success", text: "Your email is verified. You can now use your account." }); } else if (result.state === "replayed") setNotice({ tone: "error", text: "This verification link has already been used. Sign in to continue." }); else if (result.state === "suspended") setNotice({ tone: "error", text: "This account is suspended." }); else setNotice({ tone: "error", text: "This verification link has expired. Request a new link below." }); } catch (error) { setNotice(messageFor(error)); } finally { setBusy(false); } })(); }, [token]);
-  async function resend(event: FormEvent<HTMLFormElement>) { event.preventDefault(); setBusy(true); const values = new FormData(event.currentTarget); try { const result = await postCustomer<{ deliveryAvailable?: boolean }>("verification/resend", { email: String(values.get("email") ?? "") }); setNotice(result.deliveryAvailable === false ? { tone: "error", text: "Email verification is unavailable right now." } : { tone: "success", text: "If verification is needed, a new email will be sent. Please wait a minute before trying again." }); } catch (error) { setNotice(messageFor(error)); } finally { setBusy(false); } }
-  return <AccountShell eyebrow="Email verification" title="Verify your email"><NoticeBox notice={notice}/><form className="customer-form" onSubmit={resend}><label className="customer-form__wide">Email<input name="email" type="email" autoComplete="email" required/></label><button className="customer-submit customer-form__wide" disabled={busy}>Send a new link</button></form><p className="customer-help"><Link href="/sign-in">Return to sign in</Link></p></AccountShell>;
+  const [notice, setNotice] = useState<Notice>({
+    tone: "info",
+    text: "Check your inbox for a one-time verification link. The link expires after 10 minutes. Once verified, this page will automatically redirect you.",
+  });
+  const [verifying, setVerifying] = useState(false);
+  const [verified, setVerified] = useState(false);
+  const [resendBusy, setResendBusy] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
+
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const timer = window.setInterval(() => {
+      setResendCooldown((prev) => (prev <= 1 ? 0 : prev - 1));
+    }, 1000);
+    return () => window.clearInterval(timer);
+  }, [resendCooldown]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const rawToken = params.get("token");
+    const stateParam = params.get("state");
+
+    // Immediately sanitize URL to strip raw token from browser history and address bar
+    if (rawToken) {
+      const cleanUrl = new URL(window.location.href);
+      cleanUrl.searchParams.delete("token");
+      window.history.replaceState({}, "", cleanUrl.pathname + (cleanUrl.search ? cleanUrl.search : ""));
+
+      void (async () => {
+        setVerifying(true);
+        setNotice({ tone: "info", text: "Verifying your email address, please wait…" });
+        try {
+          const result = await postCustomer<{ state: string; session?: CustomerSessionView }>("verification/confirm", { token: rawToken });
+          if (result.state === "verified") {
+            setVerified(true);
+            setNotice({ tone: "success", text: "Your email has been verified! Redirecting to your account…" });
+            try {
+              const channel = new BroadcastChannel("axs_customer_auth");
+              channel.postMessage({ type: "EMAIL_VERIFIED" });
+              channel.close();
+            } catch {}
+            try {
+              localStorage.setItem("axs_customer_verified_at", Date.now().toString());
+            } catch {}
+            window.setTimeout(() => {
+              window.location.assign("/account");
+            }, 600);
+          } else if (result.state === "replayed") {
+            setNotice({ tone: "info", text: "This verification link has already been used. If your account is verified, sign in to continue." });
+          } else if (result.state === "suspended") {
+            setNotice({ tone: "error", text: "This account is suspended. Contact ArmourXSports if you need help." });
+          } else {
+            setNotice({ tone: "error", text: "This verification link has expired. Verification links expire after 10 minutes. Request a new link below or sign in to verify from your account." });
+          }
+        } catch (error) {
+          setNotice(messageFor(error));
+        } finally {
+          setVerifying(false);
+        }
+      })();
+      return;
+    }
+
+    let initialTimer: number | null = null;
+    // No token in URL: user is waiting for verification (e.g. from sign-up)
+    if (stateParam === "unavailable") {
+      initialTimer = window.setTimeout(() => {
+        setNotice({ tone: "error", text: "Email verification is unavailable right now. Your account is not active yet." });
+      }, 0);
+    }
+
+    // Cross-tab synchronization: broadcast channel
+    let bc: BroadcastChannel | null = null;
+    try {
+      bc = new BroadcastChannel("axs_customer_auth");
+      bc.onmessage = (event) => {
+        if (event.data?.type === "EMAIL_VERIFIED") {
+          setVerified(true);
+          setNotice({ tone: "success", text: "Email verified! Redirecting to your account…" });
+          window.location.assign("/account");
+        }
+      };
+    } catch {}
+
+    // Cross-tab synchronization: localStorage storage event
+    const onStorage = (event: StorageEvent) => {
+      if (event.key === "axs_customer_verified_at") {
+        setVerified(true);
+        setNotice({ tone: "success", text: "Email verified! Redirecting to your account…" });
+        window.location.assign("/account");
+      }
+    };
+    window.addEventListener("storage", onStorage);
+
+    // Periodic probe: every 3 seconds, probe session to detect external verification
+    const pollTimer = window.setInterval(async () => {
+      try {
+        const session = await customerApi<CustomerSessionView>("session");
+        if (session?.account?.status === "active" || session?.account?.verifiedAt) {
+          setVerified(true);
+          setNotice({ tone: "success", text: "Email verified! Redirecting to your account…" });
+          window.location.assign("/account");
+        }
+      } catch {}
+    }, 3000);
+
+    return () => {
+      if (initialTimer) window.clearTimeout(initialTimer);
+      if (bc) bc.close();
+      window.removeEventListener("storage", onStorage);
+      window.clearInterval(pollTimer);
+    };
+  }, []);
+
+  async function resend(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (resendBusy || resendCooldown > 0) return;
+    setResendBusy(true);
+    const values = new FormData(event.currentTarget);
+    try {
+      const result = await postCustomer<{ deliveryAvailable?: boolean }>("verification/resend", {
+        email: String(values.get("email") ?? ""),
+      });
+      if (result.deliveryAvailable === false) {
+        setNotice({ tone: "error", text: "Email verification is unavailable right now." });
+      } else {
+        setNotice({ tone: "success", text: "If verification is needed, a new email has been sent. The link expires after 10 minutes." });
+        setResendCooldown(60);
+      }
+    } catch (error) {
+      setNotice(messageFor(error));
+    } finally {
+      setResendBusy(false);
+    }
+  }
+
+  return (
+    <AccountShell eyebrow="Email verification" title="Verify your email">
+      <NoticeBox notice={notice} />
+      {verifying ? (
+        <div className="customer-verifying-card">
+          <div className="customer-spinner" aria-hidden="true" />
+          <p style={{ margin: 0, fontWeight: 600, color: "var(--ink)" }}>Verifying your email address…</p>
+        </div>
+      ) : verified ? (
+        <div className="customer-verifying-card">
+          <div className="customer-status-badge customer-status-badge--verified" style={{ fontSize: 13, padding: "6px 14px" }}>
+            ✓ Verified
+          </div>
+          <p style={{ margin: 0, fontWeight: 600, color: "var(--ink)" }}>Redirecting to your account dashboard…</p>
+        </div>
+      ) : (
+        <>
+          <form className="customer-form" onSubmit={resend} noValidate>
+            <label className="customer-form__wide">
+              Didn&apos;t receive the link or it expired? Enter your email to resend:
+              <input name="email" type="email" autoComplete="email" required placeholder="you@example.com" />
+            </label>
+            <button className="customer-submit customer-form__wide" disabled={resendBusy || resendCooldown > 0}>
+              {resendBusy ? "Sending link…" : resendCooldown > 0 ? `Resend in ${resendCooldown}s` : "Send new verification link"}
+            </button>
+          </form>
+          <p className="customer-help">
+            <Link href="/account">Go to account overview</Link> · <Link href="/sign-in">Return to sign in</Link>
+          </p>
+        </>
+      )}
+    </AccountShell>
+  );
 }
 
 export function ForgotPasswordForm() {
@@ -125,8 +296,8 @@ function AccountState({ account, children }: { account: CustomerAccount | null; 
     <>
       {account.status === "pending" || !account.verifiedAt ? (
         <div className="customer-notice customer-notice--info" role="status" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8, marginBottom: 16 }}>
-          <span>Email verification is pending. You can use your account freely, or verify now.</span>
-          <Link className="customer-text-link" href="/verify-email?state=pending" style={{ textDecoration: "underline" }}>Verify email</Link>
+          <span>Email verification is pending (links expire after 10 minutes). You can use your account freely, or click &quot;Verify account&quot; below to receive a link.</span>
+          <Link className="customer-text-link" href="/verify-email?state=pending" style={{ textDecoration: "underline", marginTop: 0 }}>Verification details</Link>
         </div>
       ) : null}
       {children(account)}
@@ -139,8 +310,118 @@ function useAccount() { const [account, setAccount] = useState<CustomerAccount |
 export function AccountOverview() {
   const { account, notice } = useAccount();
   const [signingOut, setSigningOut] = useState(false);
-  const signOut = async () => { setSigningOut(true); try { await postCustomer("logout", {}); } catch { /* cookies are cleared regardless */ } window.location.assign("/"); };
-  return <DashboardShell title="Account overview"><NoticeBox notice={notice}/><AccountState account={account}>{(value) => <div className="customer-summary"><p>Signed in as <strong>{value.displayName}</strong>.</p><dl><div><dt>Email</dt><dd>{value.email}</dd></div><div><dt>Status</dt><dd>{value.status === "active" || value.verifiedAt ? "Verified" : "Unverified"}</dd></div></dl><Link className="customer-submit" href="/book">Book your spot</Link><button className="customer-secondary" type="button" disabled={signingOut} onClick={() => void signOut()}>{signingOut ? "Signing out…" : "Sign out"}</button></div>}</AccountState></DashboardShell>;
+  const [resendNotice, setResendNotice] = useState<Notice>(null);
+  const [resendBusy, setResendBusy] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
+
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const timer = window.setInterval(() => {
+      setResendCooldown((prev) => (prev <= 1 ? 0 : prev - 1));
+    }, 1000);
+    return () => window.clearInterval(timer);
+  }, [resendCooldown]);
+
+  const resendVerification = async (email: string) => {
+    if (resendBusy || resendCooldown > 0) return;
+    setResendBusy(true);
+    setResendNotice(null);
+    try {
+      const result = await postCustomer<{ deliveryAvailable?: boolean }>("verification/resend", { email });
+      if (result.deliveryAvailable === false) {
+        setResendNotice({ tone: "error", text: "Email verification is unavailable right now." });
+      } else {
+        setResendNotice({ tone: "success", text: `Verification link sent to ${email}! The link expires after 10 minutes.` });
+        setResendCooldown(60);
+      }
+    } catch (error) {
+      setResendNotice(messageFor(error));
+    } finally {
+      setResendBusy(false);
+    }
+  };
+
+  const signOut = async () => {
+    setSigningOut(true);
+    try { await postCustomer("logout", {}); } catch { /* cookies are cleared regardless */ }
+    window.location.assign("/");
+  };
+
+  return (
+    <DashboardShell title="Account overview">
+      <NoticeBox notice={notice} />
+      <AccountState account={account}>
+        {(value) => {
+          const isVerified = value.status === "active" || Boolean(value.verifiedAt);
+          return (
+            <div className="customer-summary customer-summary--card">
+              <div className="customer-profile-header">
+                <div className="customer-avatar" aria-hidden="true">
+                  {getInitials(value.displayName)}
+                </div>
+                <div className="customer-profile-info">
+                  <div className="customer-profile-row">
+                    <h2 className="customer-profile-name">{value.displayName}</h2>
+                    {isVerified ? (
+                      <span className="customer-status-badge customer-status-badge--verified">
+                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                          <path d="M10 3L4.5 8.5L2 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                        Verified
+                      </span>
+                    ) : (
+                      <div className="customer-verify-inline">
+                        <span className="customer-status-badge customer-status-badge--unverified">Unverified</span>
+                        <button
+                          type="button"
+                          className="customer-verify-btn"
+                          disabled={resendBusy || resendCooldown > 0}
+                          onClick={() => void resendVerification(value.email)}
+                        >
+                          {resendBusy ? "Sending…" : resendCooldown > 0 ? `Resend in ${resendCooldown}s` : "Verify account"}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                  <p className="customer-profile-email">{value.email}</p>
+                </div>
+              </div>
+
+              <NoticeBox notice={resendNotice} />
+
+              <dl>
+                <div>
+                  <dt>Email</dt>
+                  <dd>{value.email}</dd>
+                </div>
+                <div>
+                  <dt>Phone</dt>
+                  <dd>{value.phone || "Not set"}</dd>
+                </div>
+                <div>
+                  <dt>Account status</dt>
+                  <dd>{isVerified ? "Active · Verified" : "Pending verification"}</dd>
+                </div>
+                <div>
+                  <dt>Verification</dt>
+                  <dd>{isVerified ? "Verified" : "Unverified (link expires in 10m)"}</dd>
+                </div>
+              </dl>
+
+              <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 8 }}>
+                <Link className="customer-submit" href="/book">
+                  Book your spot
+                </Link>
+                <button className="customer-secondary" type="button" disabled={signingOut} onClick={() => void signOut()}>
+                  {signingOut ? "Signing out…" : "Sign out"}
+                </button>
+              </div>
+            </div>
+          );
+        }}
+      </AccountState>
+    </DashboardShell>
+  );
 }
 
 function rescheduleMessage(error: unknown): Notice {
