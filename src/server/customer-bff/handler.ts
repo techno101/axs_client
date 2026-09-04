@@ -27,6 +27,8 @@ const rules: Record<string, RouteRule> = {
   "google/complete-profile": { method: "POST", upstream: "google/complete-profile", mutation: true, body: true },
   "google/link/start": { method: "POST", upstream: "google/link/start", mutation: true, session: true, csrf: true, body: true },
   "google/unlink": { method: "DELETE", upstream: "google/unlink", mutation: true, session: true, csrf: true },
+  "account/deactivate": { method: "POST", upstream: "account/deactivate", mutation: true, session: true, csrf: true },
+  "account/delete": { method: "POST", upstream: "account/delete", mutation: true, session: true, csrf: true },
 };
 
 const LEGACY_BOOKING_REFERENCE = /^AXS-[A-Z0-9]{6,12}$/;
@@ -201,7 +203,7 @@ export async function handleCustomerBff(request: Request, segments: string[], co
     const response = noStore(sanitize(result.payload), result.status);
     const data = result.payload && typeof result.payload === "object" ? (result.payload as { data?: Record<string, unknown> }).data : null;
     if (data?.session && typeof data.session === "object") setSession(response, config, data.session as Record<string, unknown>);
-    if (key === "logout" || key === "password/set" || key === "profile/update" || key === "google/unlink" || data?.suspended === true || data?.state === "suspended") clearSession(response, config);
+    if (key === "logout" || key === "password/set" || key === "profile/update" || key === "google/unlink" || key === "account/deactivate" || key === "account/delete" || data?.suspended === true || data?.state === "suspended") clearSession(response, config);
     return response;
   } catch {
     return noStore({ data: null, error: { code: "SERVICE_UNAVAILABLE", message: "The account service is temporarily unavailable." } }, 502);

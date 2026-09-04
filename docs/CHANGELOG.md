@@ -1,5 +1,24 @@
 # Client Changelog
 
+## 2026-09-04 (Customer Account Portal UI/UX Redesign & Account Lifecycle)
+- **Portal Shell & Navigation Overhaul**:
+  - Encased navigation inside a glass sidebar card with player identity preview, active indicator pills, and bespoke vector SVGs (Overview, Bookings, Profile, Security) with hover micro-interactions.
+  - Added bottom sidebar quick-actions: "Book a pitch" high-contrast CTA and "Sign out" link.
+- **Account Overview Enhancement**:
+  - Added Matchday Quick Hub metric cards (Match bookings history, Next session slot reservation, Home arena information).
+  - Structured account details key-value table.
+  - Fixed distorted full-width button styling: `.customer-secondary` now uses natural inline-flex sizing rather than stretching across 800px.
+- **Booking History Experience**:
+  - Added filter tabs (All bookings, Upcoming, Past).
+  - Replaced cold system alert with an athletic turf pitch vector illustration, matchday invitation copy, and direct CTAs to book or locate guest bookings.
+- **Balanced Profile Settings**:
+  - Refined layout with read-only identity email, player details, helper notes, and natural action button alignment.
+- **Account Lifecycle & Danger Zone**:
+  - Added **Danger Zone** section in Security settings with Deactivate Account and Delete Account options.
+  - Implemented interactive `ConfirmModal` dialogs with confirmation prompts and immediate session termination.
+  - Registered BFF route rules `account/deactivate` and `account/delete` with automatic cookie clearance.
+- **Validation**: 39 vitest tests passing across 11 test files, 0 typescript errors, 0 lint errors/warnings.
+
 ## 2026-09-04 (Unified Google Sign-In & Non-Blocking Verification)
 - Unified the "Continue with Google" action across `/sign-in` and `/sign-up`: existing users automatically sign in (auto-linking existing password accounts seamlessly); first-time users complete profile details (mobile + age) and proceed directly to their account dashboard.
 - Made email verification non-blocking: unverified (`pending`) accounts can freely access their account overview, booking history, receipt downloads, and checkout flows.

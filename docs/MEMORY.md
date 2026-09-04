@@ -1,5 +1,14 @@
 # Client Memory
 
+On 2026-09-04 (Account Portal UI/UX Redesign & Account Lifecycle pass), the customer portal was comprehensively overhauled across all 4 account surfaces (`/account`, `/account/bookings`, `/account/profile`, `/account/security`):
+1. Shell & Navigation: Replaced floating naked links with an encased glass sidebar card featuring player identity summary, active pill indicator (`usePathname()`), bespoke athletic vector SVGs for Overview, Bookings, Profile, and Security (with no emoji placeholders), plus bottom quick actions ("Book a pitch" CTA and "Sign out" link).
+2. Button Sizing & Spacing: Fixed `.customer-secondary` so buttons use natural inline-flex sizing rather than stretching across 800px; styled buttons with balanced padding and micro-interactions.
+3. Overview: Added Matchday Quick Hub cards (Match Bookings, Next Session, Home Arena) and structured key-value account details.
+4. Booking History: Added filter tabs (All bookings, Upcoming, Past) and replaced the cold blue alert with a rich turf pitch graphic, engaging invitation copy, and direct booking CTAs.
+5. Profile: Rebalanced into a clean 2-column layout with read-only identity email, player details, and natural button alignment.
+6. Account Lifecycle (Danger Zone): Added Deactivate Account and Delete Account options under a dedicated Danger Zone in Security, complete with accessible `ConfirmModal` dialogs and automatic session cookie clearing via BFF routes `account/deactivate` and `account/delete`.
+All 39 unit/component tests in 11 files pass, 0 TypeScript errors, 0 lint warnings.
+
 On 2026-09-04, the Google authentication flow and email verification experience were unified across `axs_client` per owner instructions:
 1. Unified 'Continue with Google': The Google sign-in/up action is constant and identical across `/sign-in` and `/sign-up`. Users with existing accounts (OAuth or password-based) sign in seamlessly without encountering error walls. First-time Google visitors complete mobile & age setup and land directly on their account dashboard.
 2. Non-blocking verification UX: Unverified (`pending`) accounts are no longer locked behind a blocking barrier. Customers can freely view their dashboard, booking history, download receipts, and complete checkouts.
