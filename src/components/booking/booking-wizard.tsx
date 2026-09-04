@@ -272,7 +272,7 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
       if (!order.accessToken) throw new Error("The order response did not include its one-time status handle.");
       window.sessionStorage.setItem(`axs:order:${order.reference}`, order.accessToken);
       window.sessionStorage.setItem(`axs:order-email:${order.reference}`, customer.email ? "present" : "missing");
-      const attempt = await client.createOrderPaymentAttempt(order.reference, { method: "online_provider", returnPath: `/booking/result?reference=${encodeURIComponent(order.reference)}` }, crypto.randomUUID());
+      const attempt = await client.createOrderPaymentAttempt(order.reference, { method: "online_provider", returnPath: `/booking/result?order=${encodeURIComponent(order.reference)}` }, crypto.randomUUID());
       if (!attempt.redirectUrl) throw new Error("The payment provider did not return a redirect URL.");
       window.location.assign(attempt.redirectUrl);
     } catch (requestError) {

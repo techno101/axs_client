@@ -10,9 +10,32 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-dynamic";
 
-export default async function BookingResultPage({ searchParams }: { searchParams: Promise<{ reference?: string }> }) {
+function extractOrderReference(query: Record<string, string | string[] | undefined>): string {
+  const candidates: string[] = [];
+  for (const key of ["order", "reference"]) {
+    const val = query[key];
+    if (typeof val === "string") {
+      candidates.push(val);
+    } else if (Array.isArray(val)) {
+      candidates.push(...val);
+    }
+  }
+  for (const item of candidates) {
+    const trimmed = item.trim();
+    if (/^AXO-[A-Z0-9-]{6,24}$/i.test(trimmed)) {
+      return trimmed.toUpperCase();
+    }
+  }
+  return "AXO-PENDING";
+}
+
+export default async function BookingResultPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const query = await searchParams;
-  const reference = query.reference && /^AXO-[A-Z0-9]{6,16}$/.test(query.reference) ? query.reference : "AXO-PENDING";
+  const reference = extractOrderReference(query);
   return (
     <>
       <PageHero compact eyebrow="Booking status" title={<>Your order<br />status.</>} intro="Keep this page open after checkout. It shows when your field is locked in." image={images.homeHero} />

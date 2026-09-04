@@ -1,5 +1,16 @@
 # Client Changelog
 
+## 2026-09-04 (v20 Release - Payment Gateway Return Path & Booking Result Resilience)
+- **Payment Gateway Return Path Disambiguation**:
+  - In `src/components/booking/booking-wizard.tsx`, changed payment attempt `returnPath` from `/booking/result?reference=...` to `/booking/result?order=${encodeURIComponent(order.reference)}`.
+  - Avoids query parameter name collision when HitPay automatically appends `&reference={hitpay_request_id}` upon payment completion.
+- **Booking Result Page Parameter Handling**:
+  - In `src/app/booking/result/page.tsx`, implemented `extractOrderReference` to extract order reference from either `query.order` or `query.reference`.
+  - Added support for array values (when duplicate query keys are received), matching `/^AXO-[A-Z0-9-]{6,24}$/i` and normalizing to uppercase.
+  - Ensures `LivePaymentResult` finds the correct sessionStorage token `axs:order:{reference}` to poll and display confirmed matchday orders.
+- **Validation**:
+  - 44 tests passing across 11 test suites (with updated returnPath assertion), 0 typecheck errors, 0 lint errors, production build verified.
+
 ## 2026-09-04 (v19 Release - Payment Redirection, Cart Deletion, Customer Badges & Hero Layout Fix)
 - **HitPay Payment Redirection**:
   - Fixed missing `window.location.assign(attempt.redirectUrl)` in `src/components/booking/booking-wizard.tsx` after creating order payment attempt. Clicking "Continue to payment" now directly navigates the browser to HitPay's hosted payment gateway instead of getting stuck on "Taking you to payment…".

@@ -125,6 +125,12 @@ describe("BookingWizard", () => {
     await waitFor(() => {
       expect(assignMock).toHaveBeenCalledWith("https://sandbox.hitpayapp.com/pay/test123");
     });
+
+    const calls = (fetch as unknown as { mock: { calls: Array<[RequestInfo | URL, RequestInit?]> } }).mock.calls;
+    const paymentCall = calls.find(([u]) => String(u).includes("/payment-attempts"));
+    expect(paymentCall).toBeDefined();
+    const body = JSON.parse(paymentCall![1]!.body as string);
+    expect(body.returnPath).toBe("/booking/result?order=AXO-TEST123");
   });
 });
 

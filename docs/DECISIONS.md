@@ -1,5 +1,10 @@
 # Client Decisions
 
+| Payment Gateway Return Path & Result Page Resilience - 2026-09-04 | Result |
+| --- | --- |
+| Gateway returnPath query parameter | Changed `returnPath` parameter in `booking-wizard.tsx` from `?reference=...` to `?order=...` to prevent query key collision when HitPay automatically appends `&reference={hitpay_request_id}` to redirect URLs. |
+| Result page parameter extraction | `BookingResultPage` inspects both `order` and `reference` searchParams as either string or array, matching `/^AXO-[A-Z0-9-]{6,24}$/i` to guarantee the customer session token in `sessionStorage` matches and displays confirmed matchday order details. |
+
 | Payment Redirection, Cart Deletion & Layout Polish - 2026-09-04 | Result |
 | --- | --- |
 | HitPay payment redirection | Order payment initiation immediately assigns `window.location.assign(attempt.redirectUrl)`, redirecting the browser to HitPay hosted checkout. |

@@ -1,5 +1,11 @@
 # Client Memory
 
+On 2026-09-04 (v20 payment redirect parameter collision & result page resilience pass):
+1. **Payment Gateway Return Path Disambiguation**: Updated `returnPath` in `src/components/booking/booking-wizard.tsx` to `/booking/result?order=${encodeURIComponent(order.reference)}`. This prevents duplicate query parameter collisions with HitPay gateway which appends `&status=completed&reference={hitpay_request_id}` upon return.
+2. **Booking Result Page Parameter Extraction**: Updated `extractOrderReference` in `src/app/booking/result/page.tsx` to robustly extract order references from either `query.order` or `query.reference`, gracefully handling both string values and array values (Next.js duplicate query parameter array parsing) matching `/^AXO-[A-Z0-9-]{6,24}$/i`.
+3. **Session State Continuity**: By resolving the true order reference (e.g. `AXO-MDPDFXLHW`) instead of defaulting to `AXO-PENDING`, `LivePaymentResult` successfully retrieves `axs:order:{reference}` from `sessionStorage` and displays live payment confirmation.
+4. **Validation**: 44 unit/component tests passing across 11 test files, 0 typecheck errors, 0 lint errors, Next.js production build succeeded with bundle security scan verified. Branch `v20` on origin.
+
 On 2026-09-04 (v19 release - Payment Redirection, Cart Deletion, Customer Badges & Hero Layout Fix):
 1. **HitPay Payment Redirection**: Added `window.location.assign(attempt.redirectUrl)` in `src/components/booking/booking-wizard.tsx`. Clicking "Continue to payment" now redirects directly to HitPay's hosted payment gateway instead of freezing on "Taking you to payment…".
 2. **Cart Drawer Remove Button**: Added circular remove button (`×`) to each session item in `.booking-bar__list`, allowing users to remove sessions directly from the floating basket drawer without backing out of checkout.
