@@ -232,7 +232,7 @@ export function HomeExperience({ locale, fields, blocks, faqs, availability, sit
               <h2 id="gallery-title">Football, as it happens.</h2>
             </div>
             <div className="match-gallery__head-side">
-              <p>Real sessions at the venue — tackles, headers, sprints and team moments captured on the pitch.</p>
+              <p>Game Day Vibes | See the pace, the passion, and the pitch in action.</p>
               <div className="match-gallery__nav" aria-label="Gallery carousel controls">
                 <button className="match-gallery__nav-btn match-gallery__nav-btn--prev" aria-label="Previous photos" type="button">
                   <ArrowLeftIcon />

@@ -1,5 +1,10 @@
 # Client Changelog
 
+## 2026-09-04 (v16 Release & Deployment to main)
+- **Branch Promotion (v16)**: Promoted customer account portal UI/UX redesign, bespoke vector SVGs, fixed button widths, danger zone deactivation/deletion, and home gallery copy updates to release branch `v16` and merged into `main` for production live deployment.
+- **Home Experience**: Updated match gallery subtitle copy ("Game Day Vibes | See the pace, the passion, and the pitch in action.").
+- **Strict Branching Guidelines**: Enforced `v<number>` format published directly to origin; banned multi-word and `work/next-session-...` branch names.
+
 ## 2026-09-04 (Customer Account Portal UI/UX Redesign & Account Lifecycle)
 - **Portal Shell & Navigation Overhaul**:
   - Encased navigation inside a glass sidebar card with player identity preview, active indicator pills, and bespoke vector SVGs (Overview, Bookings, Profile, Security) with hover micro-interactions.

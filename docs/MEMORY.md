@@ -1,5 +1,7 @@
 # Client Memory
 
+On 2026-09-04 (v16 release), customer portal UI/UX redesign, bespoke vector SVGs, fixed button widths, danger zone deactivation/deletion, and home gallery copy updates ("Game Day Vibes | See the pace, the passion, and the pitch in action.") were promoted to branch `v16` and deployed to `main`. Strict branching policy (`v<number>` only, published to origin) codified across the system. Local verification: 39 tests passing, 0 type errors, 0 lint errors.
+
 On 2026-09-04 (Account Portal UI/UX Redesign & Account Lifecycle pass), the customer portal was comprehensively overhauled across all 4 account surfaces (`/account`, `/account/bookings`, `/account/profile`, `/account/security`):
 1. Shell & Navigation: Replaced floating naked links with an encased glass sidebar card featuring player identity summary, active pill indicator (`usePathname()`), bespoke athletic vector SVGs for Overview, Bookings, Profile, and Security (with no emoji placeholders), plus bottom quick actions ("Book a pitch" CTA and "Sign out" link).
 2. Button Sizing & Spacing: Fixed `.customer-secondary` so buttons use natural inline-flex sizing rather than stretching across 800px; styled buttons with balanced padding and micro-interactions.
