@@ -191,15 +191,15 @@ function MotionStage({ children, enabled }: { children: React.ReactNode; enabled
 
           // Approaching focal center: rotates inward, lifts forward from recessed depth
           gsap.fromTo(card, {
-            rotateY: 22,
-            z: -120,
-            scale: 0.88,
-            opacity: 0.7,
+            rotateY: 20,
+            z: -100,
+            scale: 0.94,
+            opacity: 0.75,
             transformOrigin: "50% 50% -80px",
           }, {
             rotateY: 0,
-            z: 48,
-            scale: 1.08,
+            z: 32,
+            scale: 1.02,
             opacity: 1,
             ease: "none",
             scrollTrigger: {
@@ -214,15 +214,15 @@ function MotionStage({ children, enabled }: { children: React.ReactNode; enabled
           // Leaving focal center: swings outward, recedes into the background
           gsap.fromTo(card, {
             rotateY: 0,
-            z: 48,
-            scale: 1.08,
+            z: 32,
+            scale: 1.02,
             opacity: 1,
             transformOrigin: "50% 50% -80px",
           }, {
-            rotateY: -22,
-            z: -120,
-            scale: 0.88,
-            opacity: 0.7,
+            rotateY: -20,
+            z: -100,
+            scale: 0.94,
+            opacity: 0.75,
             ease: "none",
             scrollTrigger: {
               containerAnimation: tween,

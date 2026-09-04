@@ -109,6 +109,7 @@ export function SiteHeader() {
           ))}
         </nav>
         <div className="site-header__actions">
+          <Link className="header-book-cta" href="/book">{copy.book}</Link>
           <AuthMenu state={sessionState} onSignOut={handleSignOut} labels={authLabels} busy={signOutBusy} />
           <Link className="header-language" href={isBm ? "/" : "/bm"} hrefLang={isBm ? "en" : "ms"} aria-label={copy.switchLanguage}>{isBm ? "EN" : "BM"}</Link>
           <button ref={menuButtonRef} className="site-header__menu" type="button" onClick={() => setOpen(true)} aria-expanded={open} aria-controls="site-menu">
@@ -121,9 +122,9 @@ export function SiteHeader() {
       </div>
 
       <div className={`site-menu${open ? " menu-open" : ""}`} id="site-menu" ref={menuRef} role="dialog" aria-modal="true" aria-label={copy.navLabel} aria-hidden={!open}>
-        <button className="site-menu__scrim" type="button" tabIndex={-1} aria-hidden="true" onClick={close} />
+        <div className="site-menu__scrim" aria-hidden="true" onClick={close} />
         <aside className="site-menu__panel">
-          <div className="site-menu__top shell">
+          <div className="site-menu__top">
             <BrandMark href={homeHref(locale)} />
             <button className="site-menu__close" type="button" onClick={close} aria-label={copy.closeMenu}>
               <span>Close</span>
@@ -132,35 +133,35 @@ export function SiteHeader() {
               </svg>
             </button>
           </div>
-          <nav className="site-menu__nav shell" aria-label={copy.navLabel}>
+          <nav className="site-menu__nav" aria-label={copy.navLabel}>
             {navItems.map((item, index) => (
-              <Link href={item.href} key={`${item.href}-${item.label}`} onClick={close} className="menu-line" style={{ "--menu-i": index } as React.CSSProperties}>
+              <Link href={item.href} key={`${item.href}-${item.label}`} onClick={close} className="menu-line">
                 <span>{item.label}</span>
                 <b aria-hidden="true">0{index + 1}</b>
               </Link>
             ))}
             {sessionState === "guest" ? (
-              <>
-                <Link href="/sign-in" onClick={close} className="menu-line" style={{ "--menu-i": navItems.length } as React.CSSProperties}>
+              <div className="site-menu__auth-links">
+                <Link href="/sign-in" onClick={close} className="menu-line menu-line--sub">
                   <span>{copy.signIn}</span>
-                  <b aria-hidden="true">0{navItems.length + 1}</b>
                 </Link>
-                <Link href="/sign-up" onClick={close} className="menu-line" style={{ "--menu-i": navItems.length + 1 } as React.CSSProperties}>
+                <Link href="/sign-up" onClick={close} className="menu-line menu-line--sub">
                   <span>{copy.createAccount}</span>
-                  <b aria-hidden="true">0{navItems.length + 2}</b>
                 </Link>
-              </>
+              </div>
             ) : (
-              <Link href="/account" onClick={close} className="menu-line" style={{ "--menu-i": navItems.length } as React.CSSProperties}>
+              <Link href="/account" onClick={close} className="menu-line">
                 <span>{copy.myAccount}</span>
                 <b aria-hidden="true">0{navItems.length + 1}</b>
               </Link>
             )}
           </nav>
-          <div className="site-menu__foot shell">
-            <Link className="site-header__book" href="/book" onClick={close}>{copy.book}</Link>
-            {sessionState === "member" ? <button className="auth-menu__signout" type="button" disabled={signOutBusy} onClick={handleSignOut}>{signOutBusy ? "…" : copy.signOut}</button> : null}
-            <Link href={isBm ? "/" : "/bm"} hrefLang={isBm ? "en" : "ms"} onClick={close}>{isBm ? "English" : "Bahasa Melayu"}</Link>
+          <div className="site-menu__foot">
+            <Link className="site-menu__book-btn" href="/book" onClick={close}>{copy.book}</Link>
+            <div className="site-menu__foot-meta">
+              {sessionState === "member" ? <button className="auth-menu__signout" type="button" disabled={signOutBusy} onClick={handleSignOut}>{signOutBusy ? "…" : copy.signOut}</button> : null}
+              <Link className="site-menu__lang-btn" href={isBm ? "/" : "/bm"} hrefLang={isBm ? "en" : "ms"} onClick={close}>{isBm ? "English" : "Bahasa Melayu"}</Link>
+            </div>
           </div>
         </aside>
       </div>

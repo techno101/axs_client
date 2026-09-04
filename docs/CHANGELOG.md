@@ -1,5 +1,28 @@
 # Client Changelog
 
+## 2026-09-04 (v17 Release & Deployment to main)
+- **Responsive Header & Right Sidebar Drawer**:
+  - Aligned navigation breakpoint to 1024px, eliminating the dead zone where desktop links and mobile menu were simultaneously hidden.
+  - Added dedicated, eye-catching "Book now" CTA button in desktop navbar beside the account button.
+  - Re-engineered hamburger menu into a solid dark right sidebar drawer (`#0c0e12`) with direct vertical navigation, clean top close button, full-width booking action, and zero blurry backdrop distortion on mobile.
+- **"Pick. Book. Play." Layout Fix**:
+  - Restructured `.match-booking__steps` from a broken 44px column template into a balanced 3-column desktop grid and stacked card mobile view. Eliminated awkward single-word line breaks and overlapping headers.
+- **Matchday Gallery Polish**:
+  - Eliminated developer debug copy ("3D Reel").
+  - Adjusted container heights and viewport padding to center reel vertically at 100% zoom without bottom clipping.
+  - Replaced harsh card containers with soft, feathered ambient drop shadows and subtle borders; tuned scale transform to preserve image sharpness.
+- **Stadium-Grade `/fields` Page Overhaul**:
+  - Integrated real venue perpendicular aerial photography (`/images/venue/proper-perpendicular-aerial.jpg`).
+  - Completely replaced raw placeholders ("pending owner confirmation", "Internal RM 2.00 test product") with full pitch specifications (FIFA regulation, 3G turf, pro LED floodlights, rapid drainage), 6-hour session breakdown, amenities, and direct booking CTA.
+  - Redirected `/fields/[slug]` cleanly to `/fields`.
+- **Footer Cleanup & Malaysian Payment Badges**:
+  - Removed technical timezone string (`Asia/Kuala_Lumpur · MYR`) from footer base.
+  - Created `PaymentBadges` component supporting Visa, Mastercard, FPX Online Banking, DuitNow QR, and Touch 'n Go eWallet, and embedded it in both the site footer and booking review step.
+- **Booking Pipeline & Cutoff Validation**:
+  - Enforced 60-minute cutoff on current-day slots in `BookingWizard` to mark expired slots as "Past", preventing users from selecting unbookable slots.
+  - Enhanced error extraction to surface specific domain/field validation messages directly in the UI.
+- **Validation**: Passed 11 test suites (42 tests), 0 TypeScript errors, Next.js production build succeeded with bundle security scan verified.
+
 ## 2026-09-04 (v16 Release & Deployment to main)
 - **Fix Customer Bookings Array Deserialization (TypeError: s.filter is not a function)**: In `src/server/customer-bff/handler.ts`, `sanitize()` now preserves array responses directly instead of converting them into plain objects with `{ ...data }`. Hardened `AccountBookings` with `Array.isArray` fallback.
 - **Fix /find-booking 404 & Add Redirect**: Corrected empty state link to `/booking/find` and added permanent redirect in `next.config.ts` from `/find-booking` to `/booking/find`.

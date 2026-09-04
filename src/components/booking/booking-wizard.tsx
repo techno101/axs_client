@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import Image from "next/image";
 import { SlotCard } from "@/components/booking/slot-card";
 import { ArrowRightIcon, CalendarIcon, ChevronIcon } from "@/components/ui/icons";
+import { PaymentBadges } from "@/components/ui/payment-badges";
 import type {
   AvailabilityDaySummary,
   AvailabilitySlot,
@@ -119,10 +120,29 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
   const sessionTotalMinor = basket.reduce((sum, item) => sum + item.amountMinor, 0);
   const discountMinor = voucher ? Math.round((sessionTotalMinor + addonTotalMinor) * voucher.percentage / 100) : 0;
   const estimatedTotalMinor = Math.max(0, sessionTotalMinor + addonTotalMinor - discountMinor);
-  const slotsByField = (fieldId: string) => blocks.filter((item) => item.fieldId === fieldId).map((item) => ({
-    block: item,
-    status: liveAvailability.find((slot) => slot.fieldId === fieldId && slot.blockId === item.id)?.status ?? "closed",
-  }));
+  const isPastCutoff = (bookingDate: string, startsAt: string) => {
+    if (bookingDate < businessDate) return true;
+    if (bookingDate === businessDate) {
+      const now = new Date();
+      const startsAtDate = new Date(`${bookingDate}T${startsAt}:00+08:00`);
+      if (startsAtDate.getTime() - now.getTime() < 60 * 60_000) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  const slotsByField = (fieldId: string) => blocks.filter((item) => item.fieldId === fieldId).map((item) => {
+    const live = liveAvailability.find((slot) => slot.fieldId === fieldId && slot.blockId === item.id);
+    let status = live?.status ?? "closed";
+    if (status === "available" && isPastCutoff(date, item.startsAt)) {
+      status = "past";
+    }
+    return {
+      block: item,
+      status,
+    };
+  });
 
   useEffect(() => {
     let active = true;
@@ -254,9 +274,18 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
       window.sessionStorage.setItem(`axs:order-email:${order.reference}`, customer.email ? "present" : "missing");
       const attempt = await client.createOrderPaymentAttempt(order.reference, { method: "online_provider", returnPath: `/booking/result?reference=${encodeURIComponent(order.reference)}` }, crypto.randomUUID());
       if (!attempt.redirectUrl) throw new Error("The payment provider did not return a redirect URL.");
-      window.location.assign(attempt.redirectUrl);
     } catch (requestError) {
-      const message = requestError instanceof PublicApiError ? requestError.message : requestError instanceof Error ? requestError.message : "Payment could not be started.";
+      let message = "Payment could not be started.";
+      if (requestError instanceof PublicApiError) {
+        if (requestError.fieldErrors && Object.keys(requestError.fieldErrors).length) {
+          const firstDetail = Object.values(requestError.fieldErrors).find(Boolean);
+          message = firstDetail || requestError.message;
+        } else {
+          message = requestError.message;
+        }
+      } else if (requestError instanceof Error) {
+        message = requestError.message;
+      }
       setError(message);
       reportOperationalEvent({ category: "payment_failure", errorCode: requestError instanceof PublicApiError ? requestError.code : "CHECKOUT_START_FAILED", summary: message, routeOrScreen: "booking" });
       setRequestState("idle");
@@ -410,7 +439,10 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
             <div className="review-step__total"><dt>Total</dt><dd>{formatMoney(estimatedTotalMinor)}</dd></div>
           </dl>
 
+          <PaymentBadges title="Accepted Payment Methods" className="booking-details-payments" />
+
           {!customer.email ? <p className="booking-note" role="alert">Add an email to get your booking details sent to you. You can also save your booking reference after payment.</p> : null}
+          {error ? <p className="booking-error" role="alert">{error}</p> : null}
         </form>
       )}
 

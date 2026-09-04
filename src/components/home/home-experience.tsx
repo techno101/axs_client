@@ -196,10 +196,13 @@ export function HomeExperience({ locale, fields, blocks, faqs, availability, sit
               </div>
             </div>
             <ol className="match-booking__steps">
-              {copy.bookingSteps.map((step) => (
+              {copy.bookingSteps.map((step, index) => (
                 <li key={step.title}>
-                  <h3>{step.title}</h3>
-                  <p>{step.copy}</p>
+                  <span className="match-booking__number">0{index + 1}</span>
+                  <div className="match-booking__content">
+                    <h3>{step.title}</h3>
+                    <p>{step.copy}</p>
+                  </div>
                 </li>
               ))}
             </ol>
@@ -228,7 +231,7 @@ export function HomeExperience({ locale, fields, blocks, faqs, availability, sit
         {galleryEnabled ? <section className="match-gallery match-reveal" id="gallery" aria-labelledby="gallery-title">
           <div className="shell match-gallery__head">
             <div>
-              <p className="match-label match-label--ink">Matchday · 3D Reel</p>
+              <p className="match-label match-label--ink">Matchday Gallery</p>
               <h2 id="gallery-title">Football, as it happens.</h2>
             </div>
             <div className="match-gallery__head-side">
@@ -244,11 +247,11 @@ export function HomeExperience({ locale, fields, blocks, faqs, availability, sit
             </div>
           </div>
           <div className="match-gallery__viewport">
-            <div className="match-gallery__track" tabIndex={0} role="region" aria-label="Matchday gallery — 3D scrollable reel">
+            <div className="match-gallery__track" tabIndex={0} role="region" aria-label="Matchday gallery — Venue in action">
               {galleryFrames.map((image, index) => (
                 <figure className="match-gallery__figure" style={{ "--gallery-i": index % 5 } as React.CSSProperties} key={`${image.src}-${index}`}>
                   <div className="match-gallery__card">
-                    <Image src={image.src} alt={image.alt} fill sizes="(max-width: 767px) 78vw, 32vw" loading={index > 2 ? "lazy" : undefined} />
+                    <Image src={image.src} alt={image.alt} fill sizes="(max-width: 767px) 80vw, 400px" quality={90} loading={index > 2 ? "lazy" : undefined} />
                     <span className="match-gallery__sheen" aria-hidden="true" />
                     <span className="match-gallery__badge" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
                     <figcaption><span>{image.caption}</span></figcaption>

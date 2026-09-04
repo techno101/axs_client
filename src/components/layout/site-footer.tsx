@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BrandMark } from "@/components/ui/brand-mark";
-
 import { ArrowUpRightIcon, PinIcon } from "@/components/ui/icons";
+import { PaymentBadges } from "@/components/ui/payment-badges";
 import { homeHref, localeFromPath, shellCopy } from "@/lib/site-copy";
 
 export function SiteFooter() {
@@ -25,6 +25,7 @@ export function SiteFooter() {
           <BrandMark footer href={homeHref(locale)} />
           <p>{copy.footerIntro}</p>
           <div className="footer-location"><PinIcon /><span>LOT 165132, Persiaran Medini 3, Sunway City, 79250 Iskandar Puteri, Johor</span></div>
+          <PaymentBadges title="Supported Payments" className="site-footer__payment-badges" />
         </div>
         <div className="site-footer__links">
           {footerGroups.map((group) => (
@@ -36,7 +37,7 @@ export function SiteFooter() {
         </div>
       </div>
       <div className="shell site-footer__base">
-        <span>© 2026 ArmourX Sports SDN BHD</span><span>{copy.currency}</span><span>{copy.location}</span>
+        <span>© 2026 ArmourX Sports SDN BHD</span><span>{copy.location}</span>
         <a className="site-footer__credit" href="https://github.com/AlMahmud22" target="_blank" rel="noreferrer">Web developer / IT</a>
       </div>
     </footer>
