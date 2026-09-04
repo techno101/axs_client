@@ -174,4 +174,86 @@ describe("customer account forms", () => {
       expect(screen.getByText(/no account-owned bookings yet/i)).toBeInTheDocument();
     });
   });
+
+  it("renders separate formatted badges and gates Download PDF button to confirmed bookings", async () => {
+    const activeAccount = {
+      id: "cust-5",
+      email: "player5@example.com",
+      displayName: "Player Five",
+      phone: "+60123456789",
+      age: 27,
+      status: "active",
+      verifiedAt: "2026-09-01T12:00:00Z",
+      passwordSet: true,
+      googleLinked: false,
+    };
+
+    const bookings = [
+      {
+        reference: "AXS-CONFIRMED-01",
+        receiptReference: "REC-01",
+        fieldId: "FIELD_01",
+        fieldName: "Field 1",
+        bookingDate: "2026-09-10",
+        blockCode: "EVENING",
+        blockLabel: "Evening Block",
+        startsAt: "15:00",
+        endsAt: "21:00",
+        timelineState: "upcoming",
+        bookingStatus: "confirmed",
+        paymentStatus: "paid",
+        reschedule: { eligible: true, deadline: "2026-09-08T15:00:00Z" },
+      },
+      {
+        reference: "AXS-PENDING-02",
+        receiptReference: null,
+        fieldId: "FIELD_02",
+        fieldName: "Field 2",
+        bookingDate: "2026-09-12",
+        blockCode: "MORNING",
+        blockLabel: "Morning Block",
+        startsAt: "09:00",
+        endsAt: "15:00",
+        timelineState: "upcoming",
+        bookingStatus: "payment_pending",
+        paymentStatus: "pending",
+        reschedule: { eligible: false, reasonCode: "payment_not_paid" },
+      },
+    ];
+
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockImplementation((url: string) => {
+        if (url.includes("/session")) {
+          return Promise.resolve({
+            ok: true,
+            json: async () => ({ data: { account: activeAccount }, error: null }),
+          });
+        }
+        if (url.includes("/bookings")) {
+          return Promise.resolve({
+            ok: true,
+            json: async () => ({ data: bookings, error: null }),
+          });
+        }
+        return Promise.resolve({ ok: true, json: async () => ({ data: null, error: null }) });
+      }),
+    );
+
+    render(<AccountBookings />);
+
+    await waitFor(() => {
+      expect(screen.getByText("AXS-CONFIRMED-01")).toBeInTheDocument();
+      expect(screen.getByText("AXS-PENDING-02")).toBeInTheDocument();
+    });
+
+    // Check distinct badge texts
+    expect(screen.getByText("Confirmed")).toBeInTheDocument();
+    expect(screen.getByText("Payment Pending")).toBeInTheDocument();
+    expect(screen.getAllByText("Upcoming").length).toBe(3); // 1 filter tab + 2 booking card badges
+
+    // Download PDF button should exist ONLY for confirmed booking
+    const downloadButtons = screen.getAllByRole("button", { name: /download pdf/i });
+    expect(downloadButtons).toHaveLength(1);
+  });
 });

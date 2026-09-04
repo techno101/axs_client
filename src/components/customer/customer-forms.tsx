@@ -852,10 +852,22 @@ export function AccountBookings() {
                 {filteredBookings.map((booking) => (
                   <article className="customer-booking customer-booking--card" key={booking.reference}>
                     <div className="customer-booking__header">
-                      <p className="customer-booking__status">
-                        <strong>{booking.timelineState}</strong>
-                        <span>{booking.bookingStatus}</span>
-                      </p>
+                      <div className="customer-booking__badges">
+                        <span className={`customer-badge customer-badge--${booking.timelineState}`}>
+                          {booking.timelineState === "upcoming" ? "Upcoming" : "Past"}
+                        </span>
+                        <span className={`customer-badge customer-badge--${booking.bookingStatus}`}>
+                          {booking.bookingStatus === "confirmed"
+                            ? "Confirmed"
+                            : booking.bookingStatus === "cancelled"
+                            ? "Cancelled"
+                            : booking.bookingStatus === "completed"
+                            ? "Completed"
+                            : booking.bookingStatus === "payment_pending"
+                            ? "Payment Pending"
+                            : booking.bookingStatus}
+                        </span>
+                      </div>
                       <h2 className="customer-booking__title">{booking.fieldName}</h2>
                       <p className="customer-booking__time">
                         {booking.bookingDate} · {booking.blockLabel} · {formatTimePair12(booking.startsAt, booking.endsAt)}
@@ -866,9 +878,11 @@ export function AccountBookings() {
                       {booking.receiptReference ? <p>Receipt: <code>{booking.receiptReference}</code></p> : null}
                     </div>
                     <div className="customer-booking__actions">
-                      <button className="customer-secondary customer-secondary--small customer-btn-action" type="button" onClick={() => void download(booking.reference)}>
-                        Download PDF
-                      </button>
+                      {booking.bookingStatus === "confirmed" ? (
+                        <button className="customer-secondary customer-secondary--small customer-btn-action" type="button" onClick={() => void download(booking.reference)}>
+                          Download PDF
+                        </button>
+                      ) : null}
                       <RescheduleBooking booking={booking} onSaved={refreshBookings} />
                     </div>
                   </article>

@@ -1,6 +1,22 @@
 # Client Changelog
 
-## 2026-09-04 (v18 Release & Deployment to main)
+## 2026-09-04 (v19 Release - Payment Redirection, Cart Deletion, Customer Badges & Hero Layout Fix)
+- **HitPay Payment Redirection**:
+  - Fixed missing `window.location.assign(attempt.redirectUrl)` in `src/components/booking/booking-wizard.tsx` after creating order payment attempt. Clicking "Continue to payment" now directly navigates the browser to HitPay's hosted payment gateway instead of getting stuck on "Taking you to payment…".
+- **Cart Drawer Remove Button**:
+  - Added dedicated remove/cross button (`×`) with accessible `aria-label` to each item in the floating booking bar drawer (`.booking-bar__list`), allowing users to remove sessions directly from the cart drawer.
+  - Styled with circular button, hover highlight, and micro-scaling in `src/app/globals.css`.
+- **Tax & SST Transparency**:
+  - Added clear disclosure microcopy under the order totals: *"All prices are inclusive of applicable SST / venue taxes. Payment gateway fee is calculated at checkout."*
+- **Customer Booking Badges & PDF Download Gate**:
+  - Replaced unstyled concatenated strings in `src/components/customer/customer-forms.tsx` (`upcomingpayment_pending`) with dedicated, styled status pill badges (`customer-badge--upcoming`, `customer-badge--past`, `customer-badge--confirmed`, `customer-badge--payment_pending`).
+  - Gated the `[Download PDF]` button to confirmed bookings only (`booking.bookingStatus === 'confirmed'`), preventing customers from attempting to download booking slips for unpaid checkouts.
+- **Hero Layout Whitespace Elimination on Wide Screens**:
+  - Bounded `.match-hero--clean .match-hero__layout` to `max-width: 1440px; margin-inline: auto;`, relaxed `.match-hero__copy` max-width, and placed `.match-hero__availability` spanning the grid width, completely eliminating the 500px empty white void on 1920px displays.
+- **Validation**:
+  - Passed 44 tests in 11 test suites (including new cart drawer removal and payment redirect tests), TypeScript check clean (0 errors), ESLint clean (0 errors).
+
+
 - **Desktop Page Hero Focal Point Optimization**:
   - Tuned `.page-hero__image` to `object-position: center 20%` (with desktop `@media (min-width: 900px)` set to `center 18%`) across all page heroes so the top portion of venue photography (stadium floodlights, sky, upper pitch) is framed beautifully rather than cropped at the center.
 - **`/booking/find` Image Replacement & Scrim Calibration**:

@@ -1,5 +1,13 @@
 # Client Memory
 
+On 2026-09-04 (v19 release - Payment Redirection, Cart Deletion, Customer Badges & Hero Layout Fix):
+1. **HitPay Payment Redirection**: Added `window.location.assign(attempt.redirectUrl)` in `src/components/booking/booking-wizard.tsx`. Clicking "Continue to payment" now redirects directly to HitPay's hosted payment gateway instead of freezing on "Taking you to payment…".
+2. **Cart Drawer Remove Button**: Added circular remove button (`×`) to each session item in `.booking-bar__list`, allowing users to remove sessions directly from the floating basket drawer without backing out of checkout.
+3. **Tax & SST Transparency**: Added disclosure notice in the review step clarifying that prices include applicable SST/venue taxes and gateway fees are calculated at checkout.
+4. **Customer Booking Badges & PDF Gating**: Replaced unstyled concatenated text (`upcomingpayment_pending`) with discrete, styled status pill badges (`customer-badge--upcoming`, `customer-badge--confirmed`, `customer-badge--payment_pending`). Gated `[Download PDF]` button to confirmed bookings only.
+5. **Hero Whitespace Elimination**: Bounded `.match-hero--clean .match-hero__layout` to 1440px max-width centered, eliminating the 500px dead whitespace gap on 1920px widescreen monitors.
+6. **Validation**: 44 unit/component tests passing across 11 test files, 0 typecheck errors, 0 lint errors. Branch `v19` on origin.
+
 On 2026-09-04 (v18 release - Hero focal point, /booking/find asset replacement & official Malaysian payment vector logos):
 1. Desktop Page Hero Focal Point: Configured `.page-hero__image` to `object-position: center 20%` (desktop `@media (min-width: 900px)` set to `center 18%`) across all page heroes, ensuring floodlights, sky, and venue context are showcased rather than center-cropped.
 2. `/booking/find` Asset Replacement & Scrim Calibration: Permanently deleted old asset `venue-overview.webp` from `public/images/venue/`. Replaced with high-resolution floodlit aerial master (`stadium-lights-aerial.jpg`). Re-tuned `.page-hero__scrim` from heavy muddy flat overlay (`0.97/0.72`) to a directional asymmetric vignette (`0.92 -> 0.65 -> 0.15`), maintaining high text contrast on the left while keeping the stadium lighting and green turf vibrant on the right.

@@ -274,6 +274,7 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
       window.sessionStorage.setItem(`axs:order-email:${order.reference}`, customer.email ? "present" : "missing");
       const attempt = await client.createOrderPaymentAttempt(order.reference, { method: "online_provider", returnPath: `/booking/result?reference=${encodeURIComponent(order.reference)}` }, crypto.randomUUID());
       if (!attempt.redirectUrl) throw new Error("The payment provider did not return a redirect URL.");
+      window.location.assign(attempt.redirectUrl);
     } catch (requestError) {
       let message = "Payment could not be started.";
       if (requestError instanceof PublicApiError) {
@@ -438,6 +439,7 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
             {discountMinor ? <div><dt>Voucher discount</dt><dd>−{formatMoney(discountMinor)}</dd></div> : null}
             <div className="review-step__total"><dt>Total</dt><dd>{formatMoney(estimatedTotalMinor)}</dd></div>
           </dl>
+          <p className="review-step__tax-note">All prices are inclusive of applicable SST / venue taxes. Payment gateway fee is calculated at checkout.</p>
 
           <PaymentBadges title="Accepted Payment Methods" className="booking-details-payments" />
 
@@ -456,7 +458,20 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
         {basketOpen ? (
           <ul className="booking-bar__list">
             {basket.map((item) => (
-              <li key={basketKey(item)}><span>{item.fieldName} · {item.label} · {displayDate(item.bookingDate, { day: "2-digit", month: "short" })}</span><span>{formatMoney(item.amountMinor)}</span></li>
+              <li key={basketKey(item)}>
+                <div className="booking-bar__item-details">
+                  <span className="booking-bar__item-title">{item.fieldName} · {item.label} · {displayDate(item.bookingDate, { day: "2-digit", month: "short" })}</span>
+                  <span className="booking-bar__item-price">{formatMoney(item.amountMinor)}</span>
+                </div>
+                <button
+                  type="button"
+                  className="booking-bar__remove"
+                  aria-label={`Remove ${item.fieldName} session`}
+                  onClick={() => toggleSession(item)}
+                >
+                  ×
+                </button>
+              </li>
             ))}
             {!basket.length ? <li>Pick a session above to add it here.</li> : null}
           </ul>

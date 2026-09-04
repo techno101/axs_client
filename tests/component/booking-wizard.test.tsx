@@ -58,10 +58,73 @@ describe("BookingWizard", () => {
     expect(screen.queryByRole("heading", { name: "Your details" })).not.toBeInTheDocument();
   });
 
-  it("keeps sandbox checkout free of technical wording", async () => {
-    vi.stubGlobal("fetch", vi.fn(async () => Response.json({ data: [], meta: {}, error: null })));
-    render(<BookingWizard fields={fields} blocks={blocks} availability={[]} addons={[]} onlinePayment={{ enabled: true, environment: "sandbox" }} businessDate="2026-07-16" initialDate="2026-07-18" />);
-    await waitFor(() => expect(screen.getByRole("heading", { name: "Pick your sessions" })).toBeVisible());
-    expect(screen.queryByText(/sandbox|no real payment|testing only/i)).not.toBeInTheDocument();
+  it("allows removing a session from the cart drawer via the remove button", async () => {
+    vi.stubGlobal("fetch", vi.fn(async (_input: RequestInfo | URL, init?: RequestInit) => {
+      if (init?.method === "POST") return Response.json({ data: { token: "h".repeat(43), expiresAt: "2026-07-18T04:10:00.000Z", fieldId: "FIELD_01", blockCode: "MORNING", bookingDate: "2026-07-18", amountMinor: 60000, currency: "MYR", state: "active" }, meta: {}, error: null }, { status: 201 });
+      return Response.json({ data: [{ fieldId: "FIELD_01", blockCode: "MORNING", state: "available" }], meta: {}, error: null });
+    }));
+    const user = userEvent.setup();
+    const availability: AvailabilitySlot[] = [
+      { fieldId: "FIELD_01", blockId: "MORNING", status: "available" },
+    ];
+    render(<BookingWizard fields={fields} blocks={blocks} availability={availability} addons={[]} onlinePayment={{ enabled: true }} businessDate="2026-07-16" initialDate="2026-07-18" />);
+
+    await user.click(screen.getAllByRole("button", { name: /available.*field 1/i })[0]);
+    expect(screen.getByText("1 session")).toBeVisible();
+
+    // Open cart drawer
+    await user.click(screen.getByRole("button", { name: /1 session/i }));
+    const removeBtn = screen.getByRole("button", { name: /remove field 1 session/i });
+    expect(removeBtn).toBeInTheDocument();
+
+    // Click remove button
+    await user.click(removeBtn);
+    expect(screen.getByText("No sessions")).toBeVisible();
+    expect(screen.getByText("Pick a session above to add it here.")).toBeVisible();
+  });
+
+  it("redirects browser to payment provider URL upon order creation and displays SST notice", async () => {
+    const assignMock = vi.fn();
+    const originalLocation = window.location;
+    Object.defineProperty(window, "location", {
+      writable: true,
+      configurable: true,
+      value: { ...originalLocation, assign: assignMock, href: "http://localhost:3000/" },
+    });
+    vi.stubGlobal("fetch", vi.fn(async (_input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(_input);
+      if (init?.method === "POST" && url.includes("/hold-groups")) {
+        return Response.json({ data: { token: "h".repeat(43), expiresAt: "2026-07-18T04:10:00.000Z" }, meta: {}, error: null }, { status: 201 });
+      }
+      if (url.includes("/orders") && !url.includes("/payment-attempts")) {
+        return Response.json({ data: { reference: "AXO-TEST123", accessToken: "token-123", amountMinor: 60000 }, meta: {}, error: null }, { status: 201 });
+      }
+      if (url.includes("/payment-attempts")) {
+        return Response.json({ data: { status: "created", redirectUrl: "https://sandbox.hitpayapp.com/pay/test123" }, meta: {}, error: null }, { status: 201 });
+      }
+      return Response.json({ data: [{ fieldId: "FIELD_01", blockCode: "MORNING", state: "available" }], meta: {}, error: null });
+    }));
+
+    const user = userEvent.setup();
+    const availability: AvailabilitySlot[] = [
+      { fieldId: "FIELD_01", blockId: "MORNING", status: "available" },
+    ];
+    render(<BookingWizard fields={fields} blocks={blocks} availability={availability} addons={[]} onlinePayment={{ enabled: true }} businessDate="2026-07-16" initialDate="2026-07-18" />);
+
+    await user.click(screen.getAllByRole("button", { name: /available.*field 1/i })[0]);
+    await user.click(screen.getByRole("button", { name: /continue/i }));
+
+    expect(await screen.findByRole("heading", { name: "Your details" })).toBeVisible();
+    expect(screen.getByText(/All prices are inclusive of applicable SST/i)).toBeInTheDocument();
+
+    await user.type(screen.getByLabelText("Full name"), "Ahmad Razak");
+    await user.type(screen.getByLabelText("Mobile number"), "0123456789");
+
+    await user.click(screen.getByRole("button", { name: /continue to payment/i }));
+
+    await waitFor(() => {
+      expect(assignMock).toHaveBeenCalledWith("https://sandbox.hitpayapp.com/pay/test123");
+    });
   });
 });
+

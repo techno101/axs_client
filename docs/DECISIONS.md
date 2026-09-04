@@ -1,5 +1,13 @@
 # Client Decisions
 
+| Payment Redirection, Cart Deletion & Layout Polish - 2026-09-04 | Result |
+| --- | --- |
+| HitPay payment redirection | Order payment initiation immediately assigns `window.location.assign(attempt.redirectUrl)`, redirecting the browser to HitPay hosted checkout. |
+| Cart drawer item deletion | Every session item in `.booking-bar__list` provides a circular `×` remove button invoking `toggleSession(item)` to allow quick cart modifications without navigating back. |
+| Tax / SST disclosure | Review step features explicit microcopy clarifying that prices include applicable SST/venue taxes and gateway fees are calculated at checkout. |
+| Customer portal status badges | Replaced inline text concatenation with discrete styled badges (`Upcoming`/`Past`, `Confirmed`/`Cancelled`/`Completed`/`Payment Pending`). `Download PDF` button is gated strictly to `confirmed` bookings. |
+| Hero container max-width | Bounded `.match-hero--clean .match-hero__layout` to 1440px centered, eliminating 500px dead whitespace gap on 1920px widescreen monitors. |
+
 | Unified Google Auth & Non-Blocking Verification - 2026-09-04 | Result |
 | --- | --- |
 | Google button uniformity | Both `/sign-in` and `/sign-up` present identical "Continue with Google" buttons. Existing accounts (whether registered via password or Google) sign in seamlessly. |
