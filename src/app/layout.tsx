@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
 import localFont from "next/font/local";
 import { PrivacySafeAnalytics } from "@/components/analytics/privacy-safe-analytics";
 import { SiteFooter } from "@/components/layout/site-footer";
@@ -80,6 +80,8 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const requestHeaders = await headers();
+  const requestCookies = await cookies();
+  const consentCookie = requestCookies.get("axs_consent")?.value ?? null;
   const documentLanguage = requestHeaders.get("x-axs-document-language") === "ms-MY" ? "ms-MY" : "en-MY";
 
   return (
@@ -95,7 +97,8 @@ export default async function RootLayout({
         <main id="main-content" tabIndex={-1}>{children}</main>
         <SiteFooter />
         {process.env.VERCEL === "1" ? <PrivacySafeAnalytics /> : null}
-      <VisitorTracker /></body>
+        <VisitorTracker initialConsent={consentCookie} />
+      </body>
     </html>
   );
 }

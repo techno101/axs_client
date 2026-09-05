@@ -1,5 +1,19 @@
 # Client Changelog
 
+## 2026-09-05 (v21 Release - Cookie Consent Resilience, SSR Dual-Storage & URL Security Sanitization)
+- **Cookie Consent Banner Hydration & Persistence Fix**:
+  - Upgraded `VisitorTracker` to dual-storage: standard browser cookie (`axs_consent=accepted|declined; path=/; max-age=31536000; SameSite=Lax`) and `localStorage` (safely caught against `SecurityError`).
+  - `RootLayout` reads request cookies server-side and passes `initialConsent`. If the user has already consented or declined, the server renders `null` immediately, eliminating page-load visual flashing.
+  - Eliminated React hydration mismatch on the consent bar buttons, ensuring click event listeners always attach reliably and dismiss the banner on first click.
+  - Added new unit and component test suite `tests/component/visitor-tracker.test.tsx` covering initial display, cookie/localStorage persistence, tracking initiation, and server-side consent suppression.
+- **Frontend URL Token & PII Sanitization**:
+  - In `src/components/customer/customer-forms.tsx`, updated `ResetPasswordForm` to extract the password reset token on render and immediately strip `?token=...` from the browser address bar and history via `window.history.replaceState`. Prevents single-use token leakage via shoulder-surfing, history, and `Referer` headers.
+  - In `GoogleReturn`, immediately stripped `email` and `name` from `window.location.search` when `status === "profile_required"`, ensuring customer personal details do not persist in browser history, proxy access logs, or referrers.
+  - Wrapped `ResetPasswordPage` and `GoogleReturnPage` in `<Suspense>` to eliminate Next.js searchParams hydration warnings.
+  - Added automated tests in `tests/component/customer-forms.test.tsx` verifying address bar sanitization on mount.
+- **Validation**:
+  - 51 tests passing across 12 test files, 0 typecheck errors, 0 lint errors, Next.js production build succeeded with bundle security scan verified.
+
 ## 2026-09-04 (v20 Release - Payment Gateway Return Path & Booking Result Resilience)
 - **Payment Gateway Return Path Disambiguation**:
   - In `src/components/booking/booking-wizard.tsx`, changed payment attempt `returnPath` from `/booking/result?reference=...` to `/booking/result?order=${encodeURIComponent(order.reference)}`.

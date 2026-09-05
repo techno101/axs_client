@@ -1,5 +1,13 @@
 # Client Decisions
 
+| Cookie Consent Resilience & Frontend URL Security Sanitization - 2026-09-05 | Result |
+| --- | --- |
+| Dual-storage consent architecture | `VisitorTracker` uses standard browser cookie `axs_consent=accepted|declined` (`max-age=31536000`, `SameSite=Lax`) alongside `localStorage`. Server-side `RootLayout` reads request cookies and suppresses the consent bar if already resolved, preventing flash-of-banner on reload. |
+| Hydration mismatch elimination | Asynchronous resolution of local storage fallback and safe button event binding prevents React hydration bailouts, ensuring Accept/Decline click listeners always work. |
+| Password reset URL token sanitization | `ResetPasswordForm` strips `?token=...` from the browser address bar and history via `window.history.replaceState` immediately on mount, preventing token leakage via shoulder-surfing, browser history, and `Referer` headers. |
+| Google OAuth profile URL sanitization | `GoogleReturn` strips `email` and `name` from `window.location.search` when `status === "profile_required"`, preventing PII from lingering in the address bar, history, or access logs. |
+| Search params Suspense boundaries | Wrapped `/reset-password` and `/google/return` in `<Suspense>` to prevent Next.js client de-optimization warnings. |
+
 | Payment Gateway Return Path & Result Page Resilience - 2026-09-04 | Result |
 | --- | --- |
 | Gateway returnPath query parameter | Changed `returnPath` parameter in `booking-wizard.tsx` from `?reference=...` to `?order=...` to prevent query key collision when HitPay automatically appends `&reference={hitpay_request_id}` to redirect URLs. |

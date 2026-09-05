@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { AccountBookings, AccountOverview, SignInForm, SignUpForm, VerifyEmailForm } from "@/components/customer/customer-forms";
+import { AccountBookings, AccountOverview, GoogleReturn, ResetPasswordForm, SignInForm, SignUpForm, VerifyEmailForm } from "@/components/customer/customer-forms";
 
 describe("customer account forms", () => {
   beforeEach(() => {
@@ -255,5 +255,54 @@ describe("customer account forms", () => {
     // Download PDF button should exist ONLY for confirmed booking
     const downloadButtons = screen.getAllByRole("button", { name: /download pdf/i });
     expect(downloadButtons).toHaveLength(1);
+  });
+
+  it("sanitizes password reset token from address bar on mount while retaining token for submission", async () => {
+    Object.defineProperty(window, "location", {
+      writable: true,
+      configurable: true,
+      value: new URL("https://armourxsports.com/reset-password?token=secret-reset-token-999"),
+    });
+    const replaceStateSpy = vi.spyOn(window.history, "replaceState");
+
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ data: { state: "reset" }, error: null }),
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const user = userEvent.setup();
+    render(<ResetPasswordForm />);
+
+    expect(replaceStateSpy).toHaveBeenCalledWith({}, "", "/reset-password");
+
+    const passwordInput = screen.getByLabelText(/new passphrase/i);
+    await user.type(passwordInput, "SecurePassphrase123!");
+    const submitBtn = screen.getByRole("button", { name: /save passphrase/i });
+    await user.click(submitBtn);
+
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledWith(
+        "/api/customer/password/reset",
+        expect.objectContaining({
+          body: JSON.stringify({ token: "secret-reset-token-999", password: "SecurePassphrase123!" }),
+        }),
+      );
+    });
+  });
+
+  it("sanitizes email and name from address bar on mount in GoogleReturn when profile_required", () => {
+    Object.defineProperty(window, "location", {
+      writable: true,
+      configurable: true,
+      value: new URL("https://armourxsports.com/google/return?status=profile_required&email=user%40example.com&name=Alex+Rivera"),
+    });
+    const replaceStateSpy = vi.spyOn(window.history, "replaceState");
+
+    render(<GoogleReturn />);
+
+    expect(replaceStateSpy).toHaveBeenCalledWith({}, "", "/google/return?status=profile_required");
+    expect(screen.getByDisplayValue("Alex Rivera")).toBeInTheDocument();
+    expect(screen.getByText(/user@example.com/i)).toBeInTheDocument();
   });
 });

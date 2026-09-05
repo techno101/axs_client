@@ -4,6 +4,20 @@ import { useEffect, useState } from "react";
 import { reportOperationalEvent } from "@/lib/operational-reporting";
 
 const CONSENT_KEY = "axs_consent";
+const ONE_YEAR_SECONDS = 31_536_000;
+
+function persistConsent(value: "accepted" | "declined") {
+  if (typeof document !== "undefined") {
+    document.cookie = `${CONSENT_KEY}=${value}; path=/; max-age=${ONE_YEAR_SECONDS}; SameSite=Lax`;
+  }
+  if (typeof window !== "undefined") {
+    try {
+      window.localStorage.setItem(CONSENT_KEY, value);
+    } catch {
+      /* ignore storage access restrictions */
+    }
+  }
+}
 
 /**
  * Privacy-safe visitor tracking: a session is only recorded after the user
@@ -11,11 +25,8 @@ const CONSENT_KEY = "axs_consent";
  * broken images with page and browser context so the owner sees failures
  * before a customer messages them.
  */
-export function VisitorTracker() {
-  const [consent, setConsent] = useState<string | null>(() => {
-    if (typeof window === "undefined") return null;
-    return window.localStorage.getItem(CONSENT_KEY);
-  });
+export function VisitorTracker({ initialConsent }: { initialConsent?: string | null } = {}) {
+  const [consent, setConsent] = useState<string | null>(() => initialConsent ?? null);
 
   useEffect(() => {
     const reportImageFailures = (event: Event) => {
@@ -33,6 +44,20 @@ export function VisitorTracker() {
   }, []);
 
   useEffect(() => {
+    if (initialConsent) return;
+    try {
+      const local = window.localStorage.getItem(CONSENT_KEY);
+      if (local === "accepted" || local === "declined") {
+        document.cookie = `${CONSENT_KEY}=${local}; path=/; max-age=${ONE_YEAR_SECONDS}; SameSite=Lax`;
+        const timer = window.setTimeout(() => setConsent(local), 0);
+        return () => window.clearTimeout(timer);
+      }
+    } catch {
+      /* ignore storage restrictions */
+    }
+  }, [initialConsent]);
+
+  useEffect(() => {
     if (consent !== "accepted") return;
     let stopped = false;
     const start = async () => {
@@ -44,7 +69,7 @@ export function VisitorTracker() {
           cache: "no-store",
         });
         if (!response.ok) return;
-        const payload = await response.json() as { data?: { token?: string } };
+        const payload = (await response.json()) as { data?: { token?: string } };
         const token = payload.data?.token;
         if (!token || stopped) return;
         const beat = () => {
@@ -58,23 +83,48 @@ export function VisitorTracker() {
         beat();
         const interval = window.setInterval(beat, 60_000);
         window.addEventListener("pagehide", beat, { once: true });
-        return () => { stopped = true; window.clearInterval(interval); };
+        return () => {
+          stopped = true;
+          window.clearInterval(interval);
+        };
       } catch {
         /* tracking is best-effort */
       }
     };
     void start();
-    return () => { stopped = true; };
+    return () => {
+      stopped = true;
+    };
   }, [consent]);
 
   if (consent !== null) return null;
 
   return (
     <div className="consent-bar" role="region" aria-label="Cookie notice">
-      <p>We use a small cookie to keep your booking session safe and understand which pages are useful. No personal data is sold or shared.</p>
+      <p>
+        We use a small cookie to keep your booking session safe and understand which pages are useful. No personal data is
+        sold or shared.
+      </p>
       <div className="consent-bar__actions">
-        <button type="button" onClick={() => { window.localStorage.setItem(CONSENT_KEY, "declined"); setConsent("declined"); }}>Decline</button>
-        <button type="button" className="consent-bar__accept" onClick={() => { window.localStorage.setItem(CONSENT_KEY, "accepted"); setConsent("accepted"); }}>Accept</button>
+        <button
+          type="button"
+          onClick={() => {
+            persistConsent("declined");
+            setConsent("declined");
+          }}
+        >
+          Decline
+        </button>
+        <button
+          type="button"
+          className="consent-bar__accept"
+          onClick={() => {
+            persistConsent("accepted");
+            setConsent("accepted");
+          }}
+        >
+          Accept
+        </button>
       </div>
     </div>
   );

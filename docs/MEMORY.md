@@ -1,5 +1,22 @@
 # Client Memory
 
+On 2026-09-05 (v21 cookie consent resilience, SSR dual-storage & URL security sanitization pass):
+1. **Cookie Consent Banner Hydration & Persistence Fix**:
+   - Replaced client-only `localStorage` reliance in `VisitorTracker` with dual-storage: standard browser cookie (`axs_consent=accepted|declined; path=/; max-age=31536000; SameSite=Lax`) and `localStorage` (guarded against `SecurityError`).
+   - RootLayout (`src/app/layout.tsx`) reads `(await cookies()).get("axs_consent")?.value` and passes `initialConsent`. When already accepted or declined, the server omits the consent bar entirely, eliminating page-flash on reloads and navigations.
+   - Synchronized client state safely without synchronous `setState` in effects, eliminating the React hydration mismatch that prevented click handlers from binding and leaving the banner permanently stuck.
+2. **Password Reset Token URL Sanitization**:
+   - `ResetPasswordForm` in `src/components/customer/customer-forms.tsx` extracts `token` from `window.location.search` on initial render and immediately sanitizes the URL bar and history via `window.history.replaceState({}, "", cleanUrl)`.
+   - Prevents sensitive password recovery tokens from persisting in the browser address bar, history, or leaking via `Referer` headers.
+3. **Google Return PII Sanitization**:
+   - `GoogleReturn` in `src/components/customer/customer-forms.tsx` immediately strips `email` and `name` from `window.location.search` when `status === "profile_required"`, preventing customer PII from leaking in browser history, proxy access logs, and referrers.
+4. **Suspense Boundaries**:
+   - Wrapped `/reset-password` and `/google/return` in `<Suspense>` to ensure clean SSR without searchParams hydration de-optimizations.
+5. **Validation**:
+   - 51 tests passing across 12 test files (including new component test suite `visitor-tracker.test.tsx` and URL sanitization tests in `customer-forms.test.tsx`).
+   - 0 TypeScript errors, 0 ESLint errors.
+   - Pinned contract valid, security boundary passed (94 files), Next.js production build succeeded with bundle scan passing (76 files). Branch `v21` on origin.
+
 On 2026-09-04 (v20 payment redirect parameter collision & result page resilience pass):
 1. **Payment Gateway Return Path Disambiguation**: Updated `returnPath` in `src/components/booking/booking-wizard.tsx` to `/booking/result?order=${encodeURIComponent(order.reference)}`. This prevents duplicate query parameter collisions with HitPay gateway which appends `&status=completed&reference={hitpay_request_id}` upon return.
 2. **Booking Result Page Parameter Extraction**: Updated `extractOrderReference` in `src/app/booking/result/page.tsx` to robustly extract order references from either `query.order` or `query.reference`, gracefully handling both string values and array values (Next.js duplicate query parameter array parsing) matching `/^AXO-[A-Z0-9-]{6,24}$/i`.

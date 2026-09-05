@@ -267,10 +267,54 @@ export function ForgotPasswordForm() {
 }
 
 export function ResetPasswordForm() {
-  const [notice, setNotice] = useState<Notice>(null); const [busy, setBusy] = useState(false);
-  const token = typeof window === "undefined" ? "" : new URLSearchParams(window.location.search).get("token") ?? "";
-  async function submit(event: FormEvent<HTMLFormElement>) { event.preventDefault(); setBusy(true); const values = new FormData(event.currentTarget); try { const result = await postCustomer<{ state: string }>("password/reset", { token, password: String(values.get("password") ?? "") }); setNotice(result.state === "reset" ? { tone: "success", text: "Your passphrase has been reset. Sign in with the new passphrase." } : { tone: "error", text: result.state === "replayed" ? "This reset link has already been used." : "This reset link is expired or unavailable." }); } catch (error) { setNotice(messageFor(error)); } finally { setBusy(false); } }
-  return <AccountShell eyebrow="Account recovery" title="Choose a new passphrase"><NoticeBox notice={notice}/><form className="customer-form" onSubmit={submit}><label className="customer-form__wide">New passphrase<input name="password" type="password" autoComplete="new-password" required minLength={12} maxLength={128}/></label><button className="customer-submit customer-form__wide" disabled={busy}>Save passphrase</button></form><p className="customer-help"><Link href="/sign-in">Return to sign in</Link></p></AccountShell>;
+  const [notice, setNotice] = useState<Notice>(null);
+  const [busy, setBusy] = useState(false);
+  const [token] = useState(() => (typeof window === "undefined" ? "" : new URLSearchParams(window.location.search).get("token") ?? ""));
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (window.location.search.includes("token=")) {
+      const cleanUrl = new URL(window.location.href);
+      cleanUrl.searchParams.delete("token");
+      window.history.replaceState({}, "", cleanUrl.pathname + (cleanUrl.search ? cleanUrl.search : ""));
+    }
+  }, []);
+
+  async function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setBusy(true);
+    const values = new FormData(event.currentTarget);
+    try {
+      const result = await postCustomer<{ state: string }>("password/reset", { token, password: String(values.get("password") ?? "") });
+      setNotice(
+        result.state === "reset"
+          ? { tone: "success", text: "Your passphrase has been reset. Sign in with the new passphrase." }
+          : { tone: "error", text: result.state === "replayed" ? "This reset link has already been used." : "This reset link is expired or unavailable." },
+      );
+    } catch (error) {
+      setNotice(messageFor(error));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <AccountShell eyebrow="Account recovery" title="Choose a new passphrase">
+      <NoticeBox notice={notice} />
+      <form className="customer-form" onSubmit={submit}>
+        <label className="customer-form__wide">
+          New passphrase
+          <input name="password" type="password" autoComplete="new-password" required minLength={12} maxLength={128} />
+        </label>
+        <button className="customer-submit customer-form__wide" disabled={busy}>
+          Save passphrase
+        </button>
+      </form>
+      <p className="customer-help">
+        <Link href="/sign-in">Return to sign in</Link>
+      </p>
+    </AccountShell>
+  );
 }
 
 function useCurrentPath(): string {
@@ -1242,13 +1286,29 @@ function GoogleProfileForm({ email, name }: { email: string; name: string }) {
 
 export function GoogleReturn() {
   const [notice, setNotice] = useState<Notice>({ tone: "info", text: "Completing your Google sign-in…" });
-  const [params] = useState(() => typeof window === "undefined" ? new URLSearchParams() : new URLSearchParams(window.location.search));
+  const [params] = useState(() => (typeof window === "undefined" ? new URLSearchParams() : new URLSearchParams(window.location.search)));
   const status = params.get("status");
+  const [email] = useState(() => params.get("email") ?? "");
+  const [name] = useState(() => params.get("name") ?? "");
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (status === "profile_required" && (window.location.search.includes("email=") || window.location.search.includes("name="))) {
+      const cleanUrl = new URL(window.location.href);
+      cleanUrl.searchParams.delete("email");
+      cleanUrl.searchParams.delete("name");
+      window.history.replaceState({}, "", cleanUrl.pathname + (cleanUrl.search ? cleanUrl.search : ""));
+    }
+  }, [status]);
+
   useEffect(() => {
     if (status !== "complete") {
-      const text = status === "link_required" ? "This email already has an ArmourXSports account. Sign in with your passphrase first, then link Google from Account → Security."
-        : status === "expired" || status === "replayed" ? "This Google sign-in attempt is no longer valid. Please try again."
-        : "We could not complete Google sign-in. Please try again — if it keeps failing, sign up with your email instead.";
+      const text =
+        status === "link_required"
+          ? "This email already has an ArmourXSports account. Sign in with your passphrase first, then link Google from Account → Security."
+          : status === "expired" || status === "replayed"
+            ? "This Google sign-in attempt is no longer valid. Please try again."
+            : "We could not complete Google sign-in. Please try again — if it keeps failing, sign up with your email instead.";
       const timer = window.setTimeout(() => setNotice({ tone: "error", text }), 0);
       return () => window.clearTimeout(timer);
     }
@@ -1259,8 +1319,24 @@ export function GoogleReturn() {
       })
       .catch((error) => setNotice(messageFor(error)));
   }, [status]);
+
   if (status === "profile_required") {
-    return <AccountShell eyebrow="Google sign-in" title="Finish setting up"><GoogleProfileForm email={params.get("email") ?? ""} name={params.get("name") ?? ""} /><p className="customer-help">Already have an account? <Link href="/sign-in">Sign in</Link></p></AccountShell>;
+    return (
+      <AccountShell eyebrow="Google sign-in" title="Finish setting up">
+        <GoogleProfileForm email={email} name={name} />
+        <p className="customer-help">
+          Already have an account? <Link href="/sign-in">Sign in</Link>
+        </p>
+      </AccountShell>
+    );
   }
-  return <AccountShell eyebrow="Google sign-in" title="Completing sign-in">{status === "complete" ? <NoticeBox notice={notice}/> : <GoogleErrorActions text={notice?.tone === "error" ? notice.text : "We could not complete Google sign-in. Please try again."} />}</AccountShell>;
+  return (
+    <AccountShell eyebrow="Google sign-in" title="Completing sign-in">
+      {status === "complete" ? (
+        <NoticeBox notice={notice} />
+      ) : (
+        <GoogleErrorActions text={notice?.tone === "error" ? notice.text : "We could not complete Google sign-in. Please try again."} />
+      )}
+    </AccountShell>
+  );
 }
