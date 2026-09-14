@@ -53,17 +53,25 @@ export interface AvailabilityEntry { fieldId: string; fieldName: string; fieldIm
 
 export interface OnlinePaymentCapability { enabled: boolean; publicMessage?: string; environment?: "sandbox" | "production"; }
 
-export interface PublicConfig { timezone: "Asia/Kuala_Lumpur"; bookingWindowDays: 90; cutoffMinutes: 60; onlineHoldMinutes: 10; currency: "MYR"; slots: Array<ScheduledSlot>; onlinePayment: OnlinePaymentCapability; addons?: Array<CatalogAddon>; }
+export interface CustomDurationPricing {
+  enabled: boolean;
+  ratePer30MinMinor: number;
+  minDurationMinutes: number;
+  stepMinutes: number;
+  currency: "MYR";
+}
 
-export interface CreateHoldRequest { fieldId: string; blockCode: string; bookingDate: string; }
+export interface PublicConfig { timezone: "Asia/Kuala_Lumpur"; bookingWindowDays: 90; cutoffMinutes: 60; onlineHoldMinutes: 10; currency: "MYR"; slots: Array<ScheduledSlot>; onlinePayment: OnlinePaymentCapability; addons?: Array<CatalogAddon>; customDurationPricing?: CustomDurationPricing; }
+
+export interface CreateHoldRequest { fieldId: string; blockCode: string; bookingDate: string; startsAt?: string; endsAt?: string; }
 
 export interface CreateCounterHoldRequest { fieldId: string; blockCode: string; bookingDate: string; reason: string; }
 
-export interface Hold { token: string; expiresAt: string; fieldId: string; blockCode: string; bookingDate: string; amountMinor: number; currency: "MYR"; state: "active" | "expired" | "consumed" | "released"; }
+export interface Hold { token: string; expiresAt: string; fieldId: string; blockCode: string; bookingDate: string; amountMinor: number; currency: "MYR"; state: "active" | "expired" | "consumed" | "released"; startsAt?: string; endsAt?: string; }
 
-export interface RequestedOccurrence { fieldId: string; blockCode: string; bookingDate: string; }
+export interface RequestedOccurrence { fieldId: string; blockCode: string; bookingDate: string; startsAt?: string; endsAt?: string; }
 
-export interface HeldOccurrence { fieldId: string; blockCode: string; bookingDate: string; amountMinor: number; currency: "MYR"; }
+export interface HeldOccurrence { fieldId: string; blockCode: string; bookingDate: string; amountMinor: number; currency: "MYR"; startsAt?: string; endsAt?: string; }
 
 export interface CreateHoldGroupRequest { occurrences: Array<RequestedOccurrence>; }
 

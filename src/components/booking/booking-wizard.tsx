@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import Image from "next/image";
 import { SlotCard } from "@/components/booking/slot-card";
 import { ArrowRightIcon, CalendarIcon, ChevronIcon } from "@/components/ui/icons";
@@ -57,6 +57,30 @@ function toDate(value: string): Date {
   return new Date(`${value}T00:00:00.000Z`);
 }
 
+function addMinutesToTime(timeStr: string, minutesToAdd: number): string {
+  const [h, m] = timeStr.split(":").map(Number);
+  const total = h * 60 + m + minutesToAdd;
+  const newH = Math.floor(total / 60) % 24;
+  const newM = total % 60;
+  return `${String(newH).padStart(2, "0")}:${String(newM).padStart(2, "0")}`;
+}
+
+const START_TIMES = [
+  "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
+  "12:00", "12:30", "13:00", "13:30", "14:00", "14:30",
+  "15:00", "15:30", "16:00", "16:30", "17:00", "17:30",
+  "18:00", "18:30", "19:00", "19:30", "20:00",
+];
+
+const DURATION_OPTIONS = [
+  { minutes: 60, label: "1 hr", amountMinor: 14000, badge: null },
+  { minutes: 90, label: "1.5 hrs", amountMinor: 21000, badge: "1 Match" },
+  { minutes: 120, label: "2 hrs", amountMinor: 28000, badge: null },
+  { minutes: 150, label: "2.5 hrs", amountMinor: 35000, badge: null },
+  { minutes: 180, label: "3 hrs", amountMinor: 42000, badge: null },
+  { minutes: 240, label: "4 hrs", amountMinor: 56000, badge: null },
+];
+
 type CustomerDetails = {
   name: string;
   phone: string;
@@ -72,9 +96,10 @@ type BookingWizardProps = {
   onlinePayment: PublicConfigView["onlinePayment"];
   businessDate: string;
   initialDate: string;
+  defaultMode?: "flexible" | "package";
 };
 
-export function BookingWizard({ fields, blocks, availability, addons, onlinePayment, businessDate, initialDate }: BookingWizardProps) {
+export function BookingWizard({ fields, blocks, availability, addons, onlinePayment, businessDate, initialDate, defaultMode = "flexible" }: BookingWizardProps) {
   const client = useMemo(() => createHttpPublicClient(), []);
   const railDays = useMemo(() => Array.from({ length: 91 }, (_, index) => {
     const value = addIsoDays(businessDate, index);
@@ -82,6 +107,10 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
   }), [businessDate]);
   const maxDate = useMemo(() => addIsoDays(businessDate, 90), [businessDate]);
   const [phase, setPhase] = useState<"sessions" | "details">("sessions");
+  const [bookingMode, setBookingMode] = useState<"flexible" | "package">(defaultMode);
+  const [selectedFieldId, setSelectedFieldId] = useState<string>(fields[0]?.id ?? "FIELD_01");
+  const [durationMinutes, setDurationMinutes] = useState<number>(90);
+  const [startTime, setStartTime] = useState<string>("16:00");
   const [date, setDate] = useState(initialDate);
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [customer, setCustomer] = useState<CustomerDetails>({ name: "", phone: "", email: "", team: "" });
@@ -120,7 +149,7 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
   const sessionTotalMinor = basket.reduce((sum, item) => sum + item.amountMinor, 0);
   const discountMinor = voucher ? Math.round((sessionTotalMinor + addonTotalMinor) * voucher.percentage / 100) : 0;
   const estimatedTotalMinor = Math.max(0, sessionTotalMinor + addonTotalMinor - discountMinor);
-  const isPastCutoff = (bookingDate: string, startsAt: string) => {
+  const isPastCutoff = useCallback((bookingDate: string, startsAt: string) => {
     if (bookingDate < businessDate) return true;
     if (bookingDate === businessDate) {
       const now = new Date();
@@ -130,7 +159,7 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
       }
     }
     return false;
-  };
+  }, [businessDate]);
 
   const slotsByField = (fieldId: string) => blocks.filter((item) => item.fieldId === fieldId).map((item) => {
     const live = liveAvailability.find((slot) => slot.fieldId === fieldId && slot.blockId === item.id);
@@ -143,6 +172,44 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
       status,
     };
   });
+
+  const selectedField = useMemo(() => fields.find((f) => f.id === selectedFieldId) || fields[0], [fields, selectedFieldId]);
+  const endTime = useMemo(() => addMinutesToTime(startTime, durationMinutes), [startTime, durationMinutes]);
+  const currentDuration = useMemo(() => DURATION_OPTIONS.find((d) => d.minutes === durationMinutes) || DURATION_OPTIONS[1], [durationMinutes]);
+
+  const checkSlotConflict = useCallback((fieldId: string, start: string, end: string) => {
+    return liveAvailability.some((slot) => {
+      if (slot.fieldId !== fieldId) return false;
+      if (slot.status === "available") return false;
+      if (!slot.startsAt || !slot.endsAt) return false;
+      return slot.startsAt.slice(0, 5) < end && slot.endsAt.slice(0, 5) > start;
+    });
+  }, [liveAvailability]);
+
+  const isCurrentSelectionConflicted = useMemo(() => {
+    if (isPastCutoff(date, startTime)) return true;
+    return checkSlotConflict(selectedFieldId, startTime, endTime);
+  }, [date, startTime, endTime, selectedFieldId, checkSlotConflict, isPastCutoff]);
+
+  const currentFlexibleBasketItem: BasketItem = useMemo(() => {
+    const startClean = startTime.replace(":", "");
+    const endClean = endTime.replace(":", "");
+    return {
+      fieldId: selectedField.id,
+      blockCode: `CUSTOM_${startClean}_${endClean}`,
+      bookingDate: date,
+      fieldName: selectedField.name,
+      label: `Flexible (${currentDuration.label})`,
+      startsAt: startTime,
+      endsAt: endTime,
+      amountMinor: currentDuration.amountMinor,
+    };
+  }, [selectedField, startTime, endTime, date, currentDuration]);
+
+  const isCurrentFlexibleInBasket = useMemo(() => {
+    const key = basketKey(currentFlexibleBasketItem);
+    return basket.some((b) => basketKey(b) === key);
+  }, [basket, currentFlexibleBasketItem]);
 
   useEffect(() => {
     let active = true;
@@ -262,7 +329,15 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
     setRequestState("booking");
     setError(null);
     try {
-      const holdGroup = await client.createHoldGroup({ occurrences: basket.map(({ fieldId, blockCode, bookingDate }) => ({ fieldId, blockCode, bookingDate })) }, crypto.randomUUID());
+      const holdGroup = await client.createHoldGroup({
+        occurrences: basket.map(({ fieldId, blockCode, bookingDate, startsAt, endsAt }) => ({
+          fieldId,
+          blockCode,
+          bookingDate,
+          startsAt,
+          endsAt,
+        })),
+      }, crypto.randomUUID());
       const addonsPayload = Object.entries(addonSelections).flatMap(([key, byAddon]) => {
         const item = basket.find((candidate) => basketKey(candidate) === key);
         if (!item) return [];
@@ -355,40 +430,175 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
             <p className="booking-note" role="status">{onlinePayment.publicMessage ?? "Online booking will open again soon."}</p>
           ) : null}
 
-          <div className="field-card-list">
-            {fields.map((item) => {
-              const slots = slotsByField(item.id);
-              return (
-                <section className="field-card" key={item.id} aria-labelledby={`field-card-${item.id}`}>
-                  <div className="field-card__media">
-                    <Image src={item.image} alt={item.imageAlt} fill sizes="(min-width: 900px) 40vw, 100vw" />
+          <div className="booking-mode-selector" role="radiogroup" aria-label="Booking Mode">
+            <button
+              type="button"
+              role="radio"
+              aria-checked={bookingMode === "flexible"}
+              className={`booking-mode-btn ${bookingMode === "flexible" ? "is-selected" : ""}`}
+              onClick={() => setBookingMode("flexible")}
+            >
+              <span className="booking-mode-title">Hourly / Match Booking</span>
+              <span className="booking-mode-subtitle">From 1 hr (RM 140) · 1.5 hrs / 1 match (RM 210)</span>
+            </button>
+            <button
+              type="button"
+              role="radio"
+              aria-checked={bookingMode === "package"}
+              className={`booking-mode-btn ${bookingMode === "package" ? "is-selected" : ""}`}
+              onClick={() => setBookingMode("package")}
+            >
+              <span className="booking-mode-title">6-Hour Packages</span>
+              <span className="booking-mode-subtitle">Morning 9AM–3PM (RM 600) · Evening 3PM–9PM (RM 800)</span>
+            </button>
+          </div>
+
+          {bookingMode === "flexible" ? (
+            <div className="flexible-booking-card">
+              <div className="flexible-booking-grid">
+                <div>
+                  <span className="flexible-section-label">1. Choose Pitch</span>
+                  <div className="pitch-selector-pills" role="radiogroup" aria-label="Pitch">
+                    {fields.map((f) => (
+                      <button
+                        key={f.id}
+                        type="button"
+                        role="radio"
+                        aria-checked={selectedFieldId === f.id}
+                        className={`pitch-pill ${selectedFieldId === f.id ? "is-selected" : ""}`}
+                        onClick={() => setSelectedFieldId(f.id)}
+                      >
+                        {f.name}
+                      </button>
+                    ))}
                   </div>
-                  <div className="field-card__body">
-                    <header className="field-card__header">
-                      <div><h3 id={`field-card-${item.id}`}>{item.name}</h3><p>{item.surface}</p></div>
-                      <p className="field-card__date">{dateLabel(date)}</p>
-                    </header>
-                    <div className="field-card__slots">
-                      {slots.map(({ block, status }) => {
-                        const key = `${item.id}-${block.id}-${date}`;
-                        const selected = basket.some((candidate) => basketKey(candidate) === key);
-                        return (
-                          <SlotCard
-                            key={key}
-                            block={block}
-                            status={status}
-                            fieldName={item.shortName}
-                            selected={selected}
-                            onSelect={status === "available" ? () => toggleSession({ fieldId: item.id, blockCode: block.id, bookingDate: date, fieldName: item.name, label: block.label, startsAt: block.startsAt, endsAt: block.endsAt, amountMinor: block.amountMinor }) : undefined}
-                          />
-                        );
-                      })}
+
+                  <span className="flexible-section-label">2. Match Duration</span>
+                  <div className="duration-pills" role="radiogroup" aria-label="Duration">
+                    {DURATION_OPTIONS.map((d) => (
+                      <button
+                        key={d.minutes}
+                        type="button"
+                        role="radio"
+                        aria-checked={durationMinutes === d.minutes}
+                        className={`duration-pill ${durationMinutes === d.minutes ? "is-selected" : ""}`}
+                        onClick={() => setDurationMinutes(d.minutes)}
+                      >
+                        {d.badge ? <span className="duration-pill-badge">{d.badge}</span> : null}
+                        <span className="duration-pill-time">{d.label}</span>
+                        <span className="duration-pill-price">{formatMoney(d.amountMinor)}</span>
+                      </button>
+                    ))}
+                  </div>
+
+                  <span className="flexible-section-label">3. Start Time</span>
+                  <div className="time-pill-grid" role="radiogroup" aria-label="Start Time">
+                    {START_TIMES.map((time) => {
+                      const computedEnd = addMinutesToTime(time, durationMinutes);
+                      const isPast = isPastCutoff(date, time);
+                      const isConflict = checkSlotConflict(selectedFieldId, time, computedEnd);
+                      const disabled = isPast || isConflict;
+                      return (
+                        <button
+                          key={time}
+                          type="button"
+                          role="radio"
+                          aria-checked={startTime === time}
+                          disabled={disabled}
+                          title={isPast ? "Past cutoff" : isConflict ? "Slot unavailable / booked" : `${time} to ${computedEnd}`}
+                          className={`time-pill ${startTime === time ? "is-selected" : ""}`}
+                          onClick={() => setStartTime(time)}
+                        >
+                          {time}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="flexible-summary-pane">
+                  <div className="flexible-summary-details">
+                    <span className="flexible-section-label">Match Window Summary</span>
+                    <div className="flexible-summary-row">
+                      <span>Pitch</span>
+                      <strong>{selectedField.name}</strong>
+                    </div>
+                    <div className="flexible-summary-row">
+                      <span>Surface</span>
+                      <strong>{selectedField.surface}</strong>
+                    </div>
+                    <div className="flexible-summary-row">
+                      <span>Date</span>
+                      <strong>{dateLabel(date)}</strong>
+                    </div>
+                    <div className="flexible-summary-row">
+                      <span>Session Time</span>
+                      <strong>{formatTimePair12(startTime, endTime)} ({currentDuration.label})</strong>
+                    </div>
+                    <div className="flexible-summary-price">
+                      <span>Session Rate</span>
+                      <strong>{formatMoney(currentDuration.amountMinor)}</strong>
                     </div>
                   </div>
-                </section>
-              );
-            })}
-          </div>
+
+                  <div className="mt-6">
+                    {isCurrentSelectionConflicted ? (
+                      <div className="flexible-conflict-alert" role="alert">
+                        ⚠️ The selected window conflicts with an existing booking or is past cutoff. Please choose another start time or pitch.
+                      </div>
+                    ) : null}
+
+                    <Button
+                      type="button"
+                      className="w-full"
+                      disabled={isCurrentSelectionConflicted || paymentBlocked}
+                      variant={isCurrentFlexibleInBasket ? "outline" : "default"}
+                      onClick={() => toggleSession(currentFlexibleBasketItem)}
+                    >
+                      {isCurrentFlexibleInBasket
+                        ? "Remove from Basket"
+                        : `Add to Basket · ${formatMoney(currentDuration.amountMinor)}`}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="field-card-list">
+              {fields.map((item) => {
+                const slots = slotsByField(item.id);
+                return (
+                  <section className="field-card" key={item.id} aria-labelledby={`field-card-${item.id}`}>
+                    <div className="field-card__media">
+                      <Image src={item.image} alt={item.imageAlt} fill sizes="(min-width: 900px) 40vw, 100vw" />
+                    </div>
+                    <div className="field-card__body">
+                      <header className="field-card__header">
+                        <div><h3 id={`field-card-${item.id}`}>{item.name}</h3><p>{item.surface}</p></div>
+                        <p className="field-card__date">{dateLabel(date)}</p>
+                      </header>
+                      <div className="field-card__slots">
+                        {slots.map(({ block, status }) => {
+                          const key = `${item.id}-${block.id}-${date}`;
+                          const selected = basket.some((candidate) => basketKey(candidate) === key);
+                          return (
+                            <SlotCard
+                              key={key}
+                              block={block}
+                              status={status}
+                              fieldName={item.shortName}
+                              selected={selected}
+                              onSelect={status === "available" ? () => toggleSession({ fieldId: item.id, blockCode: block.id, bookingDate: date, fieldName: item.name, label: block.label, startsAt: block.startsAt, endsAt: block.endsAt, amountMinor: block.amountMinor }) : undefined}
+                            />
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </section>
+                );
+              })}
+            </div>
+          )}
           <p className="availability-refresh" role="status">All times are Malaysia time · book up to 90 days ahead</p>
         </>
       ) : (

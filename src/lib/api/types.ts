@@ -27,7 +27,20 @@ export type BookingBlock = {
   weekdays: number[];
 };
 
-export type PublicConfigView = { slots: BookingBlock[]; addons: PublicAddon[]; onlinePayment: OnlinePaymentCapability; };
+export type CustomDurationPricing = {
+  enabled: boolean;
+  ratePer30MinMinor: number;
+  minDurationMinutes: number;
+  stepMinutes: number;
+  currency: "MYR";
+};
+
+export type PublicConfigView = {
+  slots: BookingBlock[];
+  addons: PublicAddon[];
+  onlinePayment: OnlinePaymentCapability;
+  customDurationPricing?: CustomDurationPricing;
+};
 
 export type PublicAddon = {
   id: string;

@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { BookingWizard } from "@/components/booking/booking-wizard";
@@ -22,7 +22,7 @@ describe("BookingWizard", () => {
       { fieldId: "FIELD_02", blockId: "MORNING", status: "booked" },
       { fieldId: "FIELD_02", blockId: "EVENING", status: "blocked" },
     ];
-    render(<BookingWizard fields={fields} blocks={blocks} availability={availability} addons={[]} onlinePayment={{ enabled: true }} businessDate="2026-07-16" initialDate="2026-07-18" />);
+    render(<BookingWizard fields={fields} blocks={blocks} availability={availability} addons={[]} onlinePayment={{ enabled: true }} businessDate="2026-07-16" initialDate="2026-07-18" defaultMode="package" />);
 
     expect(screen.getByRole("heading", { name: "Pick your sessions" })).toBeVisible();
     await user.click(screen.getAllByRole("button", { name: /available.*field 1/i })[0]);
@@ -47,7 +47,7 @@ describe("BookingWizard", () => {
       { fieldId: "FIELD_01", blockId: "MORNING", status: "available" },
       { fieldId: "FIELD_01", blockId: "EVENING", status: "available" },
     ];
-    render(<BookingWizard fields={fields} blocks={blocks} availability={availability} addons={[]} onlinePayment={{ enabled: false, publicMessage: "Online booking will open again soon." }} businessDate="2026-07-16" initialDate="2026-07-18" />);
+    render(<BookingWizard fields={fields} blocks={blocks} availability={availability} addons={[]} onlinePayment={{ enabled: false, publicMessage: "Online booking will open again soon." }} businessDate="2026-07-16" initialDate="2026-07-18" defaultMode="package" />);
 
     await user.click(screen.getAllByRole("button", { name: /available.*field 1/i })[0]);
 
@@ -67,7 +67,7 @@ describe("BookingWizard", () => {
     const availability: AvailabilitySlot[] = [
       { fieldId: "FIELD_01", blockId: "MORNING", status: "available" },
     ];
-    render(<BookingWizard fields={fields} blocks={blocks} availability={availability} addons={[]} onlinePayment={{ enabled: true }} businessDate="2026-07-16" initialDate="2026-07-18" />);
+    render(<BookingWizard fields={fields} blocks={blocks} availability={availability} addons={[]} onlinePayment={{ enabled: true }} businessDate="2026-07-16" initialDate="2026-07-18" defaultMode="package" />);
 
     await user.click(screen.getAllByRole("button", { name: /available.*field 1/i })[0]);
     expect(screen.getByText("1 session")).toBeVisible();
@@ -109,7 +109,7 @@ describe("BookingWizard", () => {
     const availability: AvailabilitySlot[] = [
       { fieldId: "FIELD_01", blockId: "MORNING", status: "available" },
     ];
-    render(<BookingWizard fields={fields} blocks={blocks} availability={availability} addons={[]} onlinePayment={{ enabled: true }} businessDate="2026-07-16" initialDate="2026-07-18" />);
+    render(<BookingWizard fields={fields} blocks={blocks} availability={availability} addons={[]} onlinePayment={{ enabled: true }} businessDate="2026-07-16" initialDate="2026-07-18" defaultMode="package" />);
 
     await user.click(screen.getAllByRole("button", { name: /available.*field 1/i })[0]);
     await user.click(screen.getByRole("button", { name: /continue/i }));
@@ -131,6 +131,29 @@ describe("BookingWizard", () => {
     expect(paymentCall).toBeDefined();
     const body = JSON.parse(paymentCall![1]!.body as string);
     expect(body.returnPath).toBe("/booking/result?order=AXO-TEST123");
+  });
+
+  it("adds a flexible duration session (1.5 hrs RM 210) and continues to customer details", async () => {
+    vi.stubGlobal("fetch", vi.fn(async (_input: RequestInfo | URL, init?: RequestInit) => {
+      if (init?.method === "POST") return Response.json({ data: { token: "h".repeat(43), expiresAt: "2026-07-18T04:10:00.000Z", fieldId: "FIELD_01", blockCode: "CUSTOM_1600_1730", bookingDate: "2026-07-18", amountMinor: 21000, currency: "MYR", state: "active" }, meta: {}, error: null }, { status: 201 });
+      return Response.json({ data: [], meta: {}, error: null });
+    }));
+
+    const user = userEvent.setup();
+    render(<BookingWizard fields={fields} blocks={blocks} availability={[]} addons={[]} onlinePayment={{ enabled: true }} businessDate="2026-07-16" initialDate="2026-07-18" />);
+
+    expect(screen.getByText(/Hourly \/ Match Booking/i)).toBeVisible();
+    // Click 1.5 hrs duration pill
+    const durationGroup = screen.getByRole("radiogroup", { name: "Duration" });
+    await user.click(within(durationGroup).getByRole("radio", { name: /1.5 hrs/i }));
+    // Click add to basket button
+    await user.click(screen.getByRole("button", { name: /add to basket/i }));
+
+    expect(screen.getByText("1 session")).toBeVisible();
+    await user.click(screen.getByRole("button", { name: /continue/i }));
+
+    expect(await screen.findByRole("heading", { name: "Your details" })).toBeVisible();
+    expect(screen.getAllByText(/RM.*210/i).length).toBeGreaterThan(0);
   });
 });
 
