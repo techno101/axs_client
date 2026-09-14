@@ -1,5 +1,17 @@
 # Client Changelog
 
+## 2026-09-14 (v22 Release - Flexible Duration Hourly Booking Alongside 6-Hour Packages)
+- **Flexible Duration Booking Mode Switcher**:
+  - Added dual-mode tab selection in `src/components/booking/booking-wizard.tsx`: **Hourly / Match Booking** (`Min 1 hr · RM 70 per 30 mins`) and **6-Hour Packages** (`Morning 9AM–3PM / Evening 3PM–9PM`).
+  - Integrated pitch selector (Field 1 / Field 2) with duration chips (`1 hr (RM 140)`, `1.5 hrs / 1 Match (RM 210)`, `2 hrs (RM 280)`, `2.5 hrs (RM 350)`, `3 hrs (RM 420)`).
+  - Dynamically computes available 30-minute start times (09:00 to 20:00), cross-referencing occupied continuous windows and lead-time cutoffs.
+  - Added live match window summary card (`Pitch`, `Time Window`, `Duration`, `Total Amount`) with instant "Add match to booking" CTA.
+- **Contract & API Synchronization**:
+  - Added `startsAt?: string` and `endsAt?: string` to `BasketItem` in `src/lib/api/types.ts` and `src/lib/api/public-adapter.ts`.
+  - Propagated exact match times into hold groups, checkout review, floating cart drawer, and confirmation summaries.
+- **Validation**:
+  - 52 tests passing across 12 test files (including component tests for flexible duration mode switcher), 0 typecheck errors, 0 lint errors, Next.js production build succeeded (23/23 routes), bundle security scan verified. Branch `v22` published to origin.
+
 ## 2026-09-05 (v21 Release - Cookie Consent Resilience, SSR Dual-Storage & URL Security Sanitization)
 - **Cookie Consent Banner Hydration & Persistence Fix**:
   - Upgraded `VisitorTracker` to dual-storage: standard browser cookie (`axs_consent=accepted|declined; path=/; max-age=31536000; SameSite=Lax`) and `localStorage` (safely caught against `SecurityError`).
