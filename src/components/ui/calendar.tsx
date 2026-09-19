@@ -68,18 +68,18 @@ export function Calendar({ selected, onSelect, min, max, availability, businessD
   const isDisabled = (date: Date) => (min && date < startOfUtcDay(min)) || (max && date > startOfUtcDay(max));
 
   return (
-    <div className={cn("w-[280px] select-none", className)} role="grid" aria-label="Choose a date">
+    <div className={cn("w-[320px] select-none p-1", className)} role="grid" aria-label="Choose a date">
       <div className="mb-3 flex items-center justify-between">
         <Button type="button" variant="ghost" size="icon" aria-label="Previous month" onClick={() => moveMonth(-1)}>
-          <ChevronLeft />
+          <ChevronLeft className="h-5 w-5 text-slate-700" />
         </Button>
-        <p className="text-sm font-bold text-[var(--ink)]">{monthLabel(month)}</p>
+        <p className="text-base font-extrabold text-slate-900">{monthLabel(month)}</p>
         <Button type="button" variant="ghost" size="icon" aria-label="Next month" onClick={() => moveMonth(1)}>
-          <ChevronRight />
+          <ChevronRight className="h-5 w-5 text-slate-700" />
         </Button>
       </div>
       <div className="grid grid-cols-7 gap-1 text-center">
-        {WEEKDAYS.map((day) => <span key={day} className="pb-1 text-[10px] font-bold uppercase tracking-wider text-[var(--muted)]">{day}</span>)}
+        {WEEKDAYS.map((day) => <span key={day} className="pb-2 text-xs font-extrabold uppercase tracking-wider text-slate-600">{day}</span>)}
         {buildGrid(month).map((cell, index) => {
           if (!cell.date) return <span key={`empty-${index}`} />;
           const day = cell.date;
@@ -99,27 +99,27 @@ export function Calendar({ selected, onSelect, min, max, availability, businessD
               aria-label={new Intl.DateTimeFormat("en-MY", { day: "2-digit", month: "long", year: "numeric", timeZone: "UTC" }).format(day)}
               onClick={() => onSelect(day)}
               className={cn(
-                "relative flex h-10 w-9 flex-col items-center justify-center rounded-md text-xs font-semibold transition-colors",
-                disabled && "cursor-not-allowed text-[var(--line)] line-through",
-                !disabled && !isSelected && "text-[var(--ink)] hover:bg-[var(--paper)]",
-                isToday && !isSelected && "text-[var(--grass)]",
-                isSelected && "bg-[var(--ink)] text-white",
+                "relative flex h-11 w-10 flex-col items-center justify-center rounded-lg text-sm transition-all",
+                disabled && "cursor-not-allowed text-slate-400 bg-slate-50/70 font-semibold",
+                !disabled && !isSelected && "text-slate-900 font-extrabold hover:bg-slate-100 hover:text-slate-950",
+                isToday && !isSelected && "ring-2 ring-emerald-500 font-black text-emerald-800 bg-emerald-50/60",
+                isSelected && "bg-slate-950 text-white font-black shadow-md ring-2 ring-slate-950",
               )}
             >
-              <span className="leading-none">{day.getUTCDate()}</span>
+              <span className="text-[14px] font-extrabold leading-tight">{day.getUTCDate()}</span>
               {level && !disabled ? (
                 <span
                   className={cn(
-                    "mt-1 h-1 w-1 rounded-full transition-all",
-                    level === "full" && "bg-[var(--success)] shadow-[0_0_3px_rgba(20,120,72,0.5)]",
-                    level === "partial" && "bg-[var(--warning)]",
+                    "mt-1 h-1.5 w-1.5 rounded-full transition-all",
+                    level === "full" && "bg-emerald-500 shadow-[0_0_4px_rgba(16,185,129,0.7)]",
+                    level === "partial" && "bg-amber-500",
                     (level === "none" || level === "past") && "bg-transparent",
                     isSelected && "bg-white",
                   )}
                   aria-hidden="true"
                 />
               ) : (
-                <span className="mt-1 h-1 w-1" aria-hidden="true" />
+                <span className="mt-1 h-1.5 w-1.5" aria-hidden="true" />
               )}
             </button>
           );

@@ -1,5 +1,10 @@
 # Client Memory
 
+On 2026-09-19 (v22 High-Contrast Calendar Dates & Date Rail Recognition Overhaul):
+1. **Calendar Popover Recognition**: Expanded `<Calendar />` width to 320px with 44x40px day buttons, bold 14px numbers, and removed line-through strikes on disabled dates so all dates remain crystal-clear and recognizable.
+2. **Date Rail Numbers**: Increased date numbers in `.date-rail__track > button strong` from 14px to 18px bold `#0f172a`.
+3. **Validation**: 52 tests passing across 12 test files, 0 typecheck errors, 0 lint errors, visual Playwright verification complete.
+
 On 2026-09-19 (v22 booking & calendar design polish):
 1. **Time Slot Selection Structure**: Grouped 24 time slot buttons into 3 categorized periods (Morning, Afternoon, Evening/Prime) with dual 12h/24h badges, resolving visual clutter on booking wizards.
 2. **Calendar Popover**: Replaced glowing horizontal line overlays on date numbers with subtle 4px status dots in `src/components/ui/calendar.tsx`.

@@ -1,5 +1,18 @@
 # Client Changelog
 
+## 2026-09-19 (v22 High-Contrast Calendar Dates & Date Rail Recognition Overhaul)
+- **High-Contrast, Large Calendar Popover Dates**:
+  - Expanded `<Calendar />` container width to 320px with spacious 44x40px day buttons.
+  - Eliminated `line-through` strike-through text from disabled/past dates, rendering clean, recognizable numbers in soft slate (`text-slate-400 font-semibold bg-slate-50/70`).
+  - Styled available dates with deep dark bold ink (`text-slate-900 font-extrabold text-[14px]`).
+  - Highlighted today's date with a vivid emerald outline ring (`ring-2 ring-emerald-500 font-black text-emerald-800 bg-emerald-50/60`).
+  - Upgraded weekday header labels to uppercase bold slate (`text-xs font-extrabold text-slate-600`).
+- **Punchy Date Rail Numbers**:
+  - Increased date numbers in `.date-rail__track > button strong` from 14px to 18px bold `#0f172a`.
+  - Upgraded day and month labels with bolder typography and improved contrast.
+- **Validation**:
+  - 52 tests passing across 12 test files, 0 typecheck errors, 0 lint errors, visual Playwright validation complete.
+
 ## 2026-09-19 (v22 Design Polish - Booking Time Periods, Calendar Popover & Layout Ergonomics)
 - **Grouped Time Periods & Dual AM/PM Badges**:
   - Replaced dense 24-slot button wall with 3 structured periods: Morning Kickoffs (`9:00 AM – 12:00 PM`), Afternoon Matches (`12:00 PM – 5:00 PM`), and Prime Evening & Floodlights (`5:00 PM – 8:00 PM`).
