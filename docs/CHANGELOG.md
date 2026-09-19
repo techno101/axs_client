@@ -1,5 +1,18 @@
 # Client Changelog
 
+## 2026-09-19 (v22 Design Polish - Booking Time Periods, Calendar Popover & Layout Ergonomics)
+- **Grouped Time Periods & Dual AM/PM Badges**:
+  - Replaced dense 24-slot button wall with 3 structured periods: Morning Kickoffs (`9:00 AM – 12:00 PM`), Afternoon Matches (`12:00 PM – 5:00 PM`), and Prime Evening & Floodlights (`5:00 PM – 8:00 PM`).
+  - Formatted time slot pills with prominent 12-hour AM/PM label and subtle 24-hour military timestamp for immediate customer comprehension.
+- **Calendar Popover Declutter**:
+  - Cleaned up date cells in `src/components/ui/calendar.tsx`, removing thick glowing horizontal bars that collided with date numbers and replacing with subtle 4px status dots.
+- **Date Rail Chevron Navigation**:
+  - Added centered SVG `ChevronLeftIcon` and `ChevronRightIcon` arrow buttons for responsive date rail scrolling.
+- **Cookie Notice Decoupling**:
+  - Docked `.consent-bar` to `bottom: 96px; right: 24px; max-width: 360px;` on desktop (and `bottom: 96px;` on mobile), ensuring it never covers or obstructs the sticky booking action bar.
+- **Validation**:
+  - 52 tests passing across 12 test files, 0 typecheck errors, 0 lint errors, visual Playwright validation complete.
+
 ## 2026-09-14 (v22 Release - Flexible Duration Hourly Booking Alongside 6-Hour Packages)
 - **Flexible Duration Booking Mode Switcher**:
   - Added dual-mode tab selection in `src/components/booking/booking-wizard.tsx`: **Hourly / Match Booking** (`Min 1 hr · RM 70 per 30 mins`) and **6-Hour Packages** (`Morning 9AM–3PM / Evening 3PM–9PM`).

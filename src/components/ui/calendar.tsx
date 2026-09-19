@@ -19,12 +19,6 @@ export type CalendarProps = {
   className?: string;
 };
 
-const dotClass: Record<AvailabilityDot, string> = {
-  full: "availability-light availability-light--full",
-  partial: "availability-light availability-light--partial",
-  none: "availability-light availability-light--none",
-  past: "availability-light availability-light--past",
-};
 
 function startOfUtcDay(value: Date): Date {
   return new Date(Date.UTC(value.getUTCFullYear(), value.getUTCMonth(), value.getUTCDate()));
@@ -112,8 +106,21 @@ export function Calendar({ selected, onSelect, min, max, availability, businessD
                 isSelected && "bg-[var(--ink)] text-white",
               )}
             >
-              {level ? <i className={cn("availability-light--top", dotClass[level])} aria-hidden="true" /> : null}
-              {day.getUTCDate()}
+              <span className="leading-none">{day.getUTCDate()}</span>
+              {level && !disabled ? (
+                <span
+                  className={cn(
+                    "mt-1 h-1 w-1 rounded-full transition-all",
+                    level === "full" && "bg-[var(--success)] shadow-[0_0_3px_rgba(20,120,72,0.5)]",
+                    level === "partial" && "bg-[var(--warning)]",
+                    (level === "none" || level === "past") && "bg-transparent",
+                    isSelected && "bg-white",
+                  )}
+                  aria-hidden="true"
+                />
+              ) : (
+                <span className="mt-1 h-1 w-1" aria-hidden="true" />
+              )}
             </button>
           );
         })}

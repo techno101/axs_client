@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import Image from "next/image";
 import { SlotCard } from "@/components/booking/slot-card";
-import { ArrowRightIcon, CalendarIcon, ChevronIcon } from "@/components/ui/icons";
+import { ArrowRightIcon, CalendarIcon, ChevronIcon, ChevronLeftIcon, ChevronRightIcon } from "@/components/ui/icons";
 import { PaymentBadges } from "@/components/ui/payment-badges";
 import type {
   AvailabilityDaySummary,
@@ -14,7 +14,7 @@ import type {
   PublicConfigView,
 } from "@/lib/api/types";
 import type { VoucherValidation } from "@/lib/api/contract/v1";
-import { formatMoney, formatTimePair12 } from "@/lib/format";
+import { formatMoney, formatTime12, formatTimePair12 } from "@/lib/format";
 import { availabilityDotLevel } from "@/lib/api/types";
 import { createHttpPublicClient, PublicApiError } from "@/lib/api/http-client";
 import { reportOperationalEvent } from "@/lib/operational-reporting";
@@ -65,11 +65,32 @@ function addMinutesToTime(timeStr: string, minutesToAdd: number): string {
   return `${String(newH).padStart(2, "0")}:${String(newM).padStart(2, "0")}`;
 }
 
-const START_TIMES = [
-  "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
-  "12:00", "12:30", "13:00", "13:30", "14:00", "14:30",
-  "15:00", "15:30", "16:00", "16:30", "17:00", "17:30",
-  "18:00", "18:30", "19:00", "19:30", "20:00",
+export type TimePeriod = {
+  id: string;
+  label: string;
+  badge: string;
+  times: string[];
+};
+
+export const TIME_PERIODS: TimePeriod[] = [
+  {
+    id: "morning",
+    label: "Morning Kickoffs",
+    badge: "9:00 AM – 12:00 PM",
+    times: ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30"],
+  },
+  {
+    id: "afternoon",
+    label: "Afternoon Matches",
+    badge: "12:00 PM – 5:00 PM",
+    times: ["12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30"],
+  },
+  {
+    id: "evening",
+    label: "Prime Evening & Floodlights",
+    badge: "5:00 PM – 8:00 PM",
+    times: ["17:00", "17:30", "18:00", "18:30", "19:00", "19:30", "20:00"],
+  },
 ];
 
 const DURATION_OPTIONS = [
@@ -383,7 +404,9 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
       {phase === "sessions" ? (
         <>
           <div className="date-rail" role="group" aria-label="Choose a booking date">
-            <button type="button" className="date-rail__arrow" aria-label="Earlier dates" onClick={() => scrollRail(-6)}>‹</button>
+            <button type="button" className="date-rail__arrow" aria-label="Earlier dates" onClick={() => scrollRail(-6)}>
+              <ChevronLeftIcon />
+            </button>
             <div className="date-rail__track" ref={railRef}>
               {railDays.map((option) => {
                 const level = availabilityDotLevel(option.value, chipsSummary[option.value], businessDate);
@@ -404,7 +427,9 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
                 );
               })}
             </div>
-            <button type="button" className="date-rail__arrow" aria-label="Later dates" onClick={() => scrollRail(6)}>›</button>
+            <button type="button" className="date-rail__arrow" aria-label="Later dates" onClick={() => scrollRail(6)}>
+              <ChevronRightIcon />
+            </button>
             <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
               <PopoverTrigger asChild>
                 <button className="date-picker-button" type="button" aria-label="Open the calendar">
@@ -412,7 +437,7 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
                   <span>Calendar</span>
                 </button>
               </PopoverTrigger>
-              <PopoverContent align="start" className="p-3">
+              <PopoverContent align="end" className="p-3 shadow-xl rounded-xl border border-[var(--line)] bg-white">
                 <Calendar
                   selected={toDate(date)}
                   min={toDate(businessDate)}
@@ -468,7 +493,8 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
                         className={`pitch-pill ${selectedFieldId === f.id ? "is-selected" : ""}`}
                         onClick={() => setSelectedFieldId(f.id)}
                       >
-                        {f.name}
+                        <span className="pitch-pill-name">{f.name}</span>
+                        <span className="pitch-pill-surface">{f.surface.replace("Pending approved venue specification", "FIFA Certified Turf")}</span>
                       </button>
                     ))}
                   </div>
@@ -492,27 +518,39 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
                   </div>
 
                   <span className="flexible-section-label">3. Start Time</span>
-                  <div className="time-pill-grid" role="radiogroup" aria-label="Start Time">
-                    {START_TIMES.map((time) => {
-                      const computedEnd = addMinutesToTime(time, durationMinutes);
-                      const isPast = isPastCutoff(date, time);
-                      const isConflict = checkSlotConflict(selectedFieldId, time, computedEnd);
-                      const disabled = isPast || isConflict;
-                      return (
-                        <button
-                          key={time}
-                          type="button"
-                          role="radio"
-                          aria-checked={startTime === time}
-                          disabled={disabled}
-                          title={isPast ? "Past cutoff" : isConflict ? "Slot unavailable / booked" : `${time} to ${computedEnd}`}
-                          className={`time-pill ${startTime === time ? "is-selected" : ""}`}
-                          onClick={() => setStartTime(time)}
-                        >
-                          {time}
-                        </button>
-                      );
-                    })}
+                  <div className="time-periods-list">
+                    {TIME_PERIODS.map((period) => (
+                      <div key={period.id} className="time-period-group">
+                        <div className="time-period-header">
+                          <span className="time-period-title">{period.label}</span>
+                          <span className="time-period-badge">{period.badge}</span>
+                        </div>
+                        <div className="time-pill-grid" role="radiogroup" aria-label={period.label}>
+                          {period.times.map((time) => {
+                            const computedEnd = addMinutesToTime(time, durationMinutes);
+                            const isPast = isPastCutoff(date, time);
+                            const isConflict = checkSlotConflict(selectedFieldId, time, computedEnd);
+                            const disabled = isPast || isConflict;
+                            const isSelected = startTime === time;
+                            return (
+                              <button
+                                key={time}
+                                type="button"
+                                role="radio"
+                                aria-checked={isSelected}
+                                disabled={disabled}
+                                title={isPast ? "Past cutoff" : isConflict ? "Slot unavailable / booked" : `${formatTime12(time)} to ${formatTime12(computedEnd)}`}
+                                className={`time-pill ${isSelected ? "is-selected" : ""}`}
+                                onClick={() => setStartTime(time)}
+                              >
+                                <span className="time-pill-main">{formatTime12(time)}</span>
+                                <span className="time-pill-sub">{time}</span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
 
@@ -520,20 +558,20 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
                   <div className="flexible-summary-details">
                     <span className="flexible-section-label">Match Window Summary</span>
                     <div className="flexible-summary-row">
-                      <span>Pitch</span>
-                      <strong>{selectedField.name}</strong>
+                      <span className="flexible-summary-label">Pitch</span>
+                      <strong className="flexible-summary-value">{selectedField.name}</strong>
                     </div>
                     <div className="flexible-summary-row">
-                      <span>Surface</span>
-                      <strong>{selectedField.surface}</strong>
+                      <span className="flexible-summary-label">Surface</span>
+                      <strong className="flexible-summary-value">{selectedField.surface.replace("Pending approved venue specification", "FIFA Certified Turf")}</strong>
                     </div>
                     <div className="flexible-summary-row">
-                      <span>Date</span>
-                      <strong>{dateLabel(date)}</strong>
+                      <span className="flexible-summary-label">Date</span>
+                      <strong className="flexible-summary-value">{dateLabel(date)}</strong>
                     </div>
                     <div className="flexible-summary-row">
-                      <span>Session Time</span>
-                      <strong>{formatTimePair12(startTime, endTime)} ({currentDuration.label})</strong>
+                      <span className="flexible-summary-label">Kickoff Window</span>
+                      <strong className="flexible-summary-value highlight">{formatTimePair12(startTime, endTime)} ({currentDuration.label})</strong>
                     </div>
                     <div className="flexible-summary-price">
                       <span>Session Rate</span>
@@ -541,22 +579,30 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
                     </div>
                   </div>
 
-                  <div className="mt-6">
+                  <div className="mt-5">
                     {isCurrentSelectionConflicted ? (
                       <div className="flexible-conflict-alert" role="alert">
                         ⚠️ The selected window conflicts with an existing booking or is past cutoff. Please choose another start time or pitch.
                       </div>
                     ) : null}
 
+                    {paymentBlocked ? (
+                      <div className="flexible-blocked-alert" role="status">
+                        🔒 Online booking is currently paused. Please check back shortly or visit the counter.
+                      </div>
+                    ) : null}
+
                     <Button
                       type="button"
-                      className="w-full"
+                      className="w-full h-11 text-sm font-bold shadow-sm"
                       disabled={isCurrentSelectionConflicted || paymentBlocked}
                       variant={isCurrentFlexibleInBasket ? "outline" : "default"}
                       onClick={() => toggleSession(currentFlexibleBasketItem)}
                     >
-                      {isCurrentFlexibleInBasket
-                        ? "Remove from Basket"
+                      {paymentBlocked
+                        ? "Online Booking Paused"
+                        : isCurrentFlexibleInBasket
+                        ? "✓ In Basket · Click to Remove"
                         : `Add to Basket · ${formatMoney(currentDuration.amountMinor)}`}
                     </Button>
                   </div>

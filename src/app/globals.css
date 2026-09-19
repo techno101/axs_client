@@ -5871,20 +5871,20 @@ html.menu-locked { overflow: hidden; }
 .consent-bar {
   position: fixed;
   z-index: 300;
-  right: 20px;
-  bottom: 20px;
-  left: 20px;
+  right: 24px;
+  bottom: 96px;
+  left: auto;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 18px;
-  max-width: 720px;
-  margin: 0 auto;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  max-width: 360px;
   padding: 16px 18px;
-  border-radius: 10px;
+  border-radius: 12px;
   background: var(--ink);
   color: var(--white);
-  box-shadow: 0 18px 44px rgba(6, 17, 22, 0.35);
+  box-shadow: 0 20px 48px rgba(6, 17, 22, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .consent-bar p {
@@ -5898,18 +5898,26 @@ html.menu-locked { overflow: hidden; }
   display: flex;
   gap: 8px;
   flex-shrink: 0;
+  width: 100%;
+  justify-content: flex-end;
 }
 
 .consent-bar__actions button {
-  padding: 9px 14px;
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  border-radius: 6px;
+  padding: 8px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
   background: transparent;
   color: var(--white);
   font: inherit;
   font-size: 12px;
   font-weight: 700;
   cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.consent-bar__actions button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.5);
 }
 
 .consent-bar__accept {
@@ -5918,10 +5926,17 @@ html.menu-locked { overflow: hidden; }
   color: var(--ink) !important;
 }
 
+.consent-bar__accept:hover {
+  background: var(--lime-strong) !important;
+}
+
 @media (max-width: 640px) {
   .consent-bar {
-    flex-direction: column;
-    align-items: stretch;
+    left: 16px;
+    right: 16px;
+    bottom: 96px; /* Lifted safely above the sticky booking footer */
+    max-width: none;
+    padding: 14px;
   }
 }
 
@@ -6000,21 +6015,28 @@ html.menu-locked { overflow: hidden; }
 
 .date-rail__arrow {
   flex-shrink: 0;
-  display: grid;
-  place-items: center;
-  width: 42px;
-  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 10px;
   background: var(--white);
   color: var(--ink);
-  font-size: 20px;
-  line-height: 1;
   cursor: pointer;
+  transition: all 0.15s ease;
 }
 
 .date-rail__arrow:hover {
-  border-color: var(--grass);
+  border-color: var(--ink);
+  background: #f8fafc;
+  transform: translateY(-1px);
+}
+
+.date-rail__arrow svg {
+  width: 16px;
+  height: 16px;
 }
 
 .date-rail__track {
@@ -6829,42 +6851,109 @@ html.menu-locked { overflow: hidden; }
   border-radius: 999px;
 }
 
+.time-periods-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.time-period-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  background: rgba(15, 19, 57, 0.02);
+  border: 1px solid rgba(15, 19, 57, 0.06);
+  border-radius: 12px;
+}
+
+.time-period-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2px;
+}
+
+.time-period-title {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+
+.time-period-badge {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted);
+  background: rgba(15, 19, 57, 0.05);
+  padding: 2px 8px;
+  border-radius: 999px;
+  letter-spacing: 0.02em;
+}
+
 .time-pill-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(75px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
   gap: 6px;
-  max-height: 190px;
-  overflow-y: auto;
   padding: 2px;
 }
 
 .time-pill {
-  padding: 8px 6px;
-  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 4px;
+  border-radius: 10px;
   border: 1px solid var(--line);
   background: var(--white);
-  font-size: 12px;
-  font-weight: 700;
   color: var(--ink);
   cursor: pointer;
   text-align: center;
   transition: all 0.15s ease;
+  user-select: none;
+}
+
+.time-pill-main {
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.time-pill-sub {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--muted);
+  line-height: 1;
+  margin-top: 2px;
 }
 
 .time-pill:hover:not(:disabled) {
   border-color: var(--grass);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(15, 19, 57, 0.08);
 }
 
 .time-pill.is-selected {
-  background: var(--grass);
-  border-color: var(--grass);
+  background: var(--ink);
+  border-color: var(--ink);
   color: var(--white);
+  box-shadow: 0 4px 14px rgba(15, 19, 57, 0.2);
+}
+
+.time-pill.is-selected .time-pill-sub {
+  color: #a1dc71;
 }
 
 .time-pill:disabled {
   opacity: 0.35;
   cursor: not-allowed;
-  background: rgba(15, 19, 57, 0.04);
+  background: rgba(15, 19, 57, 0.03);
+  border-color: transparent;
+}
+
+.time-pill:disabled .time-pill-main {
   text-decoration: line-through;
 }
 
@@ -6872,10 +6961,11 @@ html.menu-locked { overflow: hidden; }
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 20px;
-  border-radius: 12px;
-  background: rgba(15, 19, 57, 0.02);
+  padding: 22px;
+  border-radius: 14px;
+  background: #fbfbfc;
   border: 1px solid var(--line);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
 }
 
 .flexible-summary-details {
@@ -6885,20 +6975,34 @@ html.menu-locked { overflow: hidden; }
 }
 
 .flexible-summary-row {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 105px 1fr;
+  align-items: baseline;
+  gap: 8px;
   font-size: 13px;
-  color: var(--muted);
 }
 
-.flexible-summary-row strong {
+.flexible-summary-label {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.flexible-summary-value {
   color: var(--ink);
   font-weight: 700;
+  text-align: right;
+  word-break: break-word;
+}
+
+.flexible-summary-value.highlight {
+  color: #2b6113;
+  font-weight: 800;
 }
 
 .flexible-summary-price {
-  margin-top: 8px;
-  padding-top: 12px;
+  margin-top: 14px;
+  padding-top: 14px;
   border-top: 1px dashed var(--line);
   display: flex;
   justify-content: space-between;
@@ -6906,9 +7010,10 @@ html.menu-locked { overflow: hidden; }
 }
 
 .flexible-summary-price strong {
-  font-size: 22px;
-  font-weight: 800;
+  font-size: 24px;
+  font-weight: 900;
   color: var(--ink);
+  letter-spacing: -0.02em;
 }
 
 .flexible-conflict-alert {
