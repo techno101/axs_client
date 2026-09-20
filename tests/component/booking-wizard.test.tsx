@@ -1,4 +1,4 @@
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { BookingWizard } from "@/components/booking/booking-wizard";
@@ -133,7 +133,7 @@ describe("BookingWizard", () => {
     expect(body.returnPath).toBe("/booking/result?order=AXO-TEST123");
   });
 
-  it("adds a flexible duration session (1.5 hrs RM 210) and continues to customer details", async () => {
+  it("adds a flexible duration session (1.5 hrs RM 210) via serialized timing meter and continues to customer details", async () => {
     vi.stubGlobal("fetch", vi.fn(async (_input: RequestInfo | URL, init?: RequestInit) => {
       if (init?.method === "POST") return Response.json({ data: { token: "h".repeat(43), expiresAt: "2026-07-18T04:10:00.000Z", fieldId: "FIELD_01", blockCode: "CUSTOM_1600_1730", bookingDate: "2026-07-18", amountMinor: 21000, currency: "MYR", state: "active" }, meta: {}, error: null }, { status: 201 });
       return Response.json({ data: [], meta: {}, error: null });
@@ -142,10 +142,16 @@ describe("BookingWizard", () => {
     const user = userEvent.setup();
     render(<BookingWizard fields={fields} blocks={blocks} availability={[]} addons={[]} onlinePayment={{ enabled: true }} businessDate="2026-07-16" initialDate="2026-07-18" />);
 
-    expect(screen.getByText(/Hourly \/ Match Booking/i)).toBeVisible();
-    // Click 1.5 hrs duration pill
-    const durationGroup = screen.getByRole("radiogroup", { name: "Duration" });
-    await user.click(within(durationGroup).getByRole("radio", { name: /1.5 hrs/i }));
+    expect(screen.getByRole("heading", { name: "Select Field(s)" })).toBeVisible();
+    expect(screen.getByRole("heading", { name: "Select Timing" })).toBeVisible();
+
+    // Select start time 16:00 and end time 17:30 (1.5 hrs)
+    const endSelect = screen.getByLabelText(/To \(End Time\)/i);
+    await user.selectOptions(endSelect, "17:30");
+
+    expect(screen.getByText(/Pricing & Tax Analysis/i)).toBeVisible();
+    expect(screen.getByText(/Includes 8% SST/i)).toBeVisible();
+
     // Click add to basket button
     await user.click(screen.getByRole("button", { name: /add to basket/i }));
 

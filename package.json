@@ -19,6 +19,7 @@
     "test:routes": "node scripts/with-server.mjs scripts/route-smoke.mjs",
     "visual:capture": "node scripts/with-server.mjs scripts/capture-visuals.mjs",
     "test:motion": "node scripts/with-server.mjs scripts/motion-performance-smoke.mjs",
+    "test:contrast": "node scripts/with-server.mjs scripts/button-contrast-smoke.mjs",
     "check": "npm run lint && npm run typecheck && npm run contract:check && npm run test:security && npm run test && npm run build"
   },
   "dependencies": {

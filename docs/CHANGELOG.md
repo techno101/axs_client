@@ -1,6 +1,30 @@
 # Client Changelog
 
-## 2026-09-19 (v22 High-Contrast Calendar Dates & Date Rail Recognition Overhaul)
+## 2026-09-20 (v23 Serialized Booking Flow, Interactive Timing Meter, Malaysian SST 8% Breakdown & Button Contrast Fix)
+- **Cascade Layering & High-Contrast Button Fix**:
+  - Wrapped base HTML resets (`button, input, textarea, select, a`) in `@layer base` in `src/app/globals.css`. In Tailwind CSS v4, unlayered CSS declarations override utilities in `@layer utilities`; moving base resets into `@layer base` ensures utilities like `.text-white` maintain cascade precedence.
+  - Enforced `!text-white` on `default` and `primary` button variants in `src/components/ui/button.tsx`, `!text-[var(--ink)]` on `outline` and `ghost`, and `!text-[var(--muted)]` on `quiet`.
+  - Updated `.booking-bar__continue` button enabled (`var(--lime)` / `var(--ink-deep)`) and disabled states (`#1e363f` bg / `#a0b6bf` text) to guarantee WCAG AA (> 4.5:1) compliance.
+  - Automated verification via `scripts/button-contrast-smoke.mjs` running headless Playwright across all key routes (`/`, `/book`, `/fields`, `/booking/find`, `/contact`, `/sign-in`, `/sign-up`), confirming WCAG AA compliance (18.92:1 contrast ratio on booking CTA).
+- **Serialized Booking Workflow & Interactive Timing Meter**:
+  - Encapsulated booking area in `src/components/booking/booking-wizard.tsx` into a 2-column layout: Left Column (workflow steps) and Right Column (sticky summary & pricing analysis).
+  - Serialized booking process:
+    - **Step 1: Select Field**: Field 1, Field 2, or Both Fields (Full Venue).
+    - **Step 2: Select Timing**: Replaced fragmented duration and time buttons with an interactive `TimingMeter` featuring start/end time dropdowns (09:00–22:00 in 30-min steps), duration badges, an interactive 26-interval availability timeline bar (booked vs available vs selected), and real-time conflict feedback. When "Both Fields" is selected, dual meters are displayed with an optional sync toggle.
+    - **Step 3: Pricing & Tax Analysis**: Displays comprehensive calculation (e.g. `2.5 hours = RM 350.00`).
+- **Malaysian / Johor Bahru / Iskandar Puteri Tax Compliance (SST 8%)**:
+  - Complying with Section 34 of the *Service Tax Act 2018* (noting GST was repealed in 2018 and the statutory Service Tax rate is 8% effective March 1, 2024), displayed an itemized transparent tax breakdown:
+    - Pitch Rental (Net of SST)
+    - Service Tax (8% SST · Iskandar Puteri / Johor)
+    - Total Amount Payable (Nett inclusive of 8% SST), matching backend hold minor amount without financial discrepancy.
+- **Validation**:
+  - Vitest: 52 tests passing across 12 test files.
+  - TypeScript: 0 errors.
+  - ESLint: 0 errors.
+  - Public contract & security scans passed.
+  - Next.js production build succeeded (23 routes).
+  - Playwright button contrast smoke test passed with exit code 0.
+
 - **High-Contrast, Large Calendar Popover Dates**:
   - Expanded `<Calendar />` container width to 320px with spacious 44x40px day buttons.
   - Eliminated `line-through` strike-through text from disabled/past dates, rendering clean, recognizable numbers in soft slate (`text-slate-400 font-semibold bg-slate-50/70`).

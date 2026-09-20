@@ -1,6 +1,22 @@
 # Client Memory
 
-On 2026-09-19 (v22 High-Contrast Calendar Dates & Date Rail Recognition Overhaul):
+On 2026-09-20 (v23 Serialized Booking Flow, Interactive Timing Meter, Malaysian SST 8% Breakdown & Button Contrast Fix):
+1. **Button Background/Text Contrast Fix**:
+   - In Tailwind v4, unlayered CSS declarations override `@layer utilities`. Wrapped base resets (`button, input, textarea, select, a`) in `@layer base` in `src/app/globals.css`.
+   - Added `!text-white` to `default` and `primary` button variants in `src/components/ui/button.tsx`.
+   - Tuned `.booking-bar__continue` disabled state to `#1e363f` bg / `#a0b6bf` text.
+   - Built Playwright contrast auditor `scripts/button-contrast-smoke.mjs` verifying 100+ buttons across public routes (e.g. 18.92:1 contrast ratio on booking CTA vs 4.5:1 WCAG AA minimum). Added `"test:contrast"` npm script.
+2. **Serialized Booking Flow & Timing Meter**:
+   - Encapsulated booking area in `src/components/booking/booking-wizard.tsx` into a 2-column layout (Left: Steps 1 & 2; Right: Sticky summary & Step 3 pricing analysis).
+   - Step 1: Field Selection (`Field 1`, `Field 2`, or `Both Fields / Full Venue`).
+   - Step 2: Interactive `TimingMeter` with start/end time dropdowns (09:00–22:00 in 30-min intervals), live duration badge, and visual 26-interval availability meter bar (booked vs available vs selected). Dual meters with sync toggle when Both Fields is selected.
+   - Step 3: Transparent Pricing & Tax Analysis complying with Malaysian Sales & Service Tax (SST 8% under *Service Tax Act 2018* in Iskandar Puteri / Johor Bahru), displaying net pitch rental, 8% SST, and inclusive total amount payable matching backend hold minor amount.
+3. **Validation**:
+   - 52 tests passing across 12 test files in Vitest.
+   - 0 TypeScript errors, 0 ESLint errors.
+   - Pinned API contract valid, security boundary passed (94 files), Next.js production build succeeded (23 routes).
+   - Playwright button contrast smoke test passed with exit code 0.
+
 1. **Calendar Popover Recognition**: Expanded `<Calendar />` width to 320px with 44x40px day buttons, bold 14px numbers, and removed line-through strikes on disabled dates so all dates remain crystal-clear and recognizable.
 2. **Date Rail Numbers**: Increased date numbers in `.date-rail__track > button strong` from 14px to 18px bold `#0f172a`.
 3. **Validation**: 52 tests passing across 12 test files, 0 typecheck errors, 0 lint errors, visual Playwright verification complete.

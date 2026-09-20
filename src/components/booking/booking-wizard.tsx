@@ -59,11 +59,65 @@ function toDate(value: string): Date {
 
 function addMinutesToTime(timeStr: string, minutesToAdd: number): string {
   const [h, m] = timeStr.split(":").map(Number);
-  const total = h * 60 + m + minutesToAdd;
+  const total = (h || 0) * 60 + (m || 0) + minutesToAdd;
   const newH = Math.floor(total / 60) % 24;
   const newM = total % 60;
   return `${String(newH).padStart(2, "0")}:${String(newM).padStart(2, "0")}`;
 }
+
+export function timeToMinutes(timeStr: string): number {
+  const [h, m] = timeStr.split(":").map(Number);
+  return (h || 0) * 60 + (m || 0);
+}
+
+export function minutesToTime(total: number): string {
+  const h = Math.floor(total / 60) % 24;
+  const m = total % 60;
+  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+}
+
+export function diffMinutes(start: string, end: string): number {
+  const startM = timeToMinutes(start);
+  const endM = timeToMinutes(end);
+  return Math.max(0, endM - startM);
+}
+
+export function formatDurationText(mins: number): string {
+  const hours = mins / 60;
+  return hours === 1 ? "1 hr" : `${hours} hrs`;
+}
+
+export const RATE_PER_30_MIN_MINOR = 7000; // RM 70.00 / 30 mins (RM 140 / hr)
+
+export function calculateAmountMinor(durationMinutes: number): number {
+  const intervals = Math.round(durationMinutes / 30);
+  return intervals * RATE_PER_30_MIN_MINOR;
+}
+
+export const START_TIME_OPTIONS = [
+  "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
+  "12:00", "12:30", "13:00", "13:30", "14:00", "14:30",
+  "15:00", "15:30", "16:00", "16:30", "17:00", "17:30",
+  "18:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00"
+];
+
+export function getAvailableEndTimes(start: string): string[] {
+  const startM = timeToMinutes(start);
+  const minEnd = startM + 60; // minimum 1 hr
+  const maxEnd = 22 * 60; // 22:00
+  const list: string[] = [];
+  for (let m = minEnd; m <= maxEnd; m += 30) {
+    list.push(minutesToTime(m));
+  }
+  return list;
+}
+
+export const METER_INTERVALS = [
+  "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
+  "12:00", "12:30", "13:00", "13:30", "14:00", "14:30",
+  "15:00", "15:30", "16:00", "16:30", "17:00", "17:30",
+  "18:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00", "21:30"
+];
 
 export type TimePeriod = {
   id: string;
@@ -93,7 +147,7 @@ export const TIME_PERIODS: TimePeriod[] = [
   },
 ];
 
-const DURATION_OPTIONS = [
+export const DURATION_OPTIONS = [
   { minutes: 60, label: "1 hr", amountMinor: 14000, badge: null },
   { minutes: 90, label: "1.5 hrs", amountMinor: 21000, badge: "1 Match" },
   { minutes: 120, label: "2 hrs", amountMinor: 28000, badge: null },
@@ -101,6 +155,170 @@ const DURATION_OPTIONS = [
   { minutes: 180, label: "3 hrs", amountMinor: 42000, badge: null },
   { minutes: 240, label: "4 hrs", amountMinor: 56000, badge: null },
 ];
+
+function TimingMeter({
+  fieldId,
+  fieldName,
+  surface,
+  date,
+  startTime,
+  endTime,
+  onStartTimeChange,
+  onEndTimeChange,
+  isPastCutoff,
+  checkSlotConflict,
+}: {
+  fieldId: string;
+  fieldName: string;
+  surface: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  onStartTimeChange: (val: string) => void;
+  onEndTimeChange: (val: string) => void;
+  isPastCutoff: (bookingDate: string, startsAt: string) => boolean;
+  checkSlotConflict: (fieldId: string, start: string, end: string) => boolean;
+}) {
+  const durationMins = diffMinutes(startTime, endTime);
+  const durationLabel = formatDurationText(durationMins);
+  const endOptions = getAvailableEndTimes(startTime);
+  const isConflict = isPastCutoff(date, startTime) || checkSlotConflict(fieldId, startTime, endTime);
+
+  return (
+    <div className="timing-meter-card" data-testid={`timing-meter-${fieldId}`}>
+      <div className="timing-meter-header">
+        <span className="timing-meter-field-tag">
+          <span>⚽</span> {fieldName} · <span className="font-normal text-[var(--muted)]">{surface.replace("Pending approved venue specification", "FIFA Certified Turf")}</span>
+        </span>
+        <span className="timing-duration-pill">{durationLabel} ({durationMins} mins)</span>
+      </div>
+
+      <div className="timing-selectors-row">
+        <div className="timing-select-box">
+          <label className="timing-select-label" htmlFor={`start-time-${fieldId}`}>From (Start Time)</label>
+          <select
+            id={`start-time-${fieldId}`}
+            className="timing-select-input"
+            value={startTime}
+            onChange={(e) => {
+              const newStart = e.target.value;
+              onStartTimeChange(newStart);
+              const currentEndM = timeToMinutes(endTime);
+              const newStartM = timeToMinutes(newStart);
+              if (currentEndM < newStartM + 60) {
+                onEndTimeChange(minutesToTime(Math.min(22 * 60, newStartM + 60)));
+              }
+            }}
+          >
+            {START_TIME_OPTIONS.map((t) => (
+              <option key={t} value={t}>{formatTime12(t)} ({t})</option>
+            ))}
+          </select>
+        </div>
+
+        <div className="timing-select-box">
+          <label className="timing-select-label" htmlFor={`end-time-${fieldId}`}>To (End Time)</label>
+          <select
+            id={`end-time-${fieldId}`}
+            className="timing-select-input"
+            value={endTime}
+            onChange={(e) => onEndTimeChange(e.target.value)}
+          >
+            {endOptions.map((t) => {
+              const mins = diffMinutes(startTime, t);
+              return (
+                <option key={t} value={t}>
+                  {formatTime12(t)} ({formatDurationText(mins)})
+                </option>
+              );
+            })}
+          </select>
+        </div>
+      </div>
+
+      <div className="visual-meter-wrapper" aria-label={`Timeline meter for ${fieldName}`}>
+        <div className="visual-meter-time-labels">
+          <span>9 AM</span>
+          <span>11 AM</span>
+          <span>1 PM</span>
+          <span>3 PM</span>
+          <span>5 PM</span>
+          <span>7 PM</span>
+          <span>9 PM</span>
+          <span>10 PM</span>
+        </div>
+
+        <div className="visual-meter-bar" role="group" aria-label={`Time slots for ${fieldName}`}>
+          {METER_INTERVALS.map((interval) => {
+            const next30 = addMinutesToTime(interval, 30);
+            const isPast = isPastCutoff(date, interval);
+            const isBooked = checkSlotConflict(fieldId, interval, next30);
+            const isSelected = interval >= startTime && interval < endTime;
+
+            let statusClass = "is-available";
+            let statusText = "Available";
+            if (isSelected) {
+              statusClass = "is-selected";
+              statusText = "Selected";
+            } else if (isPast) {
+              statusClass = "is-past";
+              statusText = "Past cutoff";
+            } else if (isBooked) {
+              statusClass = "is-booked";
+              statusText = "Booked / unavailable";
+            }
+
+            return (
+              <button
+                key={interval}
+                type="button"
+                className={`visual-meter-block ${statusClass}`}
+                title={`${formatTime12(interval)} – ${formatTime12(next30)} (${statusText})`}
+                aria-label={`${fieldName} ${formatTime12(interval)}: ${statusText}`}
+                disabled={isPast || isBooked}
+                onClick={() => {
+                  if (isPast || isBooked) return;
+                  if (interval < startTime) {
+                    onStartTimeChange(interval);
+                  } else if (interval >= endTime) {
+                    onEndTimeChange(next30);
+                  } else {
+                    onStartTimeChange(interval);
+                  }
+                }}
+              />
+            );
+          })}
+        </div>
+
+        <div className="visual-meter-legend">
+          <div className="visual-legend-item">
+            <span className="visual-legend-swatch selected" />
+            <span>Selected Window ({formatTimePair12(startTime, endTime)})</span>
+          </div>
+          <div className="visual-legend-item">
+            <span className="visual-legend-swatch available" />
+            <span>Available</span>
+          </div>
+          <div className="visual-legend-item">
+            <span className="visual-legend-swatch booked" />
+            <span>Booked</span>
+          </div>
+          <div className="visual-legend-item">
+            <span className="visual-legend-swatch past" />
+            <span>Past Cutoff</span>
+          </div>
+        </div>
+      </div>
+
+      {isConflict ? (
+        <div className="mt-3 p-2.5 rounded-md bg-amber-50 border border-amber-200 text-amber-900 text-xs font-semibold flex items-center gap-2">
+          <span>⚠️</span> Selected window on {fieldName} conflicts with an existing booking or cutoff time.
+        </div>
+      ) : null}
+    </div>
+  );
+}
 
 type CustomerDetails = {
   name: string;
@@ -129,9 +347,12 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
   const maxDate = useMemo(() => addIsoDays(businessDate, 90), [businessDate]);
   const [phase, setPhase] = useState<"sessions" | "details">("sessions");
   const [bookingMode, setBookingMode] = useState<"flexible" | "package">(defaultMode);
-  const [selectedFieldId, setSelectedFieldId] = useState<string>(fields[0]?.id ?? "FIELD_01");
-  const [durationMinutes, setDurationMinutes] = useState<number>(90);
-  const [startTime, setStartTime] = useState<string>("16:00");
+  const [selectedFieldMode, setSelectedFieldMode] = useState<"FIELD_01" | "FIELD_02" | "BOTH">("FIELD_01");
+  const [field1Start, setField1Start] = useState<string>("16:00");
+  const [field1End, setField1End] = useState<string>("18:30");
+  const [field2Start, setField2Start] = useState<string>("16:00");
+  const [field2End, setField2End] = useState<string>("18:30");
+  const [syncBothFields, setSyncBothFields] = useState<boolean>(true);
   const [date, setDate] = useState(initialDate);
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [customer, setCustomer] = useState<CustomerDetails>({ name: "", phone: "", email: "", team: "" });
@@ -194,10 +415,6 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
     };
   });
 
-  const selectedField = useMemo(() => fields.find((f) => f.id === selectedFieldId) || fields[0], [fields, selectedFieldId]);
-  const endTime = useMemo(() => addMinutesToTime(startTime, durationMinutes), [startTime, durationMinutes]);
-  const currentDuration = useMemo(() => DURATION_OPTIONS.find((d) => d.minutes === durationMinutes) || DURATION_OPTIONS[1], [durationMinutes]);
-
   const checkSlotConflict = useCallback((fieldId: string, start: string, end: string) => {
     return liveAvailability.some((slot) => {
       if (slot.fieldId !== fieldId) return false;
@@ -207,30 +424,126 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
     });
   }, [liveAvailability]);
 
-  const isCurrentSelectionConflicted = useMemo(() => {
-    if (isPastCutoff(date, startTime)) return true;
-    return checkSlotConflict(selectedFieldId, startTime, endTime);
-  }, [date, startTime, endTime, selectedFieldId, checkSlotConflict, isPastCutoff]);
+  const field1Obj = useMemo(() => fields.find((f) => f.id === "FIELD_01") || fields[0], [fields]);
+  const field2Obj = useMemo(() => fields.find((f) => f.id === "FIELD_02") || fields[1] || fields[0], [fields]);
 
-  const currentFlexibleBasketItem: BasketItem = useMemo(() => {
-    const startClean = startTime.replace(":", "");
-    const endClean = endTime.replace(":", "");
+  const handleField1StartChange = (val: string) => {
+    setField1Start(val);
+    if (syncBothFields) {
+      setField2Start(val);
+    }
+  };
+  const handleField1EndChange = (val: string) => {
+    setField1End(val);
+    if (syncBothFields) {
+      setField2End(val);
+    }
+  };
+  const handleField2StartChange = (val: string) => {
+    setField2Start(val);
+  };
+  const handleField2EndChange = (val: string) => {
+    setField2End(val);
+  };
+
+  const field1DurationMinutes = useMemo(() => diffMinutes(field1Start, field1End), [field1Start, field1End]);
+  const field2DurationMinutes = useMemo(() => diffMinutes(field2Start, field2End), [field2Start, field2End]);
+
+  const field1BasketItem: BasketItem = useMemo(() => {
+    const startClean = field1Start.replace(":", "");
+    const endClean = field1End.replace(":", "");
     return {
-      fieldId: selectedField.id,
+      fieldId: "FIELD_01",
       blockCode: `CUSTOM_${startClean}_${endClean}`,
       bookingDate: date,
-      fieldName: selectedField.name,
-      label: `Flexible (${currentDuration.label})`,
-      startsAt: startTime,
-      endsAt: endTime,
-      amountMinor: currentDuration.amountMinor,
+      fieldName: field1Obj.name,
+      label: `Flexible (${formatDurationText(field1DurationMinutes)})`,
+      startsAt: field1Start,
+      endsAt: field1End,
+      amountMinor: calculateAmountMinor(field1DurationMinutes),
     };
-  }, [selectedField, startTime, endTime, date, currentDuration]);
+  }, [field1Obj, field1Start, field1End, date, field1DurationMinutes]);
 
-  const isCurrentFlexibleInBasket = useMemo(() => {
-    const key = basketKey(currentFlexibleBasketItem);
-    return basket.some((b) => basketKey(b) === key);
-  }, [basket, currentFlexibleBasketItem]);
+  const field2BasketItem: BasketItem = useMemo(() => {
+    const startClean = field2Start.replace(":", "");
+    const endClean = field2End.replace(":", "");
+    return {
+      fieldId: "FIELD_02",
+      blockCode: `CUSTOM_${startClean}_${endClean}`,
+      bookingDate: date,
+      fieldName: field2Obj.name,
+      label: `Flexible (${formatDurationText(field2DurationMinutes)})`,
+      startsAt: field2Start,
+      endsAt: field2End,
+      amountMinor: calculateAmountMinor(field2DurationMinutes),
+    };
+  }, [field2Obj, field2Start, field2End, date, field2DurationMinutes]);
+
+  const activeFlexibleBasketItems: BasketItem[] = useMemo(() => {
+    if (selectedFieldMode === "FIELD_01") return [field1BasketItem];
+    if (selectedFieldMode === "FIELD_02") return [field2BasketItem];
+    return [field1BasketItem, field2BasketItem];
+  }, [selectedFieldMode, field1BasketItem, field2BasketItem]);
+
+  const isAllActiveFlexibleInBasket = useMemo(() => {
+    if (!activeFlexibleBasketItems.length) return false;
+    return activeFlexibleBasketItems.every((item) => basket.some((b) => basketKey(b) === basketKey(item)));
+  }, [basket, activeFlexibleBasketItems]);
+
+  const field1Conflicted = useMemo(() => {
+    if (isPastCutoff(date, field1Start)) return true;
+    return checkSlotConflict("FIELD_01", field1Start, field1End);
+  }, [date, field1Start, field1End, checkSlotConflict, isPastCutoff]);
+
+  const field2Conflicted = useMemo(() => {
+    if (isPastCutoff(date, field2Start)) return true;
+    return checkSlotConflict("FIELD_02", field2Start, field2End);
+  }, [date, field2Start, field2End, checkSlotConflict, isPastCutoff]);
+
+  const hasCurrentFlexibleConflict = useMemo(() => {
+    if (selectedFieldMode === "FIELD_01") return field1Conflicted;
+    if (selectedFieldMode === "FIELD_02") return field2Conflicted;
+    return field1Conflicted || field2Conflicted;
+  }, [selectedFieldMode, field1Conflicted, field2Conflicted]);
+
+  const activeDurationMinutes = useMemo(() => {
+    return activeFlexibleBasketItems.reduce((acc, item) => acc + diffMinutes(item.startsAt, item.endsAt), 0);
+  }, [activeFlexibleBasketItems]);
+
+  const activeTotalMinor = useMemo(() => {
+    return activeFlexibleBasketItems.reduce((acc, item) => acc + item.amountMinor, 0);
+  }, [activeFlexibleBasketItems]);
+
+  // Malaysian Tax calculation: 8% Sales and Service Tax (SST) under Service Tax Act 2018 (Johor Bahru / Iskandar Puteri)
+  // Section 34 of Service Tax Act 2018 mandates consumer-facing quoted total is inclusive of SST
+  const netAmountMinor = useMemo(() => Math.round(activeTotalMinor / 1.08), [activeTotalMinor]);
+  const sstAmountMinor = useMemo(() => activeTotalMinor - netAmountMinor, [activeTotalMinor, netAmountMinor]);
+
+  const toggleFlexibleSessions = (items: BasketItem[]) => {
+    setError(null);
+    const allIn = items.every((item) => basket.some((b) => basketKey(b) === basketKey(item)));
+    if (allIn) {
+      const keysToRemove = new Set(items.map(basketKey));
+      setBasket((current) => current.filter((b) => !keysToRemove.has(basketKey(b))));
+      setAddonSelections((current) => {
+        const next = { ...current };
+        for (const k of keysToRemove) delete next[k];
+        return next;
+      });
+      if (voucher && basket.length - items.length < (voucher.minSessionCount ?? 1)) {
+        setVoucher(null);
+        setVoucherStatus("idle");
+        setVoucherError(null);
+      }
+    } else {
+      const itemsToAdd = items.filter((item) => !basket.some((b) => basketKey(b) === basketKey(item)));
+      if (basket.length + itemsToAdd.length > MAX_SESSIONS) {
+        setError(`You can book up to ${MAX_SESSIONS} sessions in one order.`);
+        return;
+      }
+      setBasket((current) => [...current, ...itemsToAdd]);
+    }
+  };
 
   useEffect(() => {
     let active = true;
@@ -479,131 +792,275 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
           </div>
 
           {bookingMode === "flexible" ? (
-            <div className="flexible-booking-card">
-              <div className="flexible-booking-grid">
-                <div>
-                  <span className="flexible-section-label">1. Choose Pitch</span>
-                  <div className="pitch-selector-pills" role="radiogroup" aria-label="Pitch">
-                    {fields.map((f) => (
+            <div className="booking-flow-card">
+              <div className="booking-flow-grid">
+                {/* LEFT COLUMN: SERIALIZED WORKFLOW */}
+                <div className="booking-flow-left">
+                  {/* STEP 1: SELECT FIELD OR FIELDS */}
+                  <section className="booking-step" aria-labelledby="step-field-title">
+                    <div className="booking-step-header">
+                      <span className="booking-step-badge">1</span>
+                      <div>
+                        <h3 id="step-field-title" className="booking-step-title">Select Field(s)</h3>
+                        <p className="booking-step-desc">Choose Field 1, Field 2, or both fields for a full venue match booking</p>
+                      </div>
+                    </div>
+
+                    <div className="field-select-cards" role="radiogroup" aria-label="Field Selection">
                       <button
-                        key={f.id}
                         type="button"
                         role="radio"
-                        aria-checked={selectedFieldId === f.id}
-                        className={`pitch-pill ${selectedFieldId === f.id ? "is-selected" : ""}`}
-                        onClick={() => setSelectedFieldId(f.id)}
+                        aria-checked={selectedFieldMode === "FIELD_01"}
+                        className={`field-select-btn ${selectedFieldMode === "FIELD_01" ? "is-selected" : ""}`}
+                        onClick={() => {
+                          setSelectedFieldMode("FIELD_01");
+                        }}
                       >
-                        <span className="pitch-pill-name">{f.name}</span>
-                        <span className="pitch-pill-surface">{f.surface.replace("Pending approved venue specification", "FIFA Certified Turf")}</span>
+                        <span className="field-select-badge">Single Pitch</span>
+                        <strong className="field-select-name">{field1Obj.name}</strong>
+                        <span className="field-select-surface">FIFA Certified Turf</span>
                       </button>
-                    ))}
-                  </div>
 
-                  <span className="flexible-section-label">2. Match Duration</span>
-                  <div className="duration-pills" role="radiogroup" aria-label="Duration">
-                    {DURATION_OPTIONS.map((d) => (
                       <button
-                        key={d.minutes}
                         type="button"
                         role="radio"
-                        aria-checked={durationMinutes === d.minutes}
-                        className={`duration-pill ${durationMinutes === d.minutes ? "is-selected" : ""}`}
-                        onClick={() => setDurationMinutes(d.minutes)}
+                        aria-checked={selectedFieldMode === "FIELD_02"}
+                        className={`field-select-btn ${selectedFieldMode === "FIELD_02" ? "is-selected" : ""}`}
+                        onClick={() => {
+                          setSelectedFieldMode("FIELD_02");
+                        }}
                       >
-                        {d.badge ? <span className="duration-pill-badge">{d.badge}</span> : null}
-                        <span className="duration-pill-time">{d.label}</span>
-                        <span className="duration-pill-price">{formatMoney(d.amountMinor)}</span>
+                        <span className="field-select-badge">Single Pitch</span>
+                        <strong className="field-select-name">{field2Obj.name}</strong>
+                        <span className="field-select-surface">FIFA Certified Turf</span>
                       </button>
-                    ))}
-                  </div>
 
-                  <span className="flexible-section-label">3. Start Time</span>
-                  <div className="time-periods-list">
-                    {TIME_PERIODS.map((period) => (
-                      <div key={period.id} className="time-period-group">
-                        <div className="time-period-header">
-                          <span className="time-period-title">{period.label}</span>
-                          <span className="time-period-badge">{period.badge}</span>
+                      <button
+                        type="button"
+                        role="radio"
+                        aria-checked={selectedFieldMode === "BOTH"}
+                        className={`field-select-btn ${selectedFieldMode === "BOTH" ? "is-selected" : ""}`}
+                        onClick={() => {
+                          setSelectedFieldMode("BOTH");
+                        }}
+                      >
+                        <span className="field-select-badge" style={{ background: "#efff78", color: "#091a20" }}>Full Venue</span>
+                        <strong className="field-select-name">Both Fields</strong>
+                        <span className="field-select-surface">Pitch 1 & Pitch 2</span>
+                      </button>
+                    </div>
+                  </section>
+
+                  {/* STEP 2: SELECT MATCH TIMING VIA TIMING METER */}
+                  <section className="booking-step" aria-labelledby="step-timing-title">
+                    <div className="booking-step-header">
+                      <span className="booking-step-badge">2</span>
+                      <div>
+                        <h3 id="step-timing-title" className="booking-step-title">Select Timing</h3>
+                        <p className="booking-step-desc">
+                          {selectedFieldMode === "BOTH"
+                            ? "Configure timing for Field 1 and Field 2 on this date using the timing meters below"
+                            : `Configure kickoff window for ${selectedFieldMode === "FIELD_01" ? "Field 1" : "Field 2"} on this date`}
+                        </p>
+                      </div>
+                    </div>
+
+                    {selectedFieldMode === "FIELD_01" && (
+                      <TimingMeter
+                        fieldId="FIELD_01"
+                        fieldName={field1Obj.name}
+                        surface={field1Obj.surface}
+                        date={date}
+                        startTime={field1Start}
+                        endTime={field1End}
+                        onStartTimeChange={handleField1StartChange}
+                        onEndTimeChange={handleField1EndChange}
+                        isPastCutoff={isPastCutoff}
+                        checkSlotConflict={checkSlotConflict}
+                      />
+                    )}
+
+                    {selectedFieldMode === "FIELD_02" && (
+                      <TimingMeter
+                        fieldId="FIELD_02"
+                        fieldName={field2Obj.name}
+                        surface={field2Obj.surface}
+                        date={date}
+                        startTime={field2Start}
+                        endTime={field2End}
+                        onStartTimeChange={handleField2StartChange}
+                        onEndTimeChange={handleField2EndChange}
+                        isPastCutoff={isPastCutoff}
+                        checkSlotConflict={checkSlotConflict}
+                      />
+                    )}
+
+                    {selectedFieldMode === "BOTH" && (
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between p-3 rounded-lg bg-[rgba(15,19,57,0.03)] border border-[var(--line)]">
+                          <span className="text-xs font-bold text-[var(--ink)]">Field Timing Synchronization</span>
+                          <button
+                            type="button"
+                            className={`sync-timing-pill ${syncBothFields ? "is-active" : ""}`}
+                            onClick={() => {
+                              const next = !syncBothFields;
+                              setSyncBothFields(next);
+                              if (next) {
+                                setField2Start(field1Start);
+                                setField2End(field1End);
+                              }
+                            }}
+                          >
+                            {syncBothFields ? "✓ Same timing on both fields" : "Independent field timings"}
+                          </button>
                         </div>
-                        <div className="time-pill-grid" role="radiogroup" aria-label={period.label}>
-                          {period.times.map((time) => {
-                            const computedEnd = addMinutesToTime(time, durationMinutes);
-                            const isPast = isPastCutoff(date, time);
-                            const isConflict = checkSlotConflict(selectedFieldId, time, computedEnd);
-                            const disabled = isPast || isConflict;
-                            const isSelected = startTime === time;
-                            return (
-                              <button
-                                key={time}
-                                type="button"
-                                role="radio"
-                                aria-checked={isSelected}
-                                disabled={disabled}
-                                title={isPast ? "Past cutoff" : isConflict ? "Slot unavailable / booked" : `${formatTime12(time)} to ${formatTime12(computedEnd)}`}
-                                className={`time-pill ${isSelected ? "is-selected" : ""}`}
-                                onClick={() => setStartTime(time)}
-                              >
-                                <span className="time-pill-main">{formatTime12(time)}</span>
-                                <span className="time-pill-sub">{time}</span>
-                              </button>
-                            );
-                          })}
+
+                        <div>
+                          <div className="mb-2 text-xs font-extrabold text-[var(--ink)] uppercase tracking-wider">Field 1 Timing</div>
+                          <TimingMeter
+                            fieldId="FIELD_01"
+                            fieldName={field1Obj.name}
+                            surface={field1Obj.surface}
+                            date={date}
+                            startTime={field1Start}
+                            endTime={field1End}
+                            onStartTimeChange={handleField1StartChange}
+                            onEndTimeChange={handleField1EndChange}
+                            isPastCutoff={isPastCutoff}
+                            checkSlotConflict={checkSlotConflict}
+                          />
+                        </div>
+
+                        <div>
+                          <div className="mb-2 text-xs font-extrabold text-[var(--ink)] uppercase tracking-wider">Field 2 Timing</div>
+                          <TimingMeter
+                            fieldId="FIELD_02"
+                            fieldName={field2Obj.name}
+                            surface={field2Obj.surface}
+                            date={date}
+                            startTime={field2Start}
+                            endTime={field2End}
+                            onStartTimeChange={handleField2StartChange}
+                            onEndTimeChange={handleField2EndChange}
+                            isPastCutoff={isPastCutoff}
+                            checkSlotConflict={checkSlotConflict}
+                          />
                         </div>
                       </div>
-                    ))}
-                  </div>
+                    )}
+                  </section>
                 </div>
 
-                <div className="flexible-summary-pane">
-                  <div className="flexible-summary-details">
-                    <span className="flexible-section-label">Match Window Summary</span>
-                    <div className="flexible-summary-row">
-                      <span className="flexible-summary-label">Pitch</span>
-                      <strong className="flexible-summary-value">{selectedField.name}</strong>
+                {/* RIGHT COLUMN: STICKY SUMMARY & PRICING ANALYSIS */}
+                <div className="booking-flow-right">
+                  <div className="pricing-summary-card">
+                    <div className="pricing-summary-header">
+                      <span className="pricing-summary-eyebrow">Match Booking Summary</span>
+                      <h3 className="pricing-summary-title">
+                        {selectedFieldMode === "BOTH"
+                          ? "Both Pitches (Full Venue)"
+                          : selectedFieldMode === "FIELD_01"
+                          ? `${field1Obj.name} · Single Pitch`
+                          : `${field2Obj.name} · Single Pitch`}
+                      </h3>
+                      <div className="pricing-summary-date">📅 {dateLabel(date)}</div>
                     </div>
-                    <div className="flexible-summary-row">
-                      <span className="flexible-summary-label">Surface</span>
-                      <strong className="flexible-summary-value">{selectedField.surface.replace("Pending approved venue specification", "FIFA Certified Turf")}</strong>
+
+                    <div className="pricing-window-box">
+                      <div className="pricing-window-row">
+                        <span className="pricing-window-label">Kickoff Window</span>
+                        <span className="pricing-window-value">
+                          {selectedFieldMode === "BOTH" && !syncBothFields ? (
+                            <span className="block text-right">
+                              <span>F1: {formatTimePair12(field1Start, field1End)}</span>
+                              <br />
+                              <span>F2: {formatTimePair12(field2Start, field2End)}</span>
+                            </span>
+                          ) : (
+                            <span>{formatTimePair12(field1Start, field1End)}</span>
+                          )}
+                        </span>
+                      </div>
+                      <div className="pricing-window-row">
+                        <span className="pricing-window-label">Total Duration</span>
+                        <span className="pricing-window-value highlight">
+                          {selectedFieldMode === "BOTH"
+                            ? `${formatDurationText(field1DurationMinutes + field2DurationMinutes)} total (${formatDurationText(field1DurationMinutes)} / field)`
+                            : formatDurationText(field1DurationMinutes)}
+                        </span>
+                      </div>
                     </div>
-                    <div className="flexible-summary-row">
-                      <span className="flexible-summary-label">Date</span>
-                      <strong className="flexible-summary-value">{dateLabel(date)}</strong>
-                    </div>
-                    <div className="flexible-summary-row">
-                      <span className="flexible-summary-label">Kickoff Window</span>
-                      <strong className="flexible-summary-value highlight">{formatTimePair12(startTime, endTime)} ({currentDuration.label})</strong>
-                    </div>
-                    <div className="flexible-summary-price">
-                      <span>Session Rate</span>
-                      <strong>{formatMoney(currentDuration.amountMinor)}</strong>
+
+                    {/* DETAILED PRICING & TAX ANALYSIS (JOHOR BAHRU / ISKANDAR PUTERI) */}
+                    <div className="pricing-analysis-table">
+                      <span className="pricing-analysis-heading">Pricing & Tax Analysis</span>
+
+                      <div className="pricing-analysis-row">
+                        <span>Base Pitch Rate</span>
+                        <span>RM 140.00 / hr per field</span>
+                      </div>
+
+                      <div className="pricing-analysis-row">
+                        <span>Pitch Hours ({activeFlexibleBasketItems.length} {activeFlexibleBasketItems.length > 1 ? "pitches" : "pitch"})</span>
+                        <span>{formatDurationText(activeDurationMinutes)}</span>
+                      </div>
+
+                      <div className="pricing-analysis-row">
+                        <span>Gross Pitch Rental</span>
+                        <span>{formatMoney(activeTotalMinor)}</span>
+                      </div>
+
+                      <div className="pricing-analysis-row sub-row">
+                        <span>Pitch Rental (Net of SST)</span>
+                        <span>{formatMoney(netAmountMinor)}</span>
+                      </div>
+
+                      <div className="pricing-analysis-row sub-row" style={{ color: "#1b574d" }}>
+                        <span>Service Tax (8% SST · Iskandar Puteri)</span>
+                        <span>{formatMoney(sstAmountMinor)}</span>
+                      </div>
+
+                      <div className="pricing-analysis-total">
+                        <div>
+                          <span className="pricing-total-label">Total Amount Payable</span>
+                          <span className="pricing-tax-badge">Includes 8% SST</span>
+                        </div>
+                        <strong className="pricing-total-amount">{formatMoney(activeTotalMinor)}</strong>
+                      </div>
+
+                      <p className="pricing-tax-note">
+                        All prices are inclusive of 8% Sales and Service Tax (SST) as mandated under the Malaysian Service Tax Act 2018 for Iskandar Puteri, Johor Bahru.
+                      </p>
                     </div>
                   </div>
 
-                  <div className="mt-5">
-                    {isCurrentSelectionConflicted ? (
-                      <div className="flexible-conflict-alert" role="alert">
-                        ⚠️ The selected window conflicts with an existing booking or is past cutoff. Please choose another start time or pitch.
+                  <div className="pricing-actions-pane">
+                    {hasCurrentFlexibleConflict ? (
+                      <div className="conflict-notice-banner" role="alert">
+                        ⚠️ One or more selected time slots conflict with an existing booking or are past cutoff. Please choose another window.
                       </div>
                     ) : null}
 
                     {paymentBlocked ? (
-                      <div className="flexible-blocked-alert" role="status">
+                      <div className="blocked-notice-banner" role="status">
                         🔒 Online booking is currently paused. Please check back shortly or visit the counter.
                       </div>
                     ) : null}
 
                     <Button
                       type="button"
-                      className="w-full h-11 text-sm font-bold shadow-sm"
-                      disabled={isCurrentSelectionConflicted || paymentBlocked}
-                      variant={isCurrentFlexibleInBasket ? "outline" : "default"}
-                      onClick={() => toggleSession(currentFlexibleBasketItem)}
+                      className="w-full h-12 text-sm font-bold shadow-md"
+                      disabled={hasCurrentFlexibleConflict || paymentBlocked}
+                      variant={isAllActiveFlexibleInBasket ? "outline" : "default"}
+                      onClick={() => toggleFlexibleSessions(activeFlexibleBasketItems)}
                     >
                       {paymentBlocked
                         ? "Online Booking Paused"
-                        : isCurrentFlexibleInBasket
+                        : isAllActiveFlexibleInBasket
                         ? "✓ In Basket · Click to Remove"
-                        : `Add to Basket · ${formatMoney(currentDuration.amountMinor)}`}
+                        : selectedFieldMode === "BOTH"
+                        ? `Add Both Pitches · ${formatMoney(activeTotalMinor)}`
+                        : `Add to Basket · ${formatMoney(activeTotalMinor)}`}
                     </Button>
                   </div>
                 </div>
