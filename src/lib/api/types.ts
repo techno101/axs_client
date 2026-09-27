@@ -40,6 +40,11 @@ export type PublicConfigView = {
   addons: PublicAddon[];
   onlinePayment: OnlinePaymentCapability;
   customDurationPricing?: CustomDurationPricing;
+  tax?: {
+    enabled: boolean;
+    rate: number;
+    label: string;
+  };
 };
 
 export type PublicAddon = {

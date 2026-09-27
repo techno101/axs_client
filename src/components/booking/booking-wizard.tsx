@@ -333,12 +333,27 @@ type BookingWizardProps = {
   availability: AvailabilitySlot[];
   addons: PublicAddon[];
   onlinePayment: PublicConfigView["onlinePayment"];
+  taxConfig?: {
+    enabled: boolean;
+    rate: number;
+    label: string;
+  };
   businessDate: string;
   initialDate: string;
   defaultMode?: "flexible" | "package";
 };
 
-export function BookingWizard({ fields, blocks, availability, addons, onlinePayment, businessDate, initialDate, defaultMode = "flexible" }: BookingWizardProps) {
+export function BookingWizard({
+  fields,
+  blocks,
+  availability,
+  addons,
+  onlinePayment,
+  taxConfig,
+  businessDate,
+  initialDate,
+  defaultMode = "flexible",
+}: BookingWizardProps) {
   const client = useMemo(() => createHttpPublicClient(), []);
   const railDays = useMemo(() => Array.from({ length: 91 }, (_, index) => {
     const value = addIsoDays(businessDate, index);
@@ -514,10 +529,41 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
     return activeFlexibleBasketItems.reduce((acc, item) => acc + item.amountMinor, 0);
   }, [activeFlexibleBasketItems]);
 
-  // Malaysian Tax calculation: 8% Sales and Service Tax (SST) under Service Tax Act 2018 (Johor Bahru / Iskandar Puteri)
-  // Section 34 of Service Tax Act 2018 mandates consumer-facing quoted total is inclusive of SST
-  const netAmountMinor = useMemo(() => Math.round(activeTotalMinor / 1.08), [activeTotalMinor]);
-  const sstAmountMinor = useMemo(() => activeTotalMinor - netAmountMinor, [activeTotalMinor, netAmountMinor]);
+  const taxEnabled = taxConfig?.enabled ?? true;
+  const taxRate = taxConfig?.rate ?? 8;
+  const taxLabel = taxConfig?.label || "SST (8%)";
+
+  // HitPay online payment service charge: 2.5% blended rate
+  const activeServiceChargeMinor = useMemo(() => {
+    return Math.round(activeTotalMinor * 0.025);
+  }, [activeTotalMinor]);
+
+  const activeBookingChargeMinor = useMemo(() => {
+    if (!taxEnabled || taxRate <= 0) {
+      return activeTotalMinor - activeServiceChargeMinor;
+    }
+    return Math.round((activeTotalMinor - activeServiceChargeMinor) / (1 + taxRate / 100));
+  }, [activeTotalMinor, activeServiceChargeMinor, taxEnabled, taxRate]);
+
+  const activeSstMinor = useMemo(() => {
+    return Math.max(0, activeTotalMinor - activeServiceChargeMinor - activeBookingChargeMinor);
+  }, [activeTotalMinor, activeServiceChargeMinor, activeBookingChargeMinor]);
+
+  // Overall order breakdown in review step
+  const estimatedServiceChargeMinor = useMemo(() => {
+    return Math.round(estimatedTotalMinor * 0.025);
+  }, [estimatedTotalMinor]);
+
+  const estimatedBookingChargeMinor = useMemo(() => {
+    if (!taxEnabled || taxRate <= 0) {
+      return estimatedTotalMinor - estimatedServiceChargeMinor;
+    }
+    return Math.round((estimatedTotalMinor - estimatedServiceChargeMinor) / (1 + taxRate / 100));
+  }, [estimatedTotalMinor, estimatedServiceChargeMinor, taxEnabled, taxRate]);
+
+  const estimatedSstMinor = useMemo(() => {
+    return Math.max(0, estimatedTotalMinor - estimatedServiceChargeMinor - estimatedBookingChargeMinor);
+  }, [estimatedTotalMinor, estimatedServiceChargeMinor, estimatedBookingChargeMinor]);
 
   const toggleFlexibleSessions = (items: BasketItem[]) => {
     setError(null);
@@ -1006,30 +1052,34 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
                       </div>
 
                       <div className="pricing-analysis-row">
-                        <span>Gross Pitch Rental</span>
-                        <span>{formatMoney(activeTotalMinor)}</span>
+                        <span>Booking Charge</span>
+                        <span>{formatMoney(activeBookingChargeMinor)}</span>
                       </div>
 
-                      <div className="pricing-analysis-row sub-row">
-                        <span>Pitch Rental (Net of SST)</span>
-                        <span>{formatMoney(netAmountMinor)}</span>
+                      <div className="pricing-analysis-row sub-row" style={{ color: "#2563eb" }}>
+                        <span>Service Charge (2.5% HitPay fee)</span>
+                        <span>{formatMoney(activeServiceChargeMinor)}</span>
                       </div>
 
-                      <div className="pricing-analysis-row sub-row" style={{ color: "#1b574d" }}>
-                        <span>Service Tax (8% SST · Iskandar Puteri)</span>
-                        <span>{formatMoney(sstAmountMinor)}</span>
-                      </div>
+                      {taxEnabled && activeSstMinor > 0 ? (
+                        <div className="pricing-analysis-row sub-row" style={{ color: "#1b574d" }}>
+                          <span>{taxLabel}</span>
+                          <span>{formatMoney(activeSstMinor)}</span>
+                        </div>
+                      ) : null}
 
                       <div className="pricing-analysis-total">
                         <div>
                           <span className="pricing-total-label">Total Amount Payable</span>
-                          <span className="pricing-tax-badge">Includes 8% SST</span>
+                          <span className="pricing-tax-badge">
+                            {taxEnabled ? `Includes 2.5% Fee + ${taxRate}% SST` : "Includes 2.5% Fee"}
+                          </span>
                         </div>
                         <strong className="pricing-total-amount">{formatMoney(activeTotalMinor)}</strong>
                       </div>
 
                       <p className="pricing-tax-note">
-                        All prices are inclusive of 8% Sales and Service Tax (SST) as mandated under the Malaysian Service Tax Act 2018 for Iskandar Puteri, Johor Bahru.
+                        Total includes pitch rental, 2.5% HitPay online service charge{taxEnabled ? `, and ${taxRate}% Sales & Service Tax (SST)` : ""}.
                       </p>
                     </div>
                   </div>
@@ -1150,9 +1200,17 @@ export function BookingWizard({ fields, blocks, availability, addons, onlinePaym
             <div><dt>Sessions</dt><dd>{formatMoney(sessionTotalMinor)}</dd></div>
             {addonTotalMinor ? <div><dt>Add-ons</dt><dd>{formatMoney(addonTotalMinor)}</dd></div> : null}
             {discountMinor ? <div><dt>Voucher discount</dt><dd>−{formatMoney(discountMinor)}</dd></div> : null}
+            <div style={{ borderTop: "1px dashed #cbd5e1", margin: "6px 0", paddingTop: "6px" }} />
+            <div><dt>Booking charge</dt><dd>{formatMoney(estimatedBookingChargeMinor)}</dd></div>
+            <div><dt>Service charge (2.5% HitPay fee)</dt><dd>{formatMoney(estimatedServiceChargeMinor)}</dd></div>
+            {taxEnabled && estimatedSstMinor > 0 ? (
+              <div><dt>{taxLabel}</dt><dd>{formatMoney(estimatedSstMinor)}</dd></div>
+            ) : null}
             <div className="review-step__total"><dt>Total</dt><dd>{formatMoney(estimatedTotalMinor)}</dd></div>
           </dl>
-          <p className="review-step__tax-note">All prices are inclusive of applicable SST / venue taxes. Payment gateway fee is calculated at checkout.</p>
+          <p className="review-step__tax-note">
+            Total includes pitch rental, 2.5% HitPay online service charge{taxEnabled ? ` and ${taxRate}% SST` : ""}.
+          </p>
 
           <PaymentBadges title="Accepted Payment Methods" className="booking-details-payments" />
 

@@ -27,6 +27,7 @@ export default async function BookPage({ searchParams }: { searchParams: Promise
   let availability: Awaited<ReturnType<typeof publicClient.getAvailability>> = [];
   let addons: Awaited<ReturnType<typeof publicClient.getConfig>>["addons"] = [];
   let onlinePayment: Awaited<ReturnType<typeof publicClient.getConfig>>["onlinePayment"] = { enabled: false };
+  let taxConfig: Awaited<ReturnType<typeof publicClient.getConfig>>["tax"] = undefined;
   try {
     const [liveFields, liveConfig, liveAvailability] = await Promise.all([
       publicClient.getFields(),
@@ -38,6 +39,7 @@ export default async function BookPage({ searchParams }: { searchParams: Promise
     availability = liveAvailability;
     addons = liveConfig.addons;
     onlinePayment = liveConfig.onlinePayment;
+    taxConfig = liveConfig.tax;
   } catch {
     // The booking service is unreachable; keep the page usable with local field and session defaults.
   }
@@ -49,7 +51,16 @@ export default async function BookPage({ searchParams }: { searchParams: Promise
         <h1>Two pitches. Pick a date, pick a time.</h1>
         <p>Field 1 and Field 2 run the same sessions &mdash; choose either, or both when your group needs the space. Availability is checked live before payment.</p>
       </section>
-      <BookingWizard fields={fields} blocks={blocks} availability={availability} addons={addons} onlinePayment={onlinePayment} businessDate={businessDate} initialDate={initialDate} />
+      <BookingWizard
+        fields={fields}
+        blocks={blocks}
+        availability={availability}
+        addons={addons}
+        onlinePayment={onlinePayment}
+        taxConfig={taxConfig}
+        businessDate={businessDate}
+        initialDate={initialDate}
+      />
     </>
   );
 }
