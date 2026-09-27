@@ -1,5 +1,22 @@
 # Client Changelog
 
+## 2026-09-27 (v24 Production Readiness - Client Checkout Breakdown: Booking Charge, 2.5% HitPay Fee & SST)
+
+- **Itemized Transparent Pricing Breakdown**:
+  - In `src/components/booking/booking-wizard.tsx`: enhanced the live pricing analysis panel and checkout review list to present an itemized breakdown:
+    - **Pitch Rental / Booking charge**: Base pitch fee.
+    - **Online payment service charge (2.5%)**: Blended HitPay processing charge displayed transparently.
+    - **Malaysian Service Tax (8% SST)**: Calculated in accordance with the Malaysian *Service Tax Act 2018* (inclusive).
+    - **Total Amount Payable**: Exact total matching backend hold amount.
+- **Dynamic Tax Configuration Integration**:
+  - In `src/lib/api/types.ts`: added `tax?: { enabled: boolean; rate: number; label: string }` to `PublicConfigView`.
+  - In `src/app/book/page.tsx`: fetched `taxConfig` from `getPublicConfig()` and passed it to `<BookingWizard />`.
+  - Added subtle information callouts for customer clarity regarding Malaysian SST compliance and online payment processing fees.
+- **Automated Verification**:
+  - 52 tests passing across 12 test files in Vitest.
+  - 0 TypeScript errors, 0 ESLint errors.
+  - API contract check valid, security boundary passed (94 files), Next.js production build succeeded with exit code 0.
+
 ## 2026-09-20 (v23 Serialized Booking Flow, Interactive Timing Meter, Malaysian SST 8% Breakdown & Button Contrast Fix)
 - **Cascade Layering & High-Contrast Button Fix**:
   - Wrapped base HTML resets (`button, input, textarea, select, a`) in `@layer base` in `src/app/globals.css`. In Tailwind CSS v4, unlayered CSS declarations override utilities in `@layer utilities`; moving base resets into `@layer base` ensures utilities like `.text-white` maintain cascade precedence.

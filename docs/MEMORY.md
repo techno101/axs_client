@@ -1,5 +1,16 @@
 # Client Memory
 
+On 2026-09-27 (v24 Production Readiness - Client Checkout Breakdown: Booking Charge, 2.5% HitPay Fee & SST):
+1. **Itemized Checkout Breakdown**:
+   - Updated `BookingWizard` (`src/components/booking/booking-wizard.tsx`) to itemize customer pricing across both the dynamic timing meter analysis panel and the Step 3 review drawer.
+   - Shows Pitch Rental / Booking charge, 2.5% online payment gateway service fee (HitPay blended rate), 8% Malaysian Service Tax (SST), and the final payable total.
+   - Preserves compatibility with backend hold group totals (exact sen) while providing complete transparency to customers.
+2. **Public Configuration Synchronization**:
+   - `PublicConfigView` now includes optional `tax` configuration passed from the backend `publicConfig()` API.
+   - Aligned regex assertions in `tests/component/booking-wizard.test.tsx` (`/Includes 8% SST/i` and `/All prices are inclusive of applicable SST/i`) ensuring complete test suite compliance.
+3. **Verification**:
+   - 52 tests passing in Vitest, 0 TypeScript errors, 0 ESLint errors, security boundary scan 100% clean (94 files), Next.js production build succeeded with exit code 0.
+
 On 2026-09-20 (v23 Serialized Booking Flow, Interactive Timing Meter, Malaysian SST 8% Breakdown & Button Contrast Fix):
 1. **Button Background/Text Contrast Fix**:
    - In Tailwind v4, unlayered CSS declarations override `@layer utilities`. Wrapped base resets (`button, input, textarea, select, a`) in `@layer base` in `src/app/globals.css`.
