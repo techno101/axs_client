@@ -1072,14 +1072,14 @@ export function BookingWizard({
                         <div>
                           <span className="pricing-total-label">Total Amount Payable</span>
                           <span className="pricing-tax-badge">
-                            {taxEnabled ? `Includes 2.5% Fee + ${taxRate}% SST` : "Includes 2.5% Fee"}
+                            {taxEnabled ? `Includes ${taxRate}% SST + 2.5% Fee` : "Includes 2.5% Fee"}
                           </span>
                         </div>
                         <strong className="pricing-total-amount">{formatMoney(activeTotalMinor)}</strong>
                       </div>
 
                       <p className="pricing-tax-note">
-                        Total includes pitch rental, 2.5% HitPay online service charge{taxEnabled ? `, and ${taxRate}% Sales & Service Tax (SST)` : ""}.
+                        All prices are inclusive of applicable SST / venue taxes and 2.5% HitPay online service charge.
                       </p>
                     </div>
                   </div>
@@ -1209,7 +1209,7 @@ export function BookingWizard({
             <div className="review-step__total"><dt>Total</dt><dd>{formatMoney(estimatedTotalMinor)}</dd></div>
           </dl>
           <p className="review-step__tax-note">
-            Total includes pitch rental, 2.5% HitPay online service charge{taxEnabled ? ` and ${taxRate}% SST` : ""}.
+            All prices are inclusive of applicable SST / venue taxes and 2.5% HitPay online service charge.
           </p>
 
           <PaymentBadges title="Accepted Payment Methods" className="booking-details-payments" />
